@@ -5,6 +5,7 @@ const { query, pool } = require("./db");
 const router = express.Router();
 
 const MAX_TASKS_PER_REQUEST = 20;
+const TASK_REWARD_COINS = 5;
 
 
 /* ==========================================
@@ -22,7 +23,11 @@ function parseCookies(cookieHeader = "") {
     const key = item.slice(0, index).trim();
     const value = item.slice(index + 1).trim();
 
-    cookies[key] = decodeURIComponent(value);
+    try {
+      cookies[key] = decodeURIComponent(value);
+    } catch {
+      cookies[key] = value;
+    }
   });
 
   return cookies;
@@ -60,16 +65,12 @@ async function getCurrentUser(req) {
       u.is_active,
       u.is_banned,
       u.is_admin
-
     FROM sessions s
-
     INNER JOIN users u
       ON u.id = s.user_id
-
     WHERE
       s.session_token_hash = $1
       AND s.expires_at > NOW()
-
     LIMIT 1
     `,
     [sessionHash]
@@ -93,7 +94,7 @@ async function getCurrentUser(req) {
 
 
 /* ==========================================
-   1. GET NEXT AVAILABLE PROMOTION TASK
+   1. GET NEXT TASK
 ========================================== */
 
 router.get(
@@ -115,25 +116,23 @@ router.get(
         });
       }
 
-
       await client.query("BEGIN");
 
 
       /*
-        Find a pending promotion task that:
-
-        1. Belongs to this worker.
-        2. Has not been completed.
-        3. Promotion is still active.
+        Get the oldest pending task
+        belonging to this worker.
       */
 
-      const taskResult =
+      const result =
         await client.query(
           `
           SELECT
             pt.id AS task_id,
 
             p.id AS promotion_id,
+
+            p.user_id AS promotion_owner_id,
 
             p.tiktok_username,
             p.tiktok_url,
@@ -172,9 +171,7 @@ router.get(
         );
 
 
-      if (
-        taskResult.rows.length === 0
-      ) {
+      if (result.rows.length === 0) {
 
         await client.query(
           "ROLLBACK"
@@ -182,17 +179,14 @@ router.get(
 
         return res.json({
           success: true,
-
           has_task: false,
-
-          message:
-            "No task available"
+          message: "No task available"
         });
       }
 
 
       const task =
-        taskResult.rows[0];
+        result.rows[0];
 
 
       await client.query(
@@ -206,8 +200,7 @@ router.get(
         has_task: true,
 
         task: {
-          id:
-            task.task_id,
+          id: task.task_id,
 
           promotion_id:
             task.promotion_id,
@@ -221,7 +214,8 @@ router.get(
           promotion_type:
             task.promotion_type,
 
-          reward_coins: 5,
+          reward_coins:
+            TASK_REWARD_COINS,
 
           progress: {
             completed:
@@ -242,7 +236,7 @@ router.get(
       } catch {}
 
       console.error(
-        "Get task queue error:",
+        "Get next task error:",
         error
       );
 
@@ -253,6 +247,7 @@ router.get(
       });
 
     } finally {
+
       client.release();
     }
   }
@@ -260,7 +255,521 @@ router.get(
 
 
 /* ==========================================
-   2. ASSIGN TASKS TO USERS
+   2. VERIFY / COMPLETE TASK
+========================================== */
+
+router.post(
+  "/task-queue/verify",
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const user =
+        await getCurrentUser(req);
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: "Not logged in"
+        });
+      }
+
+
+      const taskId =
+        String(
+          req.body.task_id || ""
+        ).trim();
+
+
+      if (!taskId) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Task ID is required"
+        });
+      }
+
+
+      await client.query("BEGIN");
+
+
+      /*
+        Lock the task.
+
+        This prevents two requests
+        from rewarding the same task.
+      */
+
+      const taskResult =
+        await client.query(
+          `
+          SELECT
+            pt.id AS task_id,
+
+            pt.worker_user_id,
+
+            pt.status,
+
+            p.id AS promotion_id,
+
+            p.user_id AS promotion_owner_id,
+
+            p.status AS promotion_status,
+
+            p.completed_count,
+
+            p.target_count
+
+          FROM promotion_tasks pt
+
+          INNER JOIN promotions p
+            ON p.id = pt.promotion_id
+
+          WHERE
+            pt.id = $1
+
+            AND pt.worker_user_id = $2
+
+          FOR UPDATE OF pt
+          `,
+          [
+            taskId,
+            user.id
+          ]
+        );
+
+
+      if (
+        taskResult.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+          success: false,
+          message: "Task not found"
+        });
+      }
+
+
+      const task =
+        taskResult.rows[0];
+
+
+      /*
+        Never reward a completed task twice.
+      */
+
+      if (
+        task.status !== "pending"
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(409).json({
+          success: false,
+          message:
+            "This task has already been completed"
+        });
+      }
+
+
+      /*
+        Make sure the promotion
+        is still active.
+      */
+
+      if (
+        task.promotion_status !==
+        "pending"
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(409).json({
+          success: false,
+          message:
+            "This promotion is no longer active"
+        });
+      }
+
+
+      /*
+        Make sure target has not
+        already been reached.
+      */
+
+      if (
+        Number(task.completed_count) >=
+        Number(task.target_count)
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(409).json({
+          success: false,
+          message:
+            "This promotion is already complete"
+        });
+      }
+
+
+      /*
+        IMPORTANT
+
+        At this stage the server is
+        completing the assigned task.
+
+        Actual TikTok follow verification
+        must be added separately when the
+        required TikTok API capability/
+        permission is available.
+
+        We do NOT trust a client-sent
+        "verified = true" value.
+      */
+
+
+      /* ==========================================
+         LOCK USER
+      ========================================== */
+
+      const userResult =
+        await client.query(
+          `
+          SELECT
+            id,
+            coins,
+            is_active,
+            is_banned
+
+          FROM users
+
+          WHERE id = $1
+
+          FOR UPDATE
+          `,
+          [user.id]
+        );
+
+
+      if (
+        userResult.rows.length === 0
+      ) {
+
+        throw new Error(
+          "User could not be loaded"
+        );
+      }
+
+
+      const lockedUser =
+        userResult.rows[0];
+
+
+      if (
+        !lockedUser.is_active ||
+        lockedUser.is_banned
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(403).json({
+          success: false,
+          message:
+            "Account is not active"
+        });
+      }
+
+
+      const balanceBefore =
+        Number(
+          lockedUser.coins || 0
+        );
+
+
+      const balanceAfter =
+        balanceBefore +
+        TASK_REWARD_COINS;
+
+
+      /* ==========================================
+         MARK TASK COMPLETE
+      ========================================== */
+
+      const completedTaskResult =
+        await client.query(
+          `
+          UPDATE promotion_tasks
+
+          SET
+            status = 'completed',
+            completed_at = NOW()
+
+          WHERE
+            id = $1
+
+            AND worker_user_id = $2
+
+            AND status = 'pending'
+
+          RETURNING id
+          `,
+          [
+            taskId,
+            user.id
+          ]
+        );
+
+
+      /*
+        If another request completed it
+        first, do not reward again.
+      */
+
+      if (
+        completedTaskResult.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(409).json({
+          success: false,
+          message:
+            "This task has already been completed"
+        });
+      }
+
+
+      /* ==========================================
+         UPDATE PROMOTION COUNT
+      ========================================== */
+
+      const promotionUpdate =
+        await client.query(
+          `
+          UPDATE promotions
+
+          SET
+            completed_count =
+              completed_count + 1,
+
+            status =
+              CASE
+                WHEN completed_count + 1
+                     >= target_count
+                THEN 'completed'
+
+                ELSE status
+              END,
+
+            updated_at = NOW()
+
+          WHERE
+            id = $1
+
+            AND completed_count <
+                target_count
+
+          RETURNING
+            completed_count,
+            target_count,
+            status
+          `,
+          [
+            task.promotion_id
+          ]
+        );
+
+
+      if (
+        promotionUpdate.rows.length === 0
+      ) {
+
+        throw new Error(
+          "Promotion could not be updated"
+        );
+      }
+
+
+      const promotion =
+        promotionUpdate.rows[0];
+
+
+      /* ==========================================
+         ADD COINS
+      ========================================== */
+
+      const walletResult =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+            coins = coins + $2,
+            updated_at = NOW()
+
+          WHERE
+            id = $1
+
+          RETURNING coins
+          `,
+          [
+            user.id,
+            TASK_REWARD_COINS
+          ]
+        );
+
+
+      if (
+        walletResult.rows.length === 0
+      ) {
+
+        throw new Error(
+          "Could not update wallet"
+        );
+      }
+
+
+      const newBalance =
+        Number(
+          walletResult.rows[0].coins
+        );
+
+
+      /* ==========================================
+         COIN TRANSACTION
+      ========================================== */
+
+      await client.query(
+        `
+        INSERT INTO coin_transactions (
+          user_id,
+          type,
+          amount,
+          balance_before,
+          balance_after,
+          reference_type,
+          reference_id,
+          description
+        )
+
+        VALUES (
+          $1,
+          'task_reward',
+          $2,
+          $3,
+          $4,
+          'promotion_task',
+          $5,
+          $6
+        )
+        `,
+        [
+          user.id,
+
+          TASK_REWARD_COINS,
+
+          balanceBefore,
+
+          newBalance,
+
+          task.task_id,
+
+          "Reward for completing TikTok promotion task"
+        ]
+      );
+
+
+      /* ==========================================
+         COMMIT
+      ========================================== */
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+        success: true,
+
+        message:
+          "Task completed successfully. +5 coins added.",
+
+        reward_coins:
+          TASK_REWARD_COINS,
+
+        coins:
+          newBalance,
+
+        task: {
+          id:
+            task.task_id,
+
+          status:
+            "completed"
+        },
+
+        promotion: {
+          completed:
+            Number(
+              promotion.completed_count
+            ),
+
+          target:
+            Number(
+              promotion.target_count
+            ),
+
+          status:
+            promotion.status
+        }
+      });
+
+    } catch (error) {
+
+      try {
+        await client.query(
+          "ROLLBACK"
+        );
+      } catch {}
+
+      console.error(
+        "Verify task error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Could not verify task"
+      });
+
+    } finally {
+
+      client.release();
+    }
+  }
+);
+
+
+/* ==========================================
+   3. ASSIGN TASKS
    ADMIN / SYSTEM
 ========================================== */
 
@@ -319,11 +828,6 @@ router.post(
       );
 
 
-      /*
-        Find active promotions
-        that still need workers.
-      */
-
       const promotionsResult =
         await client.query(
           `
@@ -341,7 +845,8 @@ router.post(
             AND completed_count <
                 target_count
 
-          ORDER BY created_at ASC
+          ORDER BY
+            created_at ASC
 
           LIMIT 20
 
@@ -366,25 +871,18 @@ router.post(
 
 
         const remaining =
-          promotion.target_count -
-          promotion.completed_count;
+          Number(
+            promotion.target_count
+          ) -
+          Number(
+            promotion.completed_count
+          );
 
 
-        if (
-          remaining <= 0
-        ) {
+        if (remaining <= 0) {
           continue;
         }
 
-
-        /*
-          Find eligible workers.
-
-          Exclude:
-          - Promotion owner
-          - Users who already have this promotion
-          - Banned/inactive users
-        */
 
         const workersResult =
           await client.query(
@@ -407,11 +905,9 @@ router.post(
                 FROM promotion_tasks existing_pt
 
                 WHERE
-                  existing_pt.promotion_id =
-                    $2
+                  existing_pt.promotion_id = $2
 
-                  AND existing_pt.worker_user_id =
-                    u.id
+                  AND existing_pt.worker_user_id = u.id
               )
 
             ORDER BY
@@ -443,11 +939,6 @@ router.post(
             break;
           }
 
-
-          /*
-            Insert one task
-            for one worker.
-          */
 
           const insertResult =
             await client.query(
@@ -524,6 +1015,7 @@ router.post(
       });
 
     } finally {
+
       client.release();
     }
   }
@@ -531,7 +1023,7 @@ router.post(
 
 
 /* ==========================================
-   3. MY TASKS
+   4. MY TASKS
 ========================================== */
 
 router.get(
@@ -613,7 +1105,7 @@ router.get(
 
 
 /* ==========================================
-   4. TASK STATUS
+   5. TASK STATUS
 ========================================== */
 
 router.get(
@@ -680,6 +1172,7 @@ router.get(
       if (
         result.rows.length === 0
       ) {
+
         return res.status(404).json({
           success: false,
           message:
