@@ -6,6 +6,7 @@ const router = express.Router();
 
 const MIN_PROMOTION_COINS = 60;
 const COINS_PER_FOLLOWER = 10;
+const MAX_PROMOTION_COINS = 100000;
 
 
 /* ==========================================
@@ -23,7 +24,11 @@ function parseCookies(cookieHeader = "") {
     const key = item.slice(0, index).trim();
     const value = item.slice(index + 1).trim();
 
-    cookies[key] = decodeURIComponent(value);
+    try {
+      cookies[key] = decodeURIComponent(value);
+    } catch {
+      cookies[key] = value;
+    }
   });
 
   return cookies;
@@ -39,9 +44,10 @@ function hashToken(token) {
 
 
 async function getCurrentUser(req) {
-  const cookies = parseCookies(
-    req.headers.cookie || ""
-  );
+  const cookies =
+    parseCookies(
+      req.headers.cookie || ""
+    );
 
   const sessionToken =
     cookies.session_token;
@@ -53,34 +59,38 @@ async function getCurrentUser(req) {
   const sessionHash =
     hashToken(sessionToken);
 
-  const result = await query(
-    `
-    SELECT
-      u.id,
-      u.coins,
-      u.is_active,
-      u.is_banned,
-      u.is_admin
+  const result =
+    await query(
+      `
+      SELECT
+        u.id,
+        u.coins,
+        u.is_active,
+        u.is_banned,
+        u.is_admin
 
-    FROM sessions s
+      FROM sessions s
 
-    INNER JOIN users u
-      ON u.id = s.user_id
+      INNER JOIN users u
+        ON u.id = s.user_id
 
-    WHERE
-      s.session_token_hash = $1
-      AND s.expires_at > NOW()
+      WHERE
+        s.session_token_hash = $1
+        AND s.expires_at > NOW()
 
-    LIMIT 1
-    `,
-    [sessionHash]
-  );
+      LIMIT 1
+      `,
+      [sessionHash]
+    );
 
-  if (result.rows.length === 0) {
+  if (
+    result.rows.length === 0
+  ) {
     return null;
   }
 
-  const user = result.rows[0];
+  const user =
+    result.rows[0];
 
   if (
     !user.is_active ||
@@ -98,10 +108,15 @@ async function getCurrentUser(req) {
 ========================================== */
 
 function isValidTikTokUrl(value) {
-  try {
-    const url = new URL(value);
 
-    if (url.protocol !== "https:") {
+  try {
+
+    const url =
+      new URL(value);
+
+    if (
+      url.protocol !== "https:"
+    ) {
       return false;
     }
 
@@ -121,7 +136,86 @@ function isValidTikTokUrl(value) {
 
 
 /* ==========================================
-   1. PROMOTION PRICE PREVIEW
+   NORMALIZE USERNAME
+========================================== */
+
+function normalizeUsername(value) {
+
+  let username =
+    String(value || "")
+      .trim();
+
+  if (
+    username.startsWith("@")
+  ) {
+    username =
+      username.slice(1);
+  }
+
+  return username;
+}
+
+
+/* ==========================================
+   VALIDATE PROMOTION COINS
+========================================== */
+
+function validatePromotionCoins(
+  value
+) {
+
+  const coins =
+    Number(value);
+
+  if (
+    !Number.isInteger(coins)
+  ) {
+    return {
+      valid: false,
+      message:
+        "Coin amount must be a whole number"
+    };
+  }
+
+  if (
+    coins < MIN_PROMOTION_COINS
+  ) {
+    return {
+      valid: false,
+      message:
+        "Minimum promotion is 60 coins"
+    };
+  }
+
+  if (
+    coins > MAX_PROMOTION_COINS
+  ) {
+    return {
+      valid: false,
+      message:
+        "Promotion amount is too high"
+    };
+  }
+
+  if (
+    coins % COINS_PER_FOLLOWER !== 0
+  ) {
+    return {
+      valid: false,
+      message:
+        "Coins must be a multiple of 10"
+    };
+  }
+
+  return {
+    valid: true,
+    coins
+  };
+}
+
+
+/* ==========================================
+   1. PROMOTION PREVIEW
 ========================================== */
 
 router.post(
@@ -134,72 +228,66 @@ router.post(
         await getCurrentUser(req);
 
       if (!user) {
+
         return res.status(401).json({
           success: false,
-          message: "Not logged in"
+          message:
+            "Not logged in"
+        });
+      }
+
+
+      const validation =
+        validatePromotionCoins(
+          req.body.coins
+        );
+
+
+      if (!validation.valid) {
+
+        return res.status(400).json({
+          success: false,
+          message:
+            validation.message,
+
+          minimum_coins:
+            MIN_PROMOTION_COINS,
+
+          coins_per_follower:
+            COINS_PER_FOLLOWER
         });
       }
 
 
       const coins =
-        Number(req.body.coins);
+        validation.coins;
 
 
       if (
-        !Number.isInteger(coins) ||
-        coins <= 0
+        coins > Number(user.coins)
       ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Enter a valid coin amount"
-        });
-      }
 
-
-      if (
-        coins < MIN_PROMOTION_COINS
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Minimum promotion is 60 coins",
-          minimum_coins:
-            MIN_PROMOTION_COINS
-        });
-      }
-
-
-      if (
-        coins % COINS_PER_FOLLOWER !== 0
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Coins must be a multiple of 10",
-          example:
-            "60, 70, 80, 100..."
-        });
-      }
-
-
-      if (coins > user.coins) {
         return res.status(400).json({
           success: false,
           message:
             "Insufficient coins",
+
           balance:
-            user.coins,
+            Number(user.coins),
+
           required:
             coins,
+
           missing:
-            coins - user.coins
+            coins -
+            Number(user.coins)
         });
       }
 
 
       const followers =
-        coins / COINS_PER_FOLLOWER;
+        coins /
+        COINS_PER_FOLLOWER;
 
 
       return res.json({
@@ -208,18 +296,21 @@ router.post(
         promotion: {
           coins,
           followers,
+
           minimum_coins:
             MIN_PROMOTION_COINS,
+
           coins_per_follower:
             COINS_PER_FOLLOWER
         },
 
         wallet: {
           current_balance:
-            user.coins,
+            Number(user.coins),
 
           balance_after:
-            user.coins - coins
+            Number(user.coins) -
+            coins
         }
       });
 
@@ -257,29 +348,42 @@ router.post(
         await getCurrentUser(req);
 
       if (!user) {
+
         return res.status(401).json({
           success: false,
-          message: "Not logged in"
+          message:
+            "Not logged in"
         });
       }
 
 
-      const {
-        tiktok_username,
-        tiktok_url,
-        coins
-      } = req.body;
+      const username =
+        normalizeUsername(
+          req.body.tiktok_username
+        );
 
 
-      /* ------------------------------------------
-         VALIDATE USERNAME
-      ------------------------------------------ */
+      const tiktokUrl =
+        String(
+          req.body.tiktok_url || ""
+        ).trim();
+
+
+      const validation =
+        validatePromotionCoins(
+          req.body.coins
+        );
+
+
+      /* ======================================
+         USERNAME
+      ====================================== */
 
       if (
-        typeof tiktok_username !== "string" ||
-        tiktok_username.trim().length < 1 ||
-        tiktok_username.trim().length > 100
+        username.length < 1 ||
+        username.length > 100
       ) {
+
         return res.status(400).json({
           success: false,
           message:
@@ -288,16 +392,30 @@ router.post(
       }
 
 
-      /* ------------------------------------------
-         VALIDATE URL
-      ------------------------------------------ */
-
       if (
-        typeof tiktok_url !== "string" ||
-        !isValidTikTokUrl(
-          tiktok_url.trim()
+        !/^[A-Za-z0-9._]+$/.test(
+          username
         )
       ) {
+
+        return res.status(400).json({
+          success: false,
+          message:
+            "Invalid TikTok username"
+        });
+      }
+
+
+      /* ======================================
+         URL
+      ====================================== */
+
+      if (
+        !isValidTikTokUrl(
+          tiktokUrl
+        )
+      ) {
+
         return res.status(400).json({
           success: false,
           message:
@@ -306,55 +424,28 @@ router.post(
       }
 
 
-      /* ------------------------------------------
-         VALIDATE COINS
-      ------------------------------------------ */
+      /* ======================================
+         COINS
+      ====================================== */
+
+      if (!validation.valid) {
+
+        return res.status(400).json({
+          success: false,
+          message:
+            validation.message,
+
+          minimum_coins:
+            MIN_PROMOTION_COINS,
+
+          coins_per_follower:
+            COINS_PER_FOLLOWER
+        });
+      }
+
 
       const promotionCoins =
-        Number(coins);
-
-
-      if (
-        !Number.isInteger(
-          promotionCoins
-        ) ||
-        promotionCoins <= 0
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Enter a valid coin amount"
-        });
-      }
-
-
-      if (
-        promotionCoins <
-        MIN_PROMOTION_COINS
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Minimum promotion is 60 coins",
-          minimum_coins:
-            MIN_PROMOTION_COINS
-        });
-      }
-
-
-      if (
-        promotionCoins %
-          COINS_PER_FOLLOWER !==
-        0
-      ) {
-        return res.status(400).json({
-          success: false,
-          message:
-            "Coins must be a multiple of 10",
-          example:
-            "60, 70, 80, 100..."
-        });
-      }
+        validation.coins;
 
 
       const targetFollowers =
@@ -362,16 +453,18 @@ router.post(
         COINS_PER_FOLLOWER;
 
 
-      /* ------------------------------------------
-         START DATABASE TRANSACTION
-      ------------------------------------------ */
+      /* ======================================
+         START TRANSACTION
+      ====================================== */
 
-      await client.query("BEGIN");
+      await client.query(
+        "BEGIN"
+      );
 
 
-      /* ------------------------------------------
+      /* ======================================
          LOCK USER
-      ------------------------------------------ */
+      ====================================== */
 
       const userResult =
         await client.query(
@@ -395,6 +488,7 @@ router.post(
       if (
         userResult.rows.length === 0
       ) {
+
         throw new Error(
           "User not found"
         );
@@ -422,13 +516,18 @@ router.post(
       }
 
 
-      /* ------------------------------------------
+      /* ======================================
          FINAL BALANCE CHECK
-         This is done inside the transaction.
-      ------------------------------------------ */
+      ====================================== */
+
+      const currentBalance =
+        Number(
+          currentUser.coins
+        );
+
 
       if (
-        currentUser.coins <
+        currentBalance <
         promotionCoins
       ) {
 
@@ -438,54 +537,70 @@ router.post(
 
         return res.status(400).json({
           success: false,
+
           message:
             "Insufficient coins",
 
           balance:
-            currentUser.coins,
+            currentBalance,
 
           required:
             promotionCoins,
 
           missing:
             promotionCoins -
-            currentUser.coins
+            currentBalance
         });
       }
 
 
       const balanceBefore =
-        currentUser.coins;
+        currentBalance;
+
 
       const balanceAfter =
         balanceBefore -
         promotionCoins;
 
 
-      /* ------------------------------------------
+      /* ======================================
          DEDUCT COINS
-      ------------------------------------------ */
+      ====================================== */
 
-      await client.query(
-        `
-        UPDATE users
+      const walletResult =
+        await client.query(
+          `
+          UPDATE users
 
-        SET
-          coins = $1,
-          updated_at = NOW()
+          SET
+            coins = $1,
+            updated_at = NOW()
 
-        WHERE id = $2
-        `,
-        [
-          balanceAfter,
-          user.id
-        ]
-      );
+          WHERE
+            id = $2
+
+          RETURNING coins
+          `,
+          [
+            balanceAfter,
+            user.id
+          ]
+        );
 
 
-      /* ------------------------------------------
+      if (
+        walletResult.rows.length === 0
+      ) {
+
+        throw new Error(
+          "Could not update wallet"
+        );
+      }
+
+
+      /* ======================================
          CREATE PROMOTION
-      ------------------------------------------ */
+      ====================================== */
 
       const promotionResult =
         await client.query(
@@ -517,9 +632,9 @@ router.post(
           [
             user.id,
 
-            tiktok_username.trim(),
+            username,
 
-            tiktok_url.trim(),
+            tiktokUrl,
 
             promotionCoins,
 
@@ -528,13 +643,23 @@ router.post(
         );
 
 
+      if (
+        promotionResult.rows.length === 0
+      ) {
+
+        throw new Error(
+          "Could not create promotion"
+        );
+      }
+
+
       const promotion =
         promotionResult.rows[0];
 
 
-      /* ------------------------------------------
+      /* ======================================
          COIN TRANSACTION
-      ------------------------------------------ */
+      ====================================== */
 
       await client.query(
         `
@@ -576,9 +701,114 @@ router.post(
       );
 
 
-      /* ------------------------------------------
+      /* ======================================
+         INITIAL TASK ASSIGNMENT
+      ====================================== */
+
+      /*
+        Assign workers immediately.
+
+        IMPORTANT:
+        The promotion owner is excluded.
+
+        The UNIQUE constraint on
+        (promotion_id, worker_user_id)
+        also prevents duplicate assignments.
+      */
+
+      const workersResult =
+        await client.query(
+          `
+          SELECT
+            u.id
+
+          FROM users u
+
+          WHERE
+            u.is_active = TRUE
+
+            AND u.is_banned = FALSE
+
+            AND u.id <> $1
+
+            AND NOT EXISTS (
+              SELECT 1
+
+              FROM promotion_tasks pt
+
+              WHERE
+                pt.promotion_id = $2
+
+                AND pt.worker_user_id = u.id
+            )
+
+          ORDER BY
+            u.created_at ASC
+
+          LIMIT $3
+
+          FOR UPDATE OF u
+          `,
+          [
+            user.id,
+
+            promotion.id,
+
+            targetFollowers
+          ]
+        );
+
+
+      let assignedTasks = 0;
+
+
+      for (
+        const worker
+        of workersResult.rows
+      ) {
+
+        const taskResult =
+          await client.query(
+            `
+            INSERT INTO promotion_tasks (
+              promotion_id,
+              worker_user_id,
+              status
+            )
+
+            VALUES (
+              $1,
+              $2,
+              'pending'
+            )
+
+            ON CONFLICT (
+              promotion_id,
+              worker_user_id
+            )
+
+            DO NOTHING
+
+            RETURNING id
+            `,
+            [
+              promotion.id,
+              worker.id
+            ]
+          );
+
+
+        if (
+          taskResult.rows.length > 0
+        ) {
+          assignedTasks++;
+        }
+      }
+
+
+      /* ======================================
          COMMIT
-      ------------------------------------------ */
+      ====================================== */
 
       await client.query(
         "COMMIT"
@@ -613,6 +843,9 @@ router.post(
           remaining:
             targetFollowers,
 
+          assigned_tasks:
+            assignedTasks,
+
           status:
             "pending"
         },
@@ -626,7 +859,10 @@ router.post(
 
           new_balance:
             balanceAfter
-        }
+        },
+
+        coins:
+          balanceAfter
       });
 
     } catch (error) {
@@ -649,6 +885,7 @@ router.post(
       });
 
     } finally {
+
       client.release();
     }
   }
@@ -669,9 +906,11 @@ router.get(
         await getCurrentUser(req);
 
       if (!user) {
+
         return res.status(401).json({
           success: false,
-          message: "Not logged in"
+          message:
+            "Not logged in"
         });
       }
 
@@ -705,6 +944,7 @@ router.get(
 
       return res.json({
         success: true,
+
         promotions:
           result.rows
       });
@@ -740,9 +980,11 @@ router.get(
         await getCurrentUser(req);
 
       if (!user) {
+
         return res.status(401).json({
           success: false,
-          message: "Not logged in"
+          message:
+            "Not logged in"
         });
       }
 
@@ -771,6 +1013,7 @@ router.get(
 
           WHERE
             id = $1
+
             AND user_id = $2
 
           LIMIT 1
@@ -785,6 +1028,7 @@ router.get(
       if (
         result.rows.length === 0
       ) {
+
         return res.status(404).json({
           success: false,
           message:
@@ -806,8 +1050,12 @@ router.get(
           remaining:
             Math.max(
               0,
-              promotion.target_count -
+              Number(
+                promotion.target_count
+              ) -
+              Number(
                 promotion.completed_count
+              )
             )
         }
       });
