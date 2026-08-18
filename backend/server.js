@@ -3,6 +3,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./auth");
+const walletRoutes = require("./wallet");
 const { testDatabase } = require("./db");
 
 const app = express();
@@ -27,6 +28,13 @@ app.use(express.json());
 // ==========================================
 
 app.use("/api", authRoutes);
+
+
+// ==========================================
+// WALLET
+// ==========================================
+
+app.use("/api", walletRoutes);
 
 
 // ==========================================
@@ -57,7 +65,10 @@ app.get("/health", async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Database health check failed:", error);
+    console.error(
+      "Database health check failed:",
+      error
+    );
 
     res.status(500).json({
       success: false,
@@ -72,7 +83,8 @@ app.get("/health", async (req, res) => {
 // SERVER
 // ==========================================
 
-const PORT = process.env.PORT || 3000;
+const PORT =
+  process.env.PORT || 3000;
 
 app.listen(PORT, () => {
   console.log(
