@@ -6,6 +6,7 @@ const authRoutes = require("./auth");
 const walletRoutes = require("./wallet");
 const earnRoutes = require("./earn");
 const promotionRoutes = require("./promotion");
+const taskQueueRoutes = require("./taskQueue");
 
 const { testDatabase } = require("./db");
 
@@ -52,6 +53,13 @@ app.use("/api", earnRoutes);
 // ==========================================
 
 app.use("/api", promotionRoutes);
+
+
+// ==========================================
+// TASK QUEUE
+// ==========================================
+
+app.use("/api", taskQueueRoutes);
 
 
 // ==========================================
