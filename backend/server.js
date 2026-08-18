@@ -3,17 +3,36 @@ const cors = require("cors");
 require("dotenv").config();
 
 const authRoutes = require("./auth");
+const { testDatabase } = require("./db");
 
 const app = express();
 
-// Middleware
-app.use(cors());
+
+// ==========================================
+// MIDDLEWARE
+// ==========================================
+
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
+
 app.use(express.json());
 
-// Authentication routes
+
+// ==========================================
+// AUTHENTICATION
+// ==========================================
+
 app.use("/api", authRoutes);
 
-// Home / API test
+
+// ==========================================
+// HOME
+// ==========================================
+
 app.get("/", (req, res) => {
   res.json({
     success: true,
@@ -21,9 +40,42 @@ app.get("/", (req, res) => {
   });
 });
 
-// Server
+
+// ==========================================
+// HEALTH CHECK
+// ==========================================
+
+app.get("/health", async (req, res) => {
+  try {
+    const database = await testDatabase();
+
+    res.json({
+      success: true,
+      server: "online",
+      database: "connected",
+      time: database.time
+    });
+
+  } catch (error) {
+    console.error("Database health check failed:", error);
+
+    res.status(500).json({
+      success: false,
+      server: "online",
+      database: "disconnected"
+    });
+  }
+});
+
+
+// ==========================================
+// SERVER
+// ==========================================
+
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`FreeFollowersTik API running on port ${PORT}`);
+  console.log(
+    `FreeFollowersTik API running on port ${PORT}`
+  );
 });
