@@ -115,7 +115,7 @@ router.get("/tiktok/login", (req, res) => {
     state
   });
 
-  res.redirect(
+  return res.redirect(
     `${TIKTOK_AUTH_URL}?${params.toString()}`
   );
 });
@@ -136,6 +136,9 @@ router.get("/tiktok/callback", async (req, res) => {
       error_description
     } = req.query;
 
+
+    /* TikTok error */
+
     if (error) {
       return res.status(400).json({
         success: false,
@@ -143,12 +146,19 @@ router.get("/tiktok/callback", async (req, res) => {
       });
     }
 
+
+    /* Missing OAuth data */
+
     if (!code || !state) {
       return res.status(400).json({
         success: false,
-        message: "Missing TikTok authorization code or state"
+        message:
+          "Missing TikTok authorization code or state"
       });
     }
+
+
+    /* Verify OAuth state */
 
     const cookies = parseCookies(
       req.headers.cookie || ""
@@ -171,7 +181,7 @@ router.get("/tiktok/callback", async (req, res) => {
 
 
     /* ==========================================
-       EXCHANGE CODE FOR TOKEN
+       EXCHANGE CODE FOR TOKENS
     ========================================== */
 
     const tokenResponse = await fetch(
@@ -259,67 +269,26 @@ router.get("/tiktok/callback", async (req, res) => {
 
 
     /* ==========================================
-       DATABASE TRANSACTION
+       START DATABASE TRANSACTION
     ========================================== */
 
     await client.query("BEGIN");
 
 
     /* ==========================================
-       CREATE USER
+       CHECK EXISTING USER
     ========================================== */
 
-    const userResult = await client.query(
-      `
-      INSERT INTO users (
-        tiktok_open_id,
-        tiktok_union_id,
-        display_name,
-        avatar_url,
-        access_token,
-        refresh_token,
-        access_token_expires_at,
-        refresh_token_expires_at,
-        coins
-      )
-      VALUES (
-        $1,
-        $2,
-        $3,
-        $4,
-        $5,
-        $6,
-        CASE
-          WHEN $7::INTEGER IS NOT NULL
-          THEN NOW() +
-            ($7::INTEGER * INTERVAL '1 second')
-          ELSE NULL
-        END,
-        CASE
-          WHEN $8::INTEGER IS NOT NULL
-          THEN NOW() +
-            ($8::INTEGER * INTERVAL '1 second')
-          ELSE NULL
-        END,
-        30
-      )
-      ON CONFLICT (tiktok_open_id)
-      DO NOTHING
-      RETURNING *
-      `,
-      [
-        tiktokUser.open_id,
-        tiktokUser.union_id || null,
-        tiktokUser.display_name || null,
-        tiktokUser.avatar_url || null,
-
-        tokenData.access_token,
-        tokenData.refresh_token || null,
-
-        tokenData.expires_in || null,
-        tokenData.refresh_expires_in || null
-      ]
-    );
+    const existingUserResult =
+      await client.query(
+        `
+        SELECT *
+        FROM users
+        WHERE tiktok_open_id = $1
+        FOR UPDATE
+        `,
+        [tiktokUser.open_id]
+      );
 
 
     let user;
@@ -330,13 +299,77 @@ router.get("/tiktok/callback", async (req, res) => {
        NEW USER
     ========================================== */
 
-    if (userResult.rows.length > 0) {
-      user = userResult.rows[0];
+    if (existingUserResult.rows.length === 0) {
 
       isNewUser = true;
 
 
-      /* Welcome bonus */
+      /* ------------------------------------------
+         CREATE USER WITH 30 COINS
+      ------------------------------------------ */
+
+      const newUserResult =
+        await client.query(
+          `
+          INSERT INTO users (
+            tiktok_open_id,
+            tiktok_union_id,
+            display_name,
+            avatar_url,
+            access_token,
+            refresh_token,
+            access_token_expires_at,
+            refresh_token_expires_at,
+            coins
+          )
+          VALUES (
+            $1,
+            $2,
+            $3,
+            $4,
+            $5,
+            $6,
+
+            CASE
+              WHEN $7::INTEGER IS NOT NULL
+              THEN NOW() +
+                ($7::INTEGER *
+                 INTERVAL '1 second')
+              ELSE NULL
+            END,
+
+            CASE
+              WHEN $8::INTEGER IS NOT NULL
+              THEN NOW() +
+                ($8::INTEGER *
+                 INTERVAL '1 second')
+              ELSE NULL
+            END,
+
+            30
+          )
+          RETURNING *
+          `,
+          [
+            tiktokUser.open_id,
+            tiktokUser.union_id || null,
+            tiktokUser.display_name || null,
+            tiktokUser.avatar_url || null,
+
+            tokenData.access_token,
+            tokenData.refresh_token || null,
+
+            tokenData.expires_in || null,
+            tokenData.refresh_expires_in || null
+          ]
+        );
+
+      user = newUserResult.rows[0];
+
+
+      /* ------------------------------------------
+         CREATE WELCOME BONUS RECORD
+      ------------------------------------------ */
 
       await client.query(
         `
@@ -345,14 +378,14 @@ router.get("/tiktok/callback", async (req, res) => {
           coins_awarded
         )
         VALUES ($1, 30)
-        ON CONFLICT (user_id)
-        DO NOTHING
         `,
         [user.id]
       );
 
 
-      /* Coin transaction */
+      /* ------------------------------------------
+         CREATE COIN TRANSACTION
+      ------------------------------------------ */
 
       await client.query(
         `
@@ -363,6 +396,7 @@ router.get("/tiktok/callback", async (req, res) => {
           balance_before,
           balance_after,
           reference_type,
+          reference_id,
           description
         )
         VALUES (
@@ -372,40 +406,24 @@ router.get("/tiktok/callback", async (req, res) => {
           0,
           30,
           'welcome_bonus',
-          'Welcome bonus for new TikTok user'
+          NULL,
+          '30 coin welcome bonus'
         )
         `,
         [user.id]
       );
-    }
+
+    } else {
+
+      /* ==========================================
+         EXISTING USER
+      ========================================== */
+
+      user =
+        existingUserResult.rows[0];
 
 
-    /* ==========================================
-       EXISTING USER
-    ========================================== */
-
-    else {
-      const existingResult =
-        await client.query(
-          `
-          SELECT *
-          FROM users
-          WHERE tiktok_open_id = $1
-          FOR UPDATE
-          `,
-          [tiktokUser.open_id]
-        );
-
-      if (existingResult.rows.length === 0) {
-        throw new Error(
-          "User could not be loaded"
-        );
-      }
-
-      user = existingResult.rows[0];
-
-
-      const updatedResult =
+      const updatedUserResult =
         await client.query(
           `
           UPDATE users
@@ -414,6 +432,7 @@ router.get("/tiktok/callback", async (req, res) => {
             display_name = $3,
             avatar_url = $4,
             access_token = $5,
+
             refresh_token =
               COALESCE($6, refresh_token),
 
@@ -456,7 +475,8 @@ router.get("/tiktok/callback", async (req, res) => {
           ]
         );
 
-      user = updatedResult.rows[0];
+      user =
+        updatedUserResult.rows[0];
     }
 
 
@@ -480,7 +500,9 @@ router.get("/tiktok/callback", async (req, res) => {
         $4,
         TRUE
       )
+
       ON CONFLICT (open_id)
+
       DO UPDATE SET
         display_name =
           EXCLUDED.display_name,
@@ -500,7 +522,7 @@ router.get("/tiktok/callback", async (req, res) => {
 
 
     /* ==========================================
-       CREATE LOGIN SESSION
+       CREATE SESSION
     ========================================== */
 
     const sessionToken =
@@ -529,11 +551,15 @@ router.get("/tiktok/callback", async (req, res) => {
     );
 
 
+    /* ==========================================
+       COMMIT EVERYTHING
+    ========================================== */
+
     await client.query("COMMIT");
 
 
     /* ==========================================
-       LOGIN COOKIE
+       SESSION COOKIE
     ========================================== */
 
     setCookie(
@@ -557,13 +583,18 @@ router.get("/tiktok/callback", async (req, res) => {
       success: true,
 
       message: isNewUser
-        ? "TikTok account created successfully"
+        ? "Welcome to FreeFollowersTik"
         : "TikTok login successful",
 
       new_user: isNewUser,
 
+      welcome_bonus: isNewUser
+        ? 30
+        : 0,
+
       user: {
         id: user.id,
+
         display_name:
           user.display_name,
 
@@ -587,7 +618,7 @@ router.get("/tiktok/callback", async (req, res) => {
     }
 
     console.error(
-      "TikTok OAuth error:",
+      "TikTok authentication error:",
       error
     );
 
@@ -629,31 +660,32 @@ router.get("/me", async (req, res) => {
     const sessionHash =
       hashToken(sessionToken);
 
-    const result = await query(
-      `
-      SELECT
-        u.id,
-        u.tiktok_open_id,
-        u.display_name,
-        u.avatar_url,
-        u.coins,
-        u.is_active,
-        u.is_banned,
-        u.is_admin
+    const result =
+      await query(
+        `
+        SELECT
+          u.id,
+          u.tiktok_open_id,
+          u.display_name,
+          u.avatar_url,
+          u.coins,
+          u.is_active,
+          u.is_banned,
+          u.is_admin
 
-      FROM sessions s
+        FROM sessions s
 
-      INNER JOIN users u
-        ON u.id = s.user_id
+        INNER JOIN users u
+          ON u.id = s.user_id
 
-      WHERE
-        s.session_token_hash = $1
-        AND s.expires_at > NOW()
+        WHERE
+          s.session_token_hash = $1
+          AND s.expires_at > NOW()
 
-      LIMIT 1
-      `,
-      [sessionHash]
-    );
+        LIMIT 1
+        `,
+        [sessionHash]
+      );
 
     if (result.rows.length === 0) {
 
