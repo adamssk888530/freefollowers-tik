@@ -5,6 +5,7 @@ require("dotenv").config();
 const authRoutes = require("./auth");
 const walletRoutes = require("./wallet");
 const earnRoutes = require("./earn");
+const promotionRoutes = require("./promotion");
 
 const { testDatabase } = require("./db");
 
@@ -44,6 +45,13 @@ app.use("/api", walletRoutes);
 // ==========================================
 
 app.use("/api", earnRoutes);
+
+
+// ==========================================
+// PROMOTION SYSTEM
+// ==========================================
+
+app.use("/api", promotionRoutes);
 
 
 // ==========================================
