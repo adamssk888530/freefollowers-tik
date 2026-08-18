@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Promote - FreeFollowersTik</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111827;
+    }
+
+    header {
+      background: #111;
+      color: #fff;
+      padding: 16px 20px;
+    }
+
+    .nav {
+      max-width: 750px;
+      margin: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #fe2c55;
+    }
+
+    .back {
+      color: #fff;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 700px;
+      margin: auto;
+      padding: 30px 20px 60px;
+    }
+
+    .title {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .title h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .title p {
+      margin: 0;
+      color: #6b7280;
+    }
+
+    .balance {
+      background: #111;
+      color: #fff;
+      border-radius: 16px;
+      padding: 22px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .balance small {
+      color: #d1d5db;
+    }
+
+    .balance strong {
+      display: block;
+      margin-top: 6px;
+      color: #fbbf24;
+      font-size: 32px;
+    }
+
+    .card {
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 25px;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      outline: none;
+      font-size: 15px;
+    }
+
+    .field input:focus {
+      border-color: #fe2c55;
+    }
+
+    .info {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 8px 0;
+      font-size: 14px;
+    }
+
+    .info-row span:first-child {
+      color: #6b7280;
+    }
+
+    .info-row strong {
+      text-align: right;
+    }
+
+    .minimum {
+      background: #fff7ed;
+      color: #9a3412;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .submit-btn {
+      width: 100%;
+      border: 0;
+      background: #fe2c55;
+      color: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .error {
+      display: block;
+      background: #fff1f2;
+      color: #be123c;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px 20px;
+      color: #6b7280;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    footer {
+      background: #111;
+      color: #9ca3af;
+      text-align: center;
+      padding: 25px 20px;
+      font-size: 13px;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+      margin: 0 7px;
+    }
+
+    @media (max-width: 550px) {
+      main {
+        padding: 25px 15px 50px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================================
+       HEADER
+  ========================================== -->
+
+  <header>
+
+    <div class="nav">
+
+      <div class="logo">
+        Free<span>FollowersTik</span>
+      </div>
+
+      <a
+        href="/dashboard.html"
+        class="back"
+      >
+        ← Dashboard
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <main>
+
+    <!-- ==========================================
+         TITLE
+    ========================================== -->
+
+    <section class="title">
+
+      <h1>
+        🚀 Promote TikTok
+      </h1>
+
+      <p>
+        Use your coins to promote your TikTok account.
+      </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         LOADING
+    ========================================== -->
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Loading your account...
+    </div>
+
+
+    <!-- ==========================================
+         CONTENT
+    ========================================== -->
+
+    <div
+      id="content"
+      class="hidden"
+    >
+
+      <!-- ========================================
+           BALANCE
+      ========================================= -->
+
+      <section class="balance">
+
+        <small>
+          Available Coins
+        </small>
+
+        <strong id="coinBalance">
+          0 🪙
+        </strong>
+
+      </section>
+
+
+      <!-- ========================================
+           PROMOTION FORM
+      ========================================= -->
+
+      <section class="card">
+
+        <form id="promotionForm">
+
+          <!-- TikTok URL -->
+
+          <div class="field">
+
+            <label for="tiktokUrl">
+              TikTok Profile URL
+            </label>
+
+            <input
+              id="tiktokUrl"
+              type="url"
+              placeholder="https://www.tiktok.com/@username"
+              required
+            >
+
+          </div>
+
+
+          <!-- Username -->
+
+          <div class="field">
+
+            <label for="tiktokUsername">
+              TikTok Username
+            </label>
+
+            <input
+              id="tiktokUsername"
+              type="text"
+              placeholder="@username"
+              maxlength="100"
+              required
+            >
+
+          </div>
+
+
+          <!-- Coins -->
+
+          <div class="field">
+
+            <label for="coins">
+              Coins to Spend
+            </label>
+
+            <input
+              id="coins"
+              type="number"
+              min="60"
+              step="1"
+              placeholder="60"
+              required
+            >
+
+          </div>
+
+
+          <!-- INFO -->
+
+          <div class="info">
+
+            <div class="info-row">
+
+              <span>
+                Minimum
+              </span>
+
+              <strong>
+                60 🪙
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Followers
+              </span>
+
+              <strong id="followers">
+                6
+              </strong>
+
+            </div>
+
+
+            <div class="info-row">
+
+              <span>
+                Coins
+              </span>
+
+              <strong id="cost">
+                60 🪙
+              </strong>
+
+            </div>
+
+          </div>
+
+
+          <div class="minimum">
+
+            💡 60 coins = 6 followers.
+            Every additional 10 coins gives another follower.
+
+          </div>
+
+
+          <!-- SUBMIT -->
+
+          <button
+            id="submitBtn"
+            class="submit-btn"
+            type="submit"
+          >
+            🚀 Create Promotion
+          </button>
+
+
+          <!-- MESSAGE -->
+
+          <div
+            id="message"
+            class="message"
+          ></div>
+
+        </form>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <!-- ==========================================
+       FOOTER
+  ========================================== -->
+
+  <footer>
+
+    <p>
+      © 2026 FreeFollowersTik
+    </p>
+
+    <div>
+
+      <a href="/dashboard.html">
+        Dashboard
+      </a>
+
+      <a href="/terms">
+        Terms
+      </a>
+
+      <a href="/privacy">
+        Privacy
+      </a>
+
+    </div>
+
+  </footer>
+
+
+  <!-- ==========================================
+       JAVASCRIPT
+  ========================================== -->
+
+  <script>
+
+    let currentCoins = 0;
+
+    const MINIMUM_COINS = 60;
+
+
+    const loading =
+      document.getElementById(
+        "loading"
+      );
+
+    const content =
+      document.getElementById(
+        "content"
+      );
+
+    const form =
+      document.getElementById(
+        "promotionForm"
+      );
+
+    const coinsInput =
+      document.getElementById(
+        "coins"
+      );
+
+    const followers =
+      document.getElementById(
+        "followers"
+      );
+
+    const cost =
+      document.getElementById(
+        "cost"
+      );
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+    const submitBtn =
+      document.getElementById(
+        "submitBtn"
+      );
+
+
+    /* ==========================================
+       MESSAGE
+    ========================================== */
+
+    function showMessage(
+      text,
+      type
+    ) {
+
+      message.textContent =
+        text;
+
+      message.className =
+        `message ${type}`;
+
+    }
+
+
+    /* ==========================================
+       UPDATE CALCULATION
+    ========================================== */
+
+    function updateCalculation() {
+
+      let coins =
+        Number(
+          coinsInput.value
+        );
+
+
+      if (
+        !Number.isFinite(coins) ||
+        coins < MINIMUM_COINS
+      ) {
+
+        followers.textContent =
+          "0";
+
+        cost.textContent =
+          "0 🪙";
+
+        return;
+      }
+
+
+      coins =
+        Math.floor(coins);
+
+
+      /*
+        60 coins = 6 followers.
+        Every additional 10 coins
+        gives 1 additional follower.
+      */
+
+      const followerCount =
+        Math.floor(
+          coins / 10
+        );
+
+
+      followers.textContent =
+        followerCount;
+
+
+      cost.textContent =
+        `${coins} 🪙`;
+
+    }
+
+
+    coinsInput.addEventListener(
+      "input",
+      updateCalculation
+    );
+
+
+    /* ==========================================
+       LOAD USER
+    ========================================== */
+
+    async function loadUser() {
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/me",
+            {
+              credentials: "include"
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (
+          response.status === 401
+        ) {
+
+          window.location.href =
+            "/";
+
+          return;
+
+        }
+
+
+        if (
+          !response.ok ||
+          !data.success ||
+          !data.user
+        ) {
+
+          throw new Error(
+            data.message ||
+            "Could not load account"
+          );
+
+        }
+
+
+        currentCoins =
+          Number(
+            data.user.coins || 0
+          );
+
+
+        document.getElementById(
+          "coinBalance"
+        ).textContent =
+          `${currentCoins} 🪙`;
+
+
+        loading.style.display =
+          "none";
+
+        content.classList.remove(
+          "hidden"
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Load user error:",
+          error
+        );
+
+
+        loading.textContent =
+          "Could not load your account.";
+
+      }
+
+    }
+
+
+    /* ==========================================
+       CREATE PROMOTION
+    ========================================== */
+
+    form.addEventListener(
+      "submit",
+      async function(event) {
+
+        event.preventDefault();
+
+
+        const tiktokUrl =
+          document.getElementById(
+            "tiktokUrl"
+          ).value.trim();
+
+
+        const tiktokUsername =
+          document.getElementById(
+            "tiktokUsername"
+          ).value.trim();
+
+
+        const coins =
+          Math.floor(
+            Number(
+              coinsInput.value
+            )
+          );
+
+
+        /* ======================================
+           VALIDATION
+        ====================================== */
+
+        if (!tiktokUrl) {
+
+          showMessage(
+            "Please enter your TikTok profile URL.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (!tiktokUsername) {
+
+          showMessage(
+            "Please enter your TikTok username.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          !Number.isInteger(coins) ||
+          coins < MINIMUM_COINS
+        ) {
+
+          showMessage(
+            "Insufficient promotion amount. Minimum is 60 coins.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          coins > currentCoins
+        ) {
+
+          showMessage(
+            `Insufficient coins. You have ${currentCoins} coins.`,
+            "error"
+          );
+
+          return;
+        }
+
+
+        /*
+          Basic TikTok URL validation.
+        */
+
+        if (
+          !tiktokUrl.includes(
+            "tiktok.com"
+          )
+        ) {
+
+          showMessage(
+            "Please enter a valid TikTok URL.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* ======================================
+           SEND TO BACKEND
+        ====================================== */
+
+        submitBtn.disabled =
+          true;
+
+        submitBtn.textContent =
+          "Creating promotion...";
+
+
+        try {
+
+          const response =
+            await fetch(
+              "/api/promotions",
+              {
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+
+                  "Accept":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+
+                  tiktok_username:
+                    tiktokUsername,
+
+                  tiktok_url:
+                    tiktokUrl,
+
+                  promotion_type:
+                    "followers",
+
+                  coins_cost:
+                    coins,
+
+                  target_count:
+                    Math.floor(
+                      coins / 10
+                    )
+
+                })
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (
+            !response.ok ||
+            !data.success
+          ) {
+
+            throw new Error(
+              data.message ||
+              "Could not create promotion"
+            );
+
+          }
+
+
+          /*
+            Update local balance.
+          */
+
+          if (
+            data.coins !== undefined
+          ) {
+
+            currentCoins =
+              Number(
+                data.coins
+              );
+
+          } else {
+
+            currentCoins =
+              currentCoins -
+              coins;
+
+          }
+
+
+          document.getElementById(
+            "coinBalance"
+          ).textContent =
+            `${currentCoins} 🪙`;
+
+
+          showMessage(
+            data.message ||
+            "Promotion created successfully.",
+            "success"
+          );
+
+
+          form.reset();
+
+          followers.textContent =
+            "6";
+
+          cost.textContent =
+            "60 🪙";
+
+
+        } catch (error) {
+
+          console.error(
+            "Create promotion error:",
+            error
+          );
+
+
+          showMessage(
+            error.message ||
+            "Could not create promotion.",
+            "error"
+          );
+
+
+        } finally {
+
+          submitBtn.disabled =
+            false;
+
+          submitBtn.textContent =
+            "🚀 Create Promotion";
+
+        }
+
+      }
+    );
+
+
+    /* ==========================================
+       START
+    ========================================== */
+
+    loadUser();
+
+  </script>
+
+</body>
+</html>
