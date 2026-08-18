@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 
 const authRoutes = require("./auth");
@@ -28,49 +29,66 @@ app.use(express.json());
 
 
 // ==========================================
-// AUTHENTICATION
+// API ROUTES
 // ==========================================
 
 app.use("/api", authRoutes);
 
-
-// ==========================================
-// WALLET
-// ==========================================
-
 app.use("/api", walletRoutes);
-
-
-// ==========================================
-// EARN SYSTEM
-// ==========================================
 
 app.use("/api", earnRoutes);
 
-
-// ==========================================
-// PROMOTION SYSTEM
-// ==========================================
-
 app.use("/api", promotionRoutes);
-
-
-// ==========================================
-// TASK QUEUE
-// ==========================================
 
 app.use("/api", taskQueueRoutes);
 
 
 // ==========================================
-// HOME
+// FRONTEND
+// ==========================================
+
+const frontendPath = path.join(
+  __dirname,
+  "..",
+  "frontend"
+);
+
+app.use(
+  express.static(frontendPath)
+);
+
+
+// ==========================================
+// WEBSITE PAGES
 // ==========================================
 
 app.get("/", (req, res) => {
-  res.json({
-    success: true,
-    message: "FreeFollowersTik API is running"
-  });
+  res.sendFile(
+    path.join(
+      frontendPath,
+      "index.html"
+    )
+  );
+});
+
+
+app.get("/terms", (req, res) => {
+  res.sendFile(
+    path.join(
+      frontendPath,
+      "terms.html"
+    )
+  );
+});
+
+
+app.get("/privacy", (req, res) => {
+  res.sendFile(
+    path.join(
+      frontendPath,
+      "privacy.html"
+    )
+  );
 });
 
 
@@ -80,7 +98,9 @@ app.get("/", (req, res) => {
 
 app.get("/health", async (req, res) => {
   try {
-    const database = await testDatabase();
+
+    const database =
+      await testDatabase();
 
     res.json({
       success: true,
@@ -90,6 +110,7 @@ app.get("/health", async (req, res) => {
     });
 
   } catch (error) {
+
     console.error(
       "Database health check failed:",
       error
@@ -109,10 +130,12 @@ app.get("/health", async (req, res) => {
 // ==========================================
 
 app.use((req, res) => {
+
   res.status(404).json({
     success: false,
-    message: "API route not found"
+    message: "Page or API route not found"
   });
+
 });
 
 
@@ -124,7 +147,9 @@ const PORT =
   process.env.PORT || 3000;
 
 app.listen(PORT, () => {
+
   console.log(
-    `FreeFollowersTik API running on port ${PORT}`
+    `FreeFollowersTik server running on port ${PORT}`
   );
+
 });
