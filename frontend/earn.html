@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Earn Coins - FreeFollowersTik</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111827;
+    }
+
+    header {
+      background: #111111;
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 900px;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #fe2c55;
+    }
+
+    .back {
+      color: white;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 700px;
+      margin: auto;
+      padding: 30px 20px 60px;
+    }
+
+    .page-title {
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    .page-title h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .page-title p {
+      margin: 0;
+      color: #6b7280;
+    }
+
+    .balance {
+      background: #111111;
+      color: white;
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .balance small {
+      color: #d1d5db;
+    }
+
+    .balance strong {
+      display: block;
+      margin-top: 5px;
+      font-size: 30px;
+      color: #fbbf24;
+    }
+
+    .task-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 18px;
+      padding: 25px;
+    }
+
+    .task-number {
+      color: #6b7280;
+      font-size: 13px;
+      margin-bottom: 15px;
+    }
+
+    .task-profile {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      background: #f9fafb;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 55px;
+      height: 55px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #e5e7eb;
+    }
+
+    .profile-name {
+      font-weight: 700;
+      font-size: 17px;
+    }
+
+    .profile-type {
+      color: #6b7280;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .reward {
+      text-align: center;
+      padding: 18px;
+      background: #fff7ed;
+      border-radius: 12px;
+      margin-bottom: 20px;
+    }
+
+    .reward strong {
+      display: block;
+      font-size: 28px;
+      color: #ea580c;
+    }
+
+    .reward span {
+      color: #6b7280;
+      font-size: 13px;
+    }
+
+    .instructions {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .instructions h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+
+    .instructions ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .instructions li {
+      margin-bottom: 7px;
+      color: #4b5563;
+      font-size: 14px;
+    }
+
+    .buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .open-btn {
+      background: #111111;
+      color: white;
+    }
+
+    .verify-btn {
+      background: #fe2c55;
+      color: white;
+    }
+
+    .verify-btn:disabled,
+    .next-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .next-btn {
+      width: 100%;
+      margin-top: 12px;
+      background: #16a34a;
+      color: white;
+    }
+
+    .message {
+      display: none;
+      margin-top: 15px;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
+      text-align: center;
+    }
+
+    .success {
+      display: block;
+      background: #f0fdf4;
+      color: #166534;
+    }
+
+    .error {
+      display: block;
+      background: #fff1f2;
+      color: #be123c;
+    }
+
+    .empty {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 35px 20px;
+      text-align: center;
+      display: none;
+    }
+
+    .empty-icon {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+
+    .empty h2 {
+      margin: 0 0 8px;
+    }
+
+    .empty p {
+      margin: 0;
+      color: #6b7280;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 60px 20px;
+      color: #6b7280;
+    }
+
+    footer {
+      background: #111111;
+      color: #9ca3af;
+      text-align: center;
+      padding: 25px 20px;
+      font-size: 13px;
+    }
+
+    footer a {
+      color: white;
+      text-decoration: none;
+      margin: 0 7px;
+    }
+
+    @media (max-width: 550px) {
+      main {
+        padding: 25px 15px 50px;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================================
+       HEADER
+  ========================================== -->
+
+  <header>
+
+    <div class="nav">
+
+      <div class="logo">
+        Free<span>FollowersTik</span>
+      </div>
+
+      <a
+        href="/dashboard.html"
+        class="back"
+      >
+        ← Dashboard
+      </a>
+
+    </div>
+
+  </header>
+
+
+  <main>
+
+    <!-- ==========================================
+         TITLE
+    ========================================== -->
+
+    <section class="page-title">
+
+      <h1>
+        🎁 Earn Coins
+      </h1>
+
+      <p>
+        Complete tasks and earn coins.
+      </p>
+
+    </section>
+
+
+    <!-- ==========================================
+         BALANCE
+    ========================================== -->
+
+    <section class="balance">
+
+      <small>
+        Your current balance
+      </small>
+
+      <strong id="coinBalance">
+        0 🪙
+      </strong>
+
+    </section>
+
+
+    <!-- ==========================================
+         LOADING
+    ========================================== -->
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Loading available task...
+    </div>
+
+
+    <!-- ==========================================
+         TASK
+    ========================================== -->
+
+    <section
+      id="taskCard"
+      class="task-card"
+      style="display:none;"
+    >
+
+      <div
+        id="taskNumber"
+        class="task-number"
+      >
+        Task
+      </div>
+
+
+      <!-- TikTok account -->
+
+      <div class="task-profile">
+
+        <img
+          id="taskAvatar"
+          class="avatar"
+          src=""
+          alt="TikTok profile"
+        >
+
+        <div>
+
+          <div
+            id="taskName"
+            class="profile-name"
+          >
+            TikTok User
+          </div>
+
+          <div class="profile-type">
+            TikTok promotion task
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- Reward -->
+
+      <div class="reward">
+
+        <strong>
+          +5 🪙
+        </strong>
+
+        <span>
+          Reward after successful verification
+        </span>
+
+      </div>
+
+
+      <!-- Instructions -->
+
+      <div class="instructions">
+
+        <h3>
+          How it works
+        </h3>
+
+        <ol>
+
+          <li>
+            Open the TikTok account below.
+          </li>
+
+          <li>
+            Complete the required action.
+          </li>
+
+          <li>
+            Return here and press Verify.
+          </li>
+
+          <li>
+            If verification succeeds, you receive 5 coins.
+          </li>
+
+          <li>
+            Press Next to receive another eligible task.
+          </li>
+
+        </ol>
+
+      </div>
+
+
+      <!-- Buttons -->
+
+      <div class="buttons">
+
+        <button
+          id="openBtn"
+          class="open-btn"
+        >
+          🎵 Open TikTok
+        </button>
+
+        <button
+          id="verifyBtn"
+          class="verify-btn"
+        >
+          ✓ Verify
+        </button>
+
+      </div>
+
+
+      <button
+        id="nextBtn"
+        class="next-btn"
+        disabled
+      >
+        Next →
+      </button>
+
+
+      <!-- Message -->
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+    </section>
+
+
+    <!-- ==========================================
+         NO TASK
+    ========================================== -->
+
+    <section
+      id="empty"
+      class="empty"
+    >
+
+      <div class="empty-icon">
+        🎉
+      </div>
+
+      <h2>
+        No more tasks
+      </h2>
+
+      <p>
+        There are currently no eligible tasks available for you.
+        Please check again later.
+      </p>
+
+    </section>
+
+  </main>
+
+
+  <!-- ==========================================
+       FOOTER
+  ========================================== -->
+
+  <footer>
+
+    <p>
+      © 2026 FreeFollowersTik
+    </p>
+
+    <div>
+
+      <a href="/dashboard.html">
+        Dashboard
+      </a>
+
+      <a href="/terms">
+        Terms
+      </a>
+
+      <a href="/privacy">
+        Privacy
+      </a>
+
+    </div>
+
+  </footer>
+
+
+  <!-- ==========================================
+       JAVASCRIPT
+  ========================================== -->
+
+  <script>
+
+    let currentTask = null;
+    let verified = false;
+
+
+    /* ==========================================
+       ELEMENTS
+    ========================================== */
+
+    const loading =
+      document.getElementById("loading");
+
+    const taskCard =
+      document.getElementById("taskCard");
+
+    const empty =
+      document.getElementById("empty");
+
+    const message =
+      document.getElementById("message");
+
+    const verifyBtn =
+      document.getElementById("verifyBtn");
+
+    const nextBtn =
+      document.getElementById("nextBtn");
+
+    const openBtn =
+      document.getElementById("openBtn");
+
+
+    /* ==========================================
+       MESSAGE
+    ========================================== */
+
+    function showMessage(
+      text,
+      type
+    ) {
+
+      message.textContent =
+        text;
+
+      message.className =
+        `message ${type}`;
+
+    }
+
+
+    /* ==========================================
+       LOAD USER
+    ========================================== */
+
+    async function loadUser() {
+
+      const response =
+        await fetch(
+          "/api/me",
+          {
+            credentials: "include"
+          }
+        );
+
+      const data =
+        await response.json();
+
+
+      if (
+        response.status === 401
+      ) {
+
+        window.location.href =
+          "/";
+
+        return null;
+      }
+
+
+      if (
+        !response.ok ||
+        !data.success
+      ) {
+
+        throw new Error(
+          data.message ||
+          "Could not load account"
+        );
+
+      }
+
+
+      document.getElementById(
+        "coinBalance"
+      ).textContent =
+        `${Number(data.user.coins || 0)} 🪙`;
+
+
+      return data.user;
+
+    }
+
+
+    /* ==========================================
+       LOAD NEXT TASK
+    ========================================== */
+
+    async function loadNextTask() {
+
+      verified = false;
+
+      currentTask = null;
+
+      verifyBtn.disabled =
+        false;
+
+      nextBtn.disabled =
+        true;
+
+      showMessage("", "");
+
+
+      loading.style.display =
+        "block";
+
+      taskCard.style.display =
+        "none";
+
+      empty.style.display =
+        "none";
+
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/task-queue/next",
+            {
+              method: "GET",
+              credentials: "include",
+              headers: {
+                "Accept": "application/json"
+              }
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (
+          response.status === 401
+        ) {
+
+          window.location.href =
+            "/";
+
+          return;
+        }
+
+
+        if (
+          !response.ok ||
+          !data.success
+        ) {
+
+          /*
+            Backend may return no task.
+          */
+
+          if (
+            response.status === 404 ||
+            response.status === 204
+          ) {
+
+            showEmpty();
+
+            return;
+          }
+
+
+          throw new Error(
+            data.message ||
+            "Could not load task"
+          );
+
+        }
+
+
+        currentTask =
+          data.task;
+
+
+        renderTask(
+          currentTask
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Task loading error:",
+          error
+        );
+
+        showMessage(
+          error.message ||
+          "Could not load task.",
+          "error"
+        );
+
+      } finally {
+
+        loading.style.display =
+          "none";
+
+      }
+
+    }
+
+
+    /* ==========================================
+       RENDER TASK
+    ========================================== */
+
+    function renderTask(task) {
+
+      if (!task) {
+
+        showEmpty();
+
+        return;
+      }
+
+
+      taskCard.style.display =
+        "block";
+
+
+      document.getElementById(
+        "taskNumber"
+      ).textContent =
+        task.title ||
+        "TikTok Task";
+
+
+      document.getElementById(
+        "taskName"
+      ).textContent =
+        task.tiktok_username ||
+        task.display_name ||
+        "TikTok User";
+
+
+      const avatar =
+        document.getElementById(
+          "taskAvatar"
+        );
+
+
+      if (task.avatar_url) {
+
+        avatar.src =
+          task.avatar_url;
+
+        avatar.style.display =
+          "block";
+
+      } else {
+
+        avatar.style.display =
+          "none";
+
+      }
+
+
+      openBtn.onclick =
+        function () {
+
+          if (task.target_url) {
+
+            window.open(
+              task.target_url,
+              "_blank",
+              "noopener,noreferrer"
+            );
+
+          } else if (task.tiktok_url) {
+
+            window.open(
+              task.tiktok_url,
+              "_blank",
+              "noopener,noreferrer"
+            );
+
+          } else {
+
+            showMessage(
+              "TikTok link is not available.",
+              "error"
+            );
+
+          }
+
+        };
+
+    }
+
+
+    /* ==========================================
+       VERIFY TASK
+    ========================================== */
+
+    verifyBtn.onclick =
+      async function () {
+
+        if (
+          !currentTask ||
+          verified
+        ) {
+          return;
+        }
+
+
+        verifyBtn.disabled =
+          true;
+
+        verifyBtn.textContent =
+          "Verifying...";
+
+
+        try {
+
+          /*
+            IMPORTANT:
+            The backend must perform the actual
+            verification before rewarding coins.
+          */
+
+          const response =
+            await fetch(
+              "/api/task-queue/verify",
+              {
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                  task_id:
+                    currentTask.id
+                })
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (
+            !response.ok ||
+            !data.success
+          ) {
+
+            throw new Error(
+              data.message ||
+              "Task verification failed"
+            );
+
+          }
+
+
+          verified =
+            true;
+
+
+          showMessage(
+            data.message ||
+            "Task verified successfully. +5 coins added.",
+            "success"
+          );
+
+
+          nextBtn.disabled =
+            false;
+
+
+          verifyBtn.textContent =
+            "✓ Verified";
+
+
+          /*
+            Update balance from server.
+          */
+
+          if (
+            data.coins !== undefined
+          ) {
+
+            document.getElementById(
+              "coinBalance"
+            ).textContent =
+              `${Number(data.coins)} 🪙`;
+
+          } else {
+
+            await loadUser();
+
+          }
+
+
+        } catch (error) {
+
+          console.error(
+            "Verification error:",
+            error
+          );
+
+
+          verifyBtn.disabled =
+            false;
+
+          verifyBtn.textContent =
+            "✓ Verify";
+
+
+          showMessage(
+            error.message ||
+            "Verification failed.",
+            "error"
+          );
+
+        }
+
+      };
+
+
+    /* ==========================================
+       NEXT TASK
+    ========================================== */
+
+    nextBtn.onclick =
+      async function () {
+
+        if (!verified) {
+          return;
+        }
+
+
+        await loadNextTask();
+
+      };
+
+
+    /* ==========================================
+       NO TASK
+    ========================================== */
+
+    function showEmpty() {
+
+      loading.style.display =
+        "none";
+
+      taskCard.style.display =
+        "none";
+
+      empty.style.display =
+        "block";
+
+    }
+
+
+    /* ==========================================
+       INITIALIZE
+    ========================================== */
+
+    async function initialize() {
+
+      try {
+
+        const user =
+          await loadUser();
+
+
+        if (!user) {
+          return;
+        }
+
+
+        await loadNextTask();
+
+
+      } catch (error) {
+
+        console.error(
+          "Earn page error:",
+          error
+        );
+
+
+        loading.style.display =
+          "none";
+
+        showMessage(
+          error.message ||
+          "Could not load earning system.",
+          "error"
+        );
+
+      }
+
+    }
+
+
+    initialize();
+
+  </script>
+
+</body>
+</html>
