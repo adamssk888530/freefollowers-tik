@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Dashboard - FreeFollowersTik</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #111827;
+    }
+
+    /* ================================
+       HEADER
+    ================================= */
+
+    header {
+      background: #111111;
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      max-width: 1100px;
+      margin: auto;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .logo span {
+      color: #fe2c55;
+    }
+
+    .logout-btn {
+      border: 0;
+      background: white;
+      color: #111111;
+
+      padding: 9px 15px;
+      border-radius: 8px;
+
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* ================================
+       MAIN
+    ================================= */
+
+    main {
+      max-width: 1100px;
+      margin: auto;
+      padding: 30px 20px 60px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 80px 20px;
+      color: #6b7280;
+    }
+
+    .error-box {
+      display: none;
+
+      background: #fff1f2;
+      color: #be123c;
+
+      border: 1px solid #fecdd3;
+      border-radius: 12px;
+
+      padding: 18px;
+      margin-bottom: 20px;
+    }
+
+    /* ================================
+       WELCOME
+    ================================= */
+
+    .welcome {
+      margin-bottom: 25px;
+    }
+
+    .welcome h1 {
+      margin: 0 0 7px;
+      font-size: 30px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: #6b7280;
+    }
+
+    /* ================================
+       PROFILE
+    ================================= */
+
+    .profile-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+
+      padding: 20px;
+
+      display: flex;
+      align-items: center;
+      gap: 16px;
+
+      margin-bottom: 20px;
+    }
+
+    .avatar {
+      width: 68px;
+      height: 68px;
+
+      border-radius: 50%;
+      object-fit: cover;
+
+      background: #e5e7eb;
+    }
+
+    .profile-info h2 {
+      margin: 0 0 6px;
+      font-size: 20px;
+    }
+
+    .profile-info p {
+      margin: 0;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    /* ================================
+       WALLET
+    ================================= */
+
+    .wallet-card {
+      background: #111111;
+      color: white;
+
+      border-radius: 18px;
+      padding: 25px;
+
+      margin-bottom: 25px;
+    }
+
+    .wallet-label {
+      color: #d1d5db;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .wallet-balance {
+      font-size: 42px;
+      font-weight: 800;
+    }
+
+    .wallet-balance span {
+      color: #fbbf24;
+    }
+
+    .wallet-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    .wallet-btn {
+      display: inline-block;
+
+      text-decoration: none;
+
+      background: white;
+      color: #111111;
+
+      padding: 11px 16px;
+
+      border-radius: 9px;
+
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    /* ================================
+       ACTION GRID
+    ================================= */
+
+    .actions {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 15px;
+
+      margin-bottom: 25px;
+    }
+
+    .action-card {
+      background: white;
+
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+
+      padding: 22px;
+
+      text-decoration: none;
+      color: #111827;
+
+      transition: transform 0.15s;
+    }
+
+    .action-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .action-icon {
+      font-size: 29px;
+      margin-bottom: 12px;
+    }
+
+    .action-card h3 {
+      margin: 0 0 7px;
+      font-size: 17px;
+    }
+
+    .action-card p {
+      margin: 0;
+
+      color: #6b7280;
+
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    /* ================================
+       SECTIONS
+    ================================= */
+
+    .section {
+      background: white;
+
+      border: 1px solid #e5e7eb;
+      border-radius: 15px;
+
+      padding: 23px;
+
+      margin-bottom: 20px;
+    }
+
+    .section-header {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      margin-bottom: 15px;
+    }
+
+    .section-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .view-link {
+      color: #fe2c55;
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .status {
+      padding: 13px 15px;
+
+      border-radius: 10px;
+
+      background: #f0fdf4;
+      color: #166534;
+
+      font-size: 14px;
+    }
+
+    .empty {
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    /* ================================
+       FOOTER
+    ================================= */
+
+    footer {
+      background: #111111;
+
+      color: #9ca3af;
+
+      text-align: center;
+
+      padding: 28px 20px;
+
+      font-size: 13px;
+    }
+
+    footer a {
+      color: white;
+
+      text-decoration: none;
+
+      margin: 0 7px;
+    }
+
+    /* ================================
+       MOBILE
+    ================================= */
+
+    @media (max-width: 850px) {
+
+      .actions {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+    }
+
+    @media (max-width: 550px) {
+
+      main {
+        padding: 22px 15px 50px;
+      }
+
+      .welcome h1 {
+        font-size: 26px;
+      }
+
+      .profile-card {
+        padding: 17px;
+      }
+
+      .avatar {
+        width: 58px;
+        height: 58px;
+      }
+
+      .wallet-balance {
+        font-size: 35px;
+      }
+
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .action-card {
+        padding: 19px;
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ==========================================
+       HEADER
+  ========================================== -->
+
+  <header>
+
+    <div class="nav">
+
+      <div class="logo">
+        Free<span>FollowersTik</span>
+      </div>
+
+      <button
+        id="logoutBtn"
+        class="logout-btn"
+      >
+        Logout
+      </button>
+
+    </div>
+
+  </header>
+
+
+  <!-- ==========================================
+       MAIN
+  ========================================== -->
+
+  <main>
+
+    <!-- Loading -->
+
+    <div
+      id="loading"
+      class="loading"
+    >
+      Loading your dashboard...
+    </div>
+
+
+    <!-- Error -->
+
+    <div
+      id="errorBox"
+      class="error-box"
+    >
+      Could not load your account.
+    </div>
+
+
+    <!-- Dashboard -->
+
+    <div id="dashboard" style="display:none;">
+
+
+      <!-- ================================
+           WELCOME
+      ================================= -->
+
+      <section class="welcome">
+
+        <h1>
+          Welcome back, <span id="welcomeName">User</span> 👋
+        </h1>
+
+        <p>
+          Manage your TikTok growth from one place.
+        </p>
+
+      </section>
+
+
+      <!-- ================================
+           PROFILE
+      ================================= -->
+
+      <section class="profile-card">
+
+        <img
+          id="avatar"
+          class="avatar"
+          src=""
+          alt="TikTok profile"
+        >
+
+        <div class="profile-info">
+
+          <h2 id="displayName">
+            TikTok User
+          </h2>
+
+          <p id="tiktokId">
+            TikTok account
+          </p>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================
+           WALLET
+      ================================= -->
+
+      <section class="wallet-card">
+
+        <div class="wallet-label">
+          Available Coin Balance
+        </div>
+
+        <div class="wallet-balance">
+
+          <span id="coinBalance">
+            0
+          </span>
+
+          🪙
+
+        </div>
+
+        <div class="wallet-actions">
+
+          <a
+            href="/buy-coins.html"
+            class="wallet-btn"
+          >
+            💳 Buy Coins
+          </a>
+
+          <a
+            href="/transactions.html"
+            class="wallet-btn"
+          >
+            📋 Transactions
+          </a>
+
+        </div>
+
+      </section>
+
+
+      <!-- ================================
+           MAIN ACTIONS
+      ================================= -->
+
+      <section class="actions">
+
+        <a
+          href="/earn.html"
+          class="action-card"
+        >
+
+          <div class="action-icon">
+            🎁
+          </div>
+
+          <h3>
+            Earn Coins
+          </h3>
+
+          <p>
+            Complete tasks and earn coins.
+          </p>
+
+        </a>
+
+
+        <a
+          href="/promote.html"
+          class="action-card"
+        >
+
+          <div class="action-icon">
+            🚀
+          </div>
+
+          <h3>
+            Promote
+          </h3>
+
+          <p>
+            Promote your TikTok account.
+          </p>
+
+        </a>
+
+
+        <a
+          href="/buy-coins.html"
+          class="action-card"
+        >
+
+          <div class="action-icon">
+            💳
+          </div>
+
+          <h3>
+            Buy Coins
+          </h3>
+
+          <p>
+            Purchase more coins.
+          </p>
+
+        </a>
+
+
+        <a
+          href="/transactions.html"
+          class="action-card"
+        >
+
+          <div class="action-icon">
+            📋
+          </div>
+
+          <h3>
+            Transaction History
+          </h3>
+
+          <p>
+            View your wallet activity.
+          </p>
+
+        </a>
+
+      </section>
+
+
+      <!-- ================================
+           TIKTOK STATUS
+      ================================= -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <h2>
+            TikTok Account
+          </h2>
+
+        </div>
+
+        <div
+          id="accountStatus"
+          class="status"
+        >
+          Checking account...
+        </div>
+
+      </section>
+
+
+      <!-- ================================
+           RECENT TASKS
+      ================================= -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <h2>
+            Recent Earn Activity
+          </h2>
+
+          <a
+            href="/earn.html"
+            class="view-link"
+          >
+            View Tasks
+          </a>
+
+        </div>
+
+        <p class="empty">
+          Your completed earning tasks will appear here.
+        </p>
+
+      </section>
+
+
+      <!-- ================================
+           PROMOTIONS
+      ================================= -->
+
+      <section class="section">
+
+        <div class="section-header">
+
+          <h2>
+            Your Promotions
+          </h2>
+
+          <a
+            href="/promote.html"
+            class="view-link"
+          >
+            Promote
+          </a>
+
+        </div>
+
+        <p class="empty">
+          Your promotions will appear here.
+        </p>
+
+      </section>
+
+    </div>
+
+  </main>
+
+
+  <!-- ==========================================
+       FOOTER
+  ========================================== -->
+
+  <footer>
+
+    <p>
+      © 2026 FreeFollowersTik. All rights reserved.
+    </p>
+
+    <div>
+
+      <a href="/">
+        Home
+      </a>
+
+      <a href="/terms">
+        Terms
+      </a>
+
+      <a href="/privacy">
+        Privacy
+      </a>
+
+    </div>
+
+  </footer>
+
+
+  <!-- ==========================================
+       JAVASCRIPT
+  ========================================== -->
+
+  <script>
+
+    const loading =
+      document.getElementById("loading");
+
+    const dashboard =
+      document.getElementById("dashboard");
+
+    const errorBox =
+      document.getElementById("errorBox");
+
+
+    /* ==========================================
+       LOAD CURRENT USER
+    ========================================== */
+
+    async function loadUser() {
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/me",
+            {
+              method: "GET",
+
+              credentials: "include",
+
+              headers: {
+                "Accept": "application/json"
+              }
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        /* Not logged in */
+
+        if (
+          response.status === 401
+        ) {
+
+          window.location.href =
+            "/";
+
+          return;
+        }
+
+
+        if (
+          !response.ok ||
+          !data.success ||
+          !data.user
+        ) {
+
+          throw new Error(
+            data.message ||
+            "Could not load user"
+          );
+        }
+
+
+        const user =
+          data.user;
+
+
+        /* ==========================================
+           PROFILE
+        ========================================== */
+
+        const displayName =
+          user.display_name ||
+          "TikTok User";
+
+
+        document.getElementById(
+          "displayName"
+        ).textContent =
+          displayName;
+
+
+        document.getElementById(
+          "welcomeName"
+        ).textContent =
+          displayName;
+
+
+        document.getElementById(
+          "tiktokId"
+        ).textContent =
+          user.tiktok_open_id
+            ? "TikTok account connected"
+            : "TikTok account";
+
+
+        /* ==========================================
+           COINS
+        ========================================== */
+
+        document.getElementById(
+          "coinBalance"
+        ).textContent =
+          Number(user.coins || 0);
+
+
+        /* ==========================================
+           AVATAR
+        ========================================== */
+
+        const avatar =
+          document.getElementById(
+            "avatar"
+          );
+
+
+        if (user.avatar_url) {
+
+          avatar.src =
+            user.avatar_url;
+
+        } else {
+
+          avatar.style.display =
+            "none";
+        }
+
+
+        /* ==========================================
+           ACCOUNT STATUS
+        ========================================== */
+
+        const accountStatus =
+          document.getElementById(
+            "accountStatus"
+          );
+
+
+        if (user.is_banned) {
+
+          accountStatus.textContent =
+            "🚫 Your account has been suspended.";
+
+          accountStatus.style.background =
+            "#fff1f2";
+
+          accountStatus.style.color =
+            "#be123c";
+
+        } else if (!user.is_active) {
+
+          accountStatus.textContent =
+            "⚠️ Your account is inactive.";
+
+          accountStatus.style.background =
+            "#fffbeb";
+
+          accountStatus.style.color =
+            "#92400e";
+
+        } else {
+
+          accountStatus.textContent =
+            "✅ TikTok account connected and active.";
+
+        }
+
+
+        /* ==========================================
+           SHOW DASHBOARD
+        ========================================== */
+
+        loading.style.display =
+          "none";
+
+        dashboard.style.display =
+          "block";
+
+
+      } catch (error) {
+
+        console.error(
+          "Dashboard error:",
+          error
+        );
+
+        loading.style.display =
+          "none";
+
+        errorBox.style.display =
+          "block";
+
+        errorBox.textContent =
+          "Could not connect to the FreeFollowersTik server. Please try again.";
+
+      }
+
+    }
+
+
+    /* ==========================================
+       LOGOUT
+    ========================================== */
+
+    async function logout() {
+
+      const button =
+        document.getElementById(
+          "logoutBtn"
+        );
+
+
+      button.disabled =
+        true;
+
+      button.textContent =
+        "Logging out...";
+
+
+      try {
+
+        await fetch(
+          "/api/logout",
+          {
+            method: "POST",
+
+            credentials: "include",
+
+            headers: {
+              "Accept": "application/json"
+            }
+          }
+        );
+
+      } catch (error) {
+
+        console.error(
+          "Logout error:",
+          error
+        );
+
+      }
+
+
+      window.location.href =
+        "/";
+
+    }
+
+
+    document
+      .getElementById("logoutBtn")
+      .addEventListener(
+        "click",
+        logout
+      );
+
+
+    /* ==========================================
+       START
+    ========================================== */
+
+    loadUser();
+
+  </script>
+
+</body>
+</html>
