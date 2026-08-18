@@ -4,8 +4,8 @@ const { query, pool } = require("./db");
 
 const router = express.Router();
 
-const PROMOTION_COST = 60;
-const PROMOTION_TARGET = 6;
+const MIN_PROMOTION_COINS = 60;
+const COINS_PER_FOLLOWER = 10;
 
 
 /* ==========================================
@@ -29,6 +29,7 @@ function parseCookies(cookieHeader = "") {
   return cookies;
 }
 
+
 function hashToken(token) {
   return crypto
     .createHash("sha256")
@@ -36,10 +37,6 @@ function hashToken(token) {
     .digest("hex");
 }
 
-
-/* ==========================================
-   CURRENT USER
-========================================== */
 
 async function getCurrentUser(req) {
   const cookies = parseCookies(
@@ -104,10 +101,7 @@ function isValidTikTokUrl(value) {
   try {
     const url = new URL(value);
 
-    if (
-      url.protocol !== "https:" &&
-      url.protocol !== "http:"
-    ) {
+    if (url.protocol !== "https:") {
       return false;
     }
 
@@ -127,7 +121,127 @@ function isValidTikTokUrl(value) {
 
 
 /* ==========================================
-   1. CREATE PROMOTION
+   1. PROMOTION PRICE PREVIEW
+========================================== */
+
+router.post(
+  "/promotions/preview",
+  async (req, res) => {
+
+    try {
+
+      const user =
+        await getCurrentUser(req);
+
+      if (!user) {
+        return res.status(401).json({
+          success: false,
+          message: "Not logged in"
+        });
+      }
+
+
+      const coins =
+        Number(req.body.coins);
+
+
+      if (
+        !Number.isInteger(coins) ||
+        coins <= 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Enter a valid coin amount"
+        });
+      }
+
+
+      if (
+        coins < MIN_PROMOTION_COINS
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Minimum promotion is 60 coins",
+          minimum_coins:
+            MIN_PROMOTION_COINS
+        });
+      }
+
+
+      if (
+        coins % COINS_PER_FOLLOWER !== 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Coins must be a multiple of 10",
+          example:
+            "60, 70, 80, 100..."
+        });
+      }
+
+
+      if (coins > user.coins) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Insufficient coins",
+          balance:
+            user.coins,
+          required:
+            coins,
+          missing:
+            coins - user.coins
+        });
+      }
+
+
+      const followers =
+        coins / COINS_PER_FOLLOWER;
+
+
+      return res.json({
+        success: true,
+
+        promotion: {
+          coins,
+          followers,
+          minimum_coins:
+            MIN_PROMOTION_COINS,
+          coins_per_follower:
+            COINS_PER_FOLLOWER
+        },
+
+        wallet: {
+          current_balance:
+            user.coins,
+
+          balance_after:
+            user.coins - coins
+        }
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Promotion preview error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Could not calculate promotion"
+      });
+    }
+  }
+);
+
+
+/* ==========================================
+   2. CREATE PROMOTION
 ========================================== */
 
 router.post(
@@ -152,12 +266,13 @@ router.post(
 
       const {
         tiktok_username,
-        tiktok_url
+        tiktok_url,
+        coins
       } = req.body;
 
 
       /* ------------------------------------------
-         VALIDATE INPUT
+         VALIDATE USERNAME
       ------------------------------------------ */
 
       if (
@@ -173,6 +288,10 @@ router.post(
       }
 
 
+      /* ------------------------------------------
+         VALIDATE URL
+      ------------------------------------------ */
+
       if (
         typeof tiktok_url !== "string" ||
         !isValidTikTokUrl(
@@ -187,11 +306,71 @@ router.post(
       }
 
 
+      /* ------------------------------------------
+         VALIDATE COINS
+      ------------------------------------------ */
+
+      const promotionCoins =
+        Number(coins);
+
+
+      if (
+        !Number.isInteger(
+          promotionCoins
+        ) ||
+        promotionCoins <= 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Enter a valid coin amount"
+        });
+      }
+
+
+      if (
+        promotionCoins <
+        MIN_PROMOTION_COINS
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Minimum promotion is 60 coins",
+          minimum_coins:
+            MIN_PROMOTION_COINS
+        });
+      }
+
+
+      if (
+        promotionCoins %
+          COINS_PER_FOLLOWER !==
+        0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Coins must be a multiple of 10",
+          example:
+            "60, 70, 80, 100..."
+        });
+      }
+
+
+      const targetFollowers =
+        promotionCoins /
+        COINS_PER_FOLLOWER;
+
+
+      /* ------------------------------------------
+         START DATABASE TRANSACTION
+      ------------------------------------------ */
+
       await client.query("BEGIN");
 
 
       /* ------------------------------------------
-         LOCK USER BALANCE
+         LOCK USER
       ------------------------------------------ */
 
       const userResult =
@@ -213,7 +392,9 @@ router.post(
         );
 
 
-      if (userResult.rows.length === 0) {
+      if (
+        userResult.rows.length === 0
+      ) {
         throw new Error(
           "User not found"
         );
@@ -228,6 +409,7 @@ router.post(
         !currentUser.is_active ||
         currentUser.is_banned
       ) {
+
         await client.query(
           "ROLLBACK"
         );
@@ -241,13 +423,15 @@ router.post(
 
 
       /* ------------------------------------------
-         BALANCE VALIDATION
+         FINAL BALANCE CHECK
+         This is done inside the transaction.
       ------------------------------------------ */
 
       if (
         currentUser.coins <
-        PROMOTION_COST
+        promotionCoins
       ) {
+
         await client.query(
           "ROLLBACK"
         );
@@ -256,9 +440,15 @@ router.post(
           success: false,
           message:
             "Insufficient coins",
-          required:
-            PROMOTION_COST,
+
           balance:
+            currentUser.coins,
+
+          required:
+            promotionCoins,
+
+          missing:
+            promotionCoins -
             currentUser.coins
         });
       }
@@ -269,7 +459,7 @@ router.post(
 
       const balanceAfter =
         balanceBefore -
-        PROMOTION_COST;
+        promotionCoins;
 
 
       /* ------------------------------------------
@@ -310,6 +500,7 @@ router.post(
             completed_count,
             status
           )
+
           VALUES (
             $1,
             $2,
@@ -326,15 +517,13 @@ router.post(
           [
             user.id,
 
-            tiktok_username
-              .trim(),
+            tiktok_username.trim(),
 
-            tiktok_url
-              .trim(),
+            tiktok_url.trim(),
 
-            PROMOTION_COST,
+            promotionCoins,
 
-            PROMOTION_TARGET
+            targetFollowers
           ]
         );
 
@@ -359,6 +548,7 @@ router.post(
           reference_id,
           description
         )
+
         VALUES (
           $1,
           'promotion_purchase',
@@ -373,7 +563,7 @@ router.post(
         [
           user.id,
 
-          -PROMOTION_COST,
+          -promotionCoins,
 
           balanceBefore,
 
@@ -381,10 +571,14 @@ router.post(
 
           promotion.id,
 
-          '60 coins used for 6 follower promotion'
+          `${promotionCoins} coins used for ${targetFollowers} follower promotion`
         ]
       );
 
+
+      /* ------------------------------------------
+         COMMIT
+      ------------------------------------------ */
 
       await client.query(
         "COMMIT"
@@ -407,17 +601,20 @@ router.post(
           tiktok_url:
             promotion.tiktok_url,
 
-          followers:
-            PROMOTION_TARGET,
+          coins:
+            promotionCoins,
 
-          coins_cost:
-            PROMOTION_COST,
+          followers:
+            targetFollowers,
 
           completed:
             0,
 
+          remaining:
+            targetFollowers,
+
           status:
-            promotion.status
+            "pending"
         },
 
         wallet: {
@@ -425,7 +622,7 @@ router.post(
             balanceBefore,
 
           spent:
-            PROMOTION_COST,
+            promotionCoins,
 
           new_balance:
             balanceAfter
@@ -459,7 +656,7 @@ router.post(
 
 
 /* ==========================================
-   2. MY PROMOTIONS
+   3. MY PROMOTIONS
 ========================================== */
 
 router.get(
@@ -530,7 +727,7 @@ router.get(
 
 
 /* ==========================================
-   3. PROMOTION DETAILS
+   4. PROMOTION DETAILS
 ========================================== */
 
 router.get(
@@ -585,7 +782,9 @@ router.get(
         );
 
 
-      if (result.rows.length === 0) {
+      if (
+        result.rows.length === 0
+      ) {
         return res.status(404).json({
           success: false,
           message:
@@ -594,16 +793,29 @@ router.get(
       }
 
 
+      const promotion =
+        result.rows[0];
+
+
       return res.json({
         success: true,
-        promotion:
-          result.rows[0]
+
+        promotion: {
+          ...promotion,
+
+          remaining:
+            Math.max(
+              0,
+              promotion.target_count -
+                promotion.completed_count
+            )
+        }
       });
 
     } catch (error) {
 
       console.error(
-        "Get promotion error:",
+        "Get promotion details error:",
         error
       );
 
