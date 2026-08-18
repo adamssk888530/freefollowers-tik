@@ -1,0 +1,15 @@
+{
+  "name": "freefollowers-tik",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FreeFollowersTik - TikTok creator promotion platform",
+  "scripts": {
+    "dev": "node backend/server.js",
+    "start": "node backend/server.js"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1"
+  }
+}
