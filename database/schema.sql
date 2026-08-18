@@ -1,111 +1,248 @@
 -- FreeFollowersTik Database Schema
--- Version 1
+-- TikTok-only authentication
 
-CREATE TABLE users (
-    id BIGSERIAL PRIMARY KEY,
-    email VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(100) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
-    coins INTEGER NOT NULL DEFAULT 30 CHECK (coins >= 0),
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
-CREATE TABLE tiktok_accounts (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    tiktok_user_id VARCHAR(255) UNIQUE NOT NULL,
-    username VARCHAR(255),
-    display_name VARCHAR(255),
+-- ==========================================
+-- USERS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    tiktok_open_id VARCHAR(255) NOT NULL UNIQUE,
+    tiktok_union_id VARCHAR(255),
+
+    display_name VARCHAR(100),
     avatar_url TEXT,
+
     access_token TEXT,
     refresh_token TEXT,
-    connected_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    access_token_expires_at TIMESTAMPTZ,
+    refresh_token_expires_at TIMESTAMPTZ,
+
+    coins INTEGER NOT NULL DEFAULT 0 CHECK (coins >= 0),
+
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    is_banned BOOLEAN NOT NULL DEFAULT FALSE,
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE coin_transactions (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+-- ==========================================
+-- COIN TRANSACTIONS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS coin_transactions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    type VARCHAR(30) NOT NULL,
     amount INTEGER NOT NULL,
-    type VARCHAR(50) NOT NULL,
+
+    balance_before INTEGER NOT NULL,
+    balance_after INTEGER NOT NULL,
+
+    reference_type VARCHAR(50),
+    reference_id UUID,
+
     description TEXT,
-    reference_id VARCHAR(255),
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE earn_tasks (
-    id BIGSERIAL PRIMARY KEY,
-    title VARCHAR(255) NOT NULL,
-    description TEXT,
-    reward_coins INTEGER NOT NULL DEFAULT 5 CHECK (reward_coins > 0),
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+-- ==========================================
+-- WELCOME BONUS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS welcome_bonuses (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+
+    coins_awarded INTEGER NOT NULL DEFAULT 30,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE completed_earn_tasks (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    task_id BIGINT NOT NULL REFERENCES earn_tasks(id) ON DELETE CASCADE,
-    completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    UNIQUE(user_id, task_id)
-);
+-- ==========================================
+-- TIKTOK ACCOUNTS
+-- ==========================================
 
-CREATE TABLE promotions (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    title VARCHAR(255) NOT NULL,
-    target_url TEXT NOT NULL,
-    coins_required INTEGER NOT NULL CHECK (coins_required > 0),
-    status VARCHAR(30) NOT NULL DEFAULT 'active',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
+CREATE TABLE IF NOT EXISTS tiktok_accounts (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
 
-CREATE TABLE promotion_tasks (
-    id BIGSERIAL PRIMARY KEY,
-    promotion_id BIGINT NOT NULL REFERENCES promotions(id) ON DELETE CASCADE,
-    worker_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    status VARCHAR(30) NOT NULL DEFAULT 'pending',
-    completed_at TIMESTAMPTZ,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    open_id VARCHAR(255) NOT NULL UNIQUE,
+    display_name VARCHAR(100),
+    avatar_url TEXT,
+
+    is_verified BOOLEAN NOT NULL DEFAULT FALSE,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ==========================================
+-- EARN TASKS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS earn_tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    title VARCHAR(150) NOT NULL,
+    description TEXT,
+
+    reward_coins INTEGER NOT NULL CHECK (reward_coins > 0),
+
+    task_type VARCHAR(50) NOT NULL,
+
+    target_url TEXT,
+
+    max_completions INTEGER,
+
+    current_completions INTEGER NOT NULL DEFAULT 0,
+
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ==========================================
+-- EARN TASK COMPLETIONS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS earn_completions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    task_id UUID NOT NULL REFERENCES earn_tasks(id) ON DELETE CASCADE,
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    reward_coins INTEGER NOT NULL,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'completed',
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    UNIQUE(task_id, user_id)
+);
+
+-- ==========================================
+-- PROMOTIONS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS promotions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    tiktok_username VARCHAR(100),
+    tiktok_url TEXT,
+
+    promotion_type VARCHAR(30) NOT NULL DEFAULT 'followers',
+
+    coins_cost INTEGER NOT NULL CHECK (coins_cost > 0),
+
+    target_count INTEGER NOT NULL CHECK (target_count > 0),
+    completed_count INTEGER NOT NULL DEFAULT 0,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending',
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- ==========================================
+-- PROMOTION TASKS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS promotion_tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    promotion_id UUID NOT NULL REFERENCES promotions(id) ON DELETE CASCADE,
+    worker_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    status VARCHAR(30) NOT NULL DEFAULT 'pending',
+
+    completed_at TIMESTAMPTZ,
+
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
     UNIQUE(promotion_id, worker_user_id)
 );
 
-CREATE TABLE payments (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    amount_kobo INTEGER NOT NULL CHECK (amount_kobo > 0),
-    coins INTEGER NOT NULL CHECK (coins > 0),
+-- ==========================================
+-- PAYMENTS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS payments (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
     provider VARCHAR(50) NOT NULL,
-    reference VARCHAR(255) UNIQUE NOT NULL,
+    reference VARCHAR(255) NOT NULL UNIQUE,
+
+    amount NUMERIC(12,2) NOT NULL,
+    currency VARCHAR(10) NOT NULL DEFAULT 'NGN',
+
+    coins INTEGER NOT NULL CHECK (coins > 0),
+
     status VARCHAR(30) NOT NULL DEFAULT 'pending',
+
+    provider_transaction_id VARCHAR(255),
+
+    verified_at TIMESTAMPTZ,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-    verified_at TIMESTAMPTZ
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE admin_actions (
-    id BIGSERIAL PRIMARY KEY,
-    admin_user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    action VARCHAR(255) NOT NULL,
-    target_type VARCHAR(100),
-    target_id BIGINT,
-    details TEXT,
+-- ==========================================
+-- ADMIN ACTIONS
+-- ==========================================
+
+CREATE TABLE IF NOT EXISTS admin_actions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+
+    admin_user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+
+    action VARCHAR(100) NOT NULL,
+
+    target_user_id UUID REFERENCES users(id) ON DELETE SET NULL,
+
+    details JSONB,
+
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_tiktok_accounts_user
-    ON tiktok_accounts(user_id);
+-- ==========================================
+-- INDEXES
+-- ==========================================
 
-CREATE INDEX idx_coin_transactions_user
-    ON coin_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_users_tiktok_open_id
+ON users(tiktok_open_id);
 
-CREATE INDEX idx_promotions_user
-    ON promotions(user_id);
+CREATE INDEX IF NOT EXISTS idx_coin_transactions_user_id
+ON coin_transactions(user_id);
 
-CREATE INDEX idx_promotion_tasks_worker
-    ON promotion_tasks(worker_user_id);
+CREATE INDEX IF NOT EXISTS idx_earn_completions_user_id
+ON earn_completions(user_id);
 
-CREATE INDEX idx_payments_user
-    ON payments(user_id);
+CREATE INDEX IF NOT EXISTS idx_promotion_tasks_worker
+ON promotion_tasks(worker_user_id);
+
+CREATE INDEX IF NOT EXISTS idx_promotions_user_id
+ON promotions(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_payments_user_id
+ON payments(user_id);
+
+CREATE INDEX IF NOT EXISTS idx_payments_reference
+ON payments(reference);
