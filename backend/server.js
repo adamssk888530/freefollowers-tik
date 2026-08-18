@@ -4,6 +4,8 @@ require("dotenv").config();
 
 const authRoutes = require("./auth");
 const walletRoutes = require("./wallet");
+const earnRoutes = require("./earn");
+
 const { testDatabase } = require("./db");
 
 const app = express();
@@ -35,6 +37,13 @@ app.use("/api", authRoutes);
 // ==========================================
 
 app.use("/api", walletRoutes);
+
+
+// ==========================================
+// EARN SYSTEM
+// ==========================================
+
+app.use("/api", earnRoutes);
 
 
 // ==========================================
@@ -76,6 +85,18 @@ app.get("/health", async (req, res) => {
       database: "disconnected"
     });
   }
+});
+
+
+// ==========================================
+// 404 HANDLER
+// ==========================================
+
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "API route not found"
+  });
 });
 
 
