@@ -1,1205 +1,1087 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+<meta charset="UTF-8">
 
-  <meta
-    name="theme-color"
-    content="#050505"
-  >
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+>
 
-  <title>FreeFollowersTik - Grow Your TikTok</title>
+<meta
+  name="theme-color"
+  content="#050505"
+>
 
-  <style>
+<title>FreeFollowersTik</title>
 
-    /* ==========================================
-       RESET
-    ========================================== */
+<style>
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+/* ==================================================
+   RESET
+================================================== */
 
-    html {
-      scroll-behavior: smooth;
-    }
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
 
-    body {
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+html{
+  scroll-behavior:smooth;
+}
 
-      background:
-        radial-gradient(
-          circle at 50% 10%,
-          rgba(254, 44, 85, 0.10),
-          transparent 35%
-        ),
-        #050505;
+body{
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
-      color: #ffffff;
+  background:#050505;
 
-      min-height: 100vh;
+  color:#fff;
 
-      overflow-x: hidden;
-    }
+  min-height:100vh;
 
-    a {
-      color: inherit;
-    }
+  overflow-x:hidden;
+}
 
+a{
+  color:inherit;
+  text-decoration:none;
+}
 
-    /* ==========================================
-       BACKGROUND EFFECT
-    ========================================== */
 
-    body::before {
-      content: "";
+/* ==================================================
+   BACKGROUND
+================================================== */
 
-      position: fixed;
+body::before{
+  content:"";
 
-      width: 300px;
-      height: 300px;
+  position:fixed;
 
-      top: 150px;
-      left: -180px;
+  width:280px;
+  height:280px;
 
-      background: #fe2c55;
+  top:100px;
+  left:-180px;
 
-      filter: blur(150px);
+  background:#fe2c55;
 
-      opacity: 0.12;
+  filter:blur(130px);
 
-      pointer-events: none;
+  opacity:.13;
 
-      z-index: -1;
-    }
+  pointer-events:none;
 
-    body::after {
-      content: "";
+  z-index:-1;
+}
 
-      position: fixed;
+body::after{
+  content:"";
 
-      width: 300px;
-      height: 300px;
+  position:fixed;
 
-      top: 500px;
-      right: -180px;
+  width:280px;
+  height:280px;
 
-      background: #00f2ea;
+  right:-180px;
+  top:500px;
 
-      filter: blur(150px);
+  background:#00f2ea;
 
-      opacity: 0.08;
+  filter:blur(130px);
 
-      pointer-events: none;
+  opacity:.09;
 
-      z-index: -1;
-    }
+  pointer-events:none;
 
+  z-index:-1;
+}
 
-    /* ==========================================
-       HEADER
-    ========================================== */
 
-    header {
-      position: sticky;
+/* ==================================================
+   HEADER
+================================================== */
 
-      top: 0;
+header{
+  position:sticky;
 
-      z-index: 100;
+  top:0;
 
-      background:
-        rgba(5, 5, 5, 0.88);
+  z-index:100;
 
-      backdrop-filter:
-        blur(18px);
+  height:68px;
 
-      border-bottom:
-        1px solid rgba(255,255,255,0.08);
-    }
+  background:
+    rgba(5,5,5,.92);
 
-    .nav {
-      height: 70px;
+  backdrop-filter:blur(18px);
 
-      max-width: 1100px;
+  border-bottom:
+    1px solid
+    rgba(255,255,255,.08);
+}
 
-      margin: auto;
+.nav{
+  height:100%;
 
-      padding:
-        0 20px;
+  max-width:1100px;
 
-      display: flex;
+  margin:auto;
 
-      align-items: center;
+  padding:
+    0 18px;
 
-      justify-content: space-between;
-    }
+  display:flex;
 
-    .logo {
-      font-size: 21px;
+  align-items:center;
 
-      font-weight: 900;
+  justify-content:space-between;
+}
 
-      letter-spacing: -0.5px;
-    }
+.logo{
+  font-size:20px;
 
-    .logo span {
-      color: #fe2c55;
-    }
+  font-weight:900;
 
-    .nav-right {
-      display: flex;
+  letter-spacing:-.7px;
+}
 
-      align-items: center;
+.logo span{
+  color:#fe2c55;
+}
 
-      gap: 12px;
-    }
+.nav-right{
+  display:flex;
 
-    .login-small {
-      text-decoration: none;
+  align-items:center;
 
-      border:
-        1px solid rgba(255,255,255,0.15);
+  gap:10px;
+}
 
-      background:
-        rgba(255,255,255,0.05);
+.login{
+  padding:
+    9px 15px;
 
-      padding:
-        9px 15px;
+  border-radius:10px;
 
-      border-radius: 10px;
+  background:
+    rgba(255,255,255,.06);
 
-      font-size: 13px;
+  border:
+    1px solid
+    rgba(255,255,255,.12);
 
-      font-weight: 700;
+  font-size:13px;
 
-      transition:
-        0.2s;
-    }
+  font-weight:700;
+}
 
-    .login-small:hover {
-      border-color: #fe2c55;
+.login:hover{
+  border-color:#fe2c55;
 
-      color: #fe2c55;
-    }
+  color:#fe2c55;
+}
 
-    .menu-btn {
-      width: 40px;
-      height: 40px;
 
-      display: none;
+/* ==================================================
+   MAIN
+================================================== */
 
-      align-items: center;
-      justify-content: center;
+main{
+  width:100%;
 
-      border: 0;
+  max-width:1100px;
 
-      background:
-        rgba(255,255,255,0.05);
+  margin:auto;
 
-      color: white;
+  padding:
+    20px 16px 50px;
+}
 
-      border-radius: 10px;
 
-      font-size: 22px;
-    }
+/* ==================================================
+   HERO
+================================================== */
 
+.hero{
+  position:relative;
 
-    /* ==========================================
-       HERO
-    ========================================== */
+  min-height:310px;
 
-    .hero {
-      max-width: 1000px;
+  overflow:hidden;
 
-      margin: auto;
+  border:
+    1px solid
+    rgba(255,255,255,.12);
 
-      padding:
-        65px 20px
-        55px;
+  border-radius:22px;
 
-      text-align: center;
+  background:
+    radial-gradient(
+      circle at 80% 45%,
+      rgba(0,242,234,.14),
+      transparent 25%
+    ),
+    radial-gradient(
+      circle at 55% 45%,
+      rgba(254,44,85,.22),
+      transparent 38%
+    ),
+    #080808;
 
-      position: relative;
-    }
+  padding:
+    38px 25px;
 
-    .badge {
-      display: inline-flex;
+  display:flex;
 
-      align-items: center;
+  align-items:center;
+}
 
-      gap: 7px;
+.hero-content{
+  position:relative;
 
-      padding:
-        9px 16px;
+  z-index:2;
 
-      border:
-        1px solid rgba(254,44,85,0.55);
+  max-width:560px;
+}
 
-      border-radius: 40px;
+.hero-small{
+  color:#fe2c55;
 
-      background:
-        rgba(254,44,85,0.06);
+  font-size:13px;
 
-      color: #ff4b72;
+  font-weight:700;
 
-      font-size: 13px;
+  margin-bottom:12px;
+}
 
-      font-weight: 700;
+.hero h1{
+  font-size:43px;
 
-      box-shadow:
-        0 0 25px
-        rgba(254,44,85,0.08);
+  line-height:1.05;
 
-      margin-bottom: 25px;
-    }
+  letter-spacing:-1.5px;
 
-    .hero h1 {
-      max-width: 800px;
+  margin-bottom:15px;
+}
 
-      margin:
-        0 auto 20px;
+.hero h1 span{
+  color:#fe2c55;
+}
 
-      font-size: 53px;
+.hero-text{
+  color:#a1a1aa;
 
-      line-height: 1.05;
+  font-size:15px;
 
-      letter-spacing:
-        -1.8px;
+  line-height:1.6;
 
-      font-weight: 900;
-    }
+  max-width:500px;
 
-    .hero h1 span {
-      display: block;
+  margin-bottom:22px;
+}
 
-      color: #fe2c55;
+.hero-button{
+  display:inline-flex;
 
-      text-shadow:
-        0 0 30px
-        rgba(254,44,85,0.35);
-    }
+  align-items:center;
 
-    .hero-text {
-      max-width: 650px;
+  justify-content:center;
 
-      margin:
-        0 auto 32px;
+  gap:8px;
 
-      color: #9ca3af;
+  padding:
+    13px 20px;
 
-      font-size: 17px;
+  border-radius:12px;
 
-      line-height: 1.7;
-    }
+  background:
+    linear-gradient(
+      135deg,
+      #fe2c55,
+      #ff0050
+    );
 
+  color:#fff;
 
-    /* ==========================================
-       LOGIN BUTTON
-    ========================================== */
+  font-size:14px;
 
-    .login-button {
-      display: inline-flex;
+  font-weight:800;
 
-      align-items: center;
-      justify-content: center;
+  box-shadow:
+    0 0 28px
+    rgba(254,44,85,.25);
+}
 
-      gap: 10px;
+.hero-button:hover{
+  transform:translateY(-1px);
+}
 
-      min-width: 240px;
+.hero-bonus{
+  margin-top:12px;
 
-      padding:
-        15px 25px;
+  color:#00e676;
 
-      border-radius: 13px;
+  font-size:12px;
 
-      text-decoration: none;
+  font-weight:700;
+}
 
-      background:
-        linear-gradient(
-          135deg,
-          #fe2c55,
-          #ff0050
-        );
 
-      color: white;
+/* ==================================================
+   HERO VISUAL
+================================================== */
 
-      font-weight: 800;
+.tiktok-visual{
+  position:absolute;
 
-      font-size: 15px;
+  right:30px;
 
-      box-shadow:
-        0 0 30px
-        rgba(254,44,85,0.28);
+  top:50%;
 
-      transition:
-        transform 0.2s,
-        box-shadow 0.2s;
-    }
+  transform:translateY(-50%);
 
-    .login-button:hover {
-      transform:
-        translateY(-2px);
+  width:250px;
 
-      box-shadow:
-        0 0 40px
-        rgba(254,44,85,0.45);
-    }
+  height:250px;
 
-    .bonus {
-      margin-top: 17px;
+  display:flex;
 
-      color: #00e676;
+  align-items:center;
 
-      font-size: 13px;
+  justify-content:center;
+}
 
-      font-weight: 700;
-    }
+.tiktok-glow{
+  position:absolute;
 
+  width:190px;
+  height:190px;
 
-    /* ==========================================
-       COIN DECORATION
-    ========================================== */
+  border-radius:50%;
 
-    .coin {
-      position: absolute;
+  background:
+    radial-gradient(
+      circle,
+      rgba(254,44,85,.32),
+      rgba(0,242,234,.16),
+      transparent 70%
+    );
 
-      width: 52px;
-      height: 52px;
+  filter:blur(20px);
+}
 
-      border-radius: 50%;
+.tiktok-box{
+  width:145px;
+  height:145px;
 
-      display: flex;
+  border-radius:28px;
 
-      align-items: center;
-      justify-content: center;
+  border:
+    2px solid
+    #00f2ea;
 
-      font-size: 24px;
+  display:flex;
 
-      border:
-        1px solid
-        rgba(254,44,85,0.55);
+  align-items:center;
 
-      background:
-        rgba(254,44,85,0.05);
+  justify-content:center;
 
-      box-shadow:
-        0 0 25px
-        rgba(254,44,85,0.18);
-    }
+  font-size:75px;
 
-    .coin.one {
-      top: 110px;
-      left: 4%;
-    }
+  background:
+    rgba(0,0,0,.55);
 
-    .coin.two {
-      top: 170px;
-      right: 4%;
+  box-shadow:
+    0 0 30px
+    rgba(0,242,234,.35),
+    inset 0 0 25px
+    rgba(254,44,85,.15);
 
-      border-color:
-        rgba(0,242,234,0.55);
+  transform:rotate(-5deg);
+}
 
-      box-shadow:
-        0 0 25px
-        rgba(0,242,234,0.18);
-    }
 
+/* ==================================================
+   ADVERTISEMENT
+================================================== */
 
-    /* ==========================================
-       FEATURES
-    ========================================== */
+.ad-wrapper{
+  margin:
+    18px 0;
 
-    .features {
-      max-width: 1050px;
+  min-height:90px;
 
-      margin: auto;
+  border:
+    1px dashed
+    rgba(255,255,255,.10);
 
-      padding:
-        25px 20px 60px;
-    }
+  border-radius:16px;
 
-    .section-title {
-      text-align: center;
+  background:
+    rgba(255,255,255,.018);
 
-      margin-bottom: 28px;
-    }
+  display:flex;
 
-    .section-title h2 {
-      font-size: 28px;
+  align-items:center;
 
-      margin-bottom: 8px;
-    }
+  justify-content:center;
 
-    .section-title p {
-      color: #6b7280;
+  overflow:hidden;
+}
 
-      font-size: 14px;
-    }
+.ad-label{
+  color:#52525b;
 
-    .feature-grid {
-      display: grid;
+  font-size:10px;
 
-      grid-template-columns:
-        repeat(3, 1fr);
+  letter-spacing:1px;
 
-      gap: 14px;
-    }
+  text-transform:uppercase;
+}
 
-    .card {
-      position: relative;
 
-      padding: 25px 20px;
+/* ==================================================
+   QUICK FEATURES
+================================================== */
 
-      min-height: 210px;
+.section-title{
+  margin:
+    28px 3px 14px;
 
-      border:
-        1px solid
-        rgba(255,255,255,0.10);
+  font-size:19px;
 
-      border-radius: 18px;
+  font-weight:800;
+}
 
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255,255,255,0.055),
-          rgba(255,255,255,0.018)
-        );
+.feature-grid{
+  display:grid;
 
-      overflow: hidden;
+  grid-template-columns:
+    repeat(3,1fr);
 
-      transition:
-        transform 0.2s,
-        border-color 0.2s;
-    }
+  gap:12px;
+}
 
-    .card:hover {
-      transform:
-        translateY(-3px);
+.feature{
+  min-height:145px;
 
-      border-color:
-        rgba(254,44,85,0.45);
-    }
+  padding:18px;
 
-    .card::before {
-      content: "";
+  border:
+    1px solid
+    rgba(255,255,255,.10);
 
-      position: absolute;
+  border-radius:17px;
 
-      width: 100px;
-      height: 100px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255,255,255,.055),
+      rgba(255,255,255,.015)
+    );
+}
 
-      top: -50px;
-      right: -50px;
+.feature-icon{
+  width:43px;
+  height:43px;
 
-      border-radius: 50%;
+  border-radius:13px;
 
-      background:
-        #fe2c55;
+  display:flex;
 
-      filter: blur(50px);
+  align-items:center;
+  justify-content:center;
 
-      opacity: 0.15;
-    }
+  font-size:22px;
 
-    .card-icon {
-      width: 50px;
-      height: 50px;
+  margin-bottom:13px;
 
-      display: flex;
+  background:
+    rgba(254,44,85,.09);
 
-      align-items: center;
-      justify-content: center;
+  border:
+    1px solid
+    rgba(254,44,85,.25);
+}
 
-      border-radius: 14px;
+.feature:nth-child(2)
+.feature-icon{
+  background:
+    rgba(254,44,85,.09);
+}
 
-      background:
-        rgba(254,44,85,0.10);
+.feature h3{
+  font-size:15px;
 
-      border:
-        1px solid
-        rgba(254,44,85,0.25);
+  margin-bottom:6px;
+}
 
-      font-size: 25px;
+.feature p{
+  color:#8f8f98;
 
-      margin-bottom: 18px;
-    }
+  font-size:12px;
 
-    .card h3 {
-      font-size: 17px;
+  line-height:1.5;
+}
 
-      margin-bottom: 9px;
-    }
 
-    .card p {
-      color: #9ca3af;
+/* ==================================================
+   CTA
+================================================== */
 
-      font-size: 13px;
+.cta{
+  margin-top:18px;
 
-      line-height: 1.65;
-    }
+  padding:25px 20px;
 
+  border:
+    1px solid
+    rgba(254,44,85,.22);
 
-    /* ==========================================
-       STATISTICS
-    ========================================== */
+  border-radius:18px;
 
-    .stats {
-      max-width: 1050px;
+  text-align:center;
 
-      margin:
-        0 auto 55px;
+  background:
+    linear-gradient(
+      135deg,
+      rgba(254,44,85,.08),
+      rgba(0,242,234,.03)
+    );
+}
 
-      padding:
-        0 20px;
-    }
+.cta h2{
+  font-size:21px;
 
-    .stats-box {
-      display: grid;
+  margin-bottom:8px;
+}
 
-      grid-template-columns:
-        repeat(4, 1fr);
+.cta p{
+  color:#8f8f98;
 
-      padding: 20px;
+  font-size:13px;
 
-      border:
-        1px solid
-        rgba(254,44,85,0.35);
+  line-height:1.5;
 
-      border-radius: 18px;
+  margin-bottom:17px;
+}
 
-      background:
-        rgba(255,255,255,0.025);
 
-      box-shadow:
-        0 0 40px
-        rgba(254,44,85,0.05);
-    }
+/* ==================================================
+   FOOTER
+================================================== */
 
-    .stat {
-      text-align: center;
+footer{
+  border-top:
+    1px solid
+    rgba(255,255,255,.08);
 
-      padding:
-        8px 10px;
+  background:#030303;
 
-      border-right:
-        1px solid
-        rgba(255,255,255,0.08);
-    }
+  padding:
+    22px 15px;
 
-    .stat:last-child {
-      border-right: 0;
-    }
+  text-align:center;
+}
 
-    .stat strong {
-      display: block;
+footer p{
+  color:#666;
 
-      font-size: 22px;
+  font-size:11px;
 
-      color: white;
+  margin-bottom:10px;
+}
 
-      margin-bottom: 5px;
-    }
+footer a{
+  color:#999;
 
-    .stat span {
-      color: #6b7280;
+  font-size:11px;
 
-      font-size: 12px;
-    }
+  margin:0 7px;
+}
 
+footer a:hover{
+  color:#fe2c55;
+}
 
-    /* ==========================================
-       CTA
-    ========================================== */
 
-    .cta {
-      max-width: 900px;
+/* ==================================================
+   MOBILE
+================================================== */
 
-      margin:
-        0 auto 60px;
+@media(max-width:700px){
 
-      padding:
-        0 20px;
-    }
+  header{
+    height:62px;
+  }
 
-    .cta-box {
-      text-align: center;
+  .nav{
+    padding:
+      0 15px;
+  }
 
-      padding:
-        35px 22px;
+  .logo{
+    font-size:18px;
+  }
 
-      border:
-        1px solid
-        rgba(254,44,85,0.25);
+  .login{
+    padding:
+      8px 13px;
 
-      border-radius: 20px;
+    font-size:12px;
+  }
 
-      background:
-        linear-gradient(
-          135deg,
-          rgba(254,44,85,0.08),
-          rgba(0,242,234,0.03)
-        );
-    }
+  main{
+    padding:
+      14px 12px 35px;
+  }
 
-    .cta-box h2 {
-      font-size: 25px;
+  .hero{
+    min-height:290px;
 
-      margin-bottom: 10px;
-    }
+    padding:
+      27px 20px;
 
-    .cta-box p {
-      color: #9ca3af;
+    align-items:flex-start;
+  }
 
-      font-size: 14px;
+  .hero-content{
+    max-width:62%;
+  }
 
-      margin-bottom: 22px;
-    }
+  .hero-small{
+    font-size:11px;
+  }
 
+  .hero h1{
+    font-size:31px;
 
-    /* ==========================================
-       FOOTER
-    ========================================== */
+    line-height:1.08;
 
-    footer {
-      border-top:
-        1px solid
-        rgba(255,255,255,0.08);
+    letter-spacing:-1px;
+  }
 
-      padding:
-        28px 20px;
+  .hero-text{
+    font-size:12px;
 
-      text-align: center;
+    line-height:1.5;
 
-      background:
-        #030303;
-    }
+    margin-bottom:17px;
+  }
 
-    footer p {
-      color: #6b7280;
+  .hero-button{
+    width:100%;
 
-      font-size: 12px;
+    padding:
+      12px 10px;
 
-      margin-bottom: 12px;
-    }
+    font-size:12px;
+  }
 
-    footer a {
-      color: #9ca3af;
+  .hero-bonus{
+    font-size:10px;
+  }
 
-      text-decoration: none;
+  .tiktok-visual{
+    width:150px;
+    height:150px;
 
-      font-size: 12px;
+    right:-8px;
 
-      margin:
-        0 8px;
-    }
+    top:56%;
+  }
 
-    footer a:hover {
-      color: #fe2c55;
-    }
+  .tiktok-glow{
+    width:130px;
+    height:130px;
+  }
 
+  .tiktok-box{
+    width:95px;
+    height:95px;
 
-    /* ==========================================
-       MOBILE
-    ========================================== */
+    border-radius:20px;
 
-    @media (max-width: 700px) {
+    font-size:50px;
+  }
 
-      .nav {
-        height: 62px;
+  .ad-wrapper{
+    min-height:80px;
 
-        padding:
-          0 16px;
-      }
+    margin:
+      14px 0;
+  }
 
-      .logo {
-        font-size: 18px;
-      }
+  .section-title{
+    font-size:17px;
 
-      .login-small {
-        padding:
-          8px 12px;
+    margin:
+      22px 3px 11px;
+  }
 
-        font-size: 12px;
-      }
+  .feature-grid{
+    grid-template-columns:
+      repeat(3,1fr);
 
-      .hero {
-        padding:
-          55px 18px
-          45px;
-      }
+    gap:7px;
+  }
 
-      .hero h1 {
-        font-size: 39px;
+  .feature{
+    min-height:135px;
 
-        letter-spacing:
-          -1.2px;
-      }
+    padding:
+      14px 10px;
 
-      .hero-text {
-        font-size: 14px;
+    border-radius:14px;
+  }
 
-        line-height: 1.65;
-      }
+  .feature-icon{
+    width:38px;
+    height:38px;
 
-      .badge {
-        font-size: 11px;
+    font-size:19px;
 
-        padding:
-          8px 12px;
-      }
+    border-radius:11px;
 
-      .login-button {
-        width: 100%;
+    margin-bottom:10px;
+  }
 
-        max-width: 330px;
-      }
+  .feature h3{
+    font-size:12px;
 
-      .coin {
-        width: 40px;
-        height: 40px;
+    margin-bottom:5px;
+  }
 
-        font-size: 18px;
-      }
+  .feature p{
+    font-size:10px;
 
-      .coin.one {
-        left: -8px;
+    line-height:1.4;
+  }
 
-        top: 125px;
-      }
+  .cta{
+    padding:
+      22px 15px;
+  }
 
-      .coin.two {
-        right: -8px;
+  .cta h2{
+    font-size:18px;
+  }
 
-        top: 205px;
-      }
+  .cta p{
+    font-size:11px;
+  }
 
-      .features {
-        padding:
-          15px 14px 45px;
-      }
+}
 
-      .section-title h2 {
-        font-size: 24px;
-      }
 
-      .feature-grid {
-        grid-template-columns: 1fr;
+/* ==================================================
+   SMALL PHONE
+================================================== */
 
-        gap: 12px;
-      }
+@media(max-width:380px){
 
-      .card {
-        min-height: auto;
+  .hero{
+    min-height:275px;
 
-        padding: 20px;
+    padding:
+      24px 16px;
+  }
 
-        display: grid;
+  .hero-content{
+    max-width:64%;
+  }
 
-        grid-template-columns:
-          50px 1fr;
+  .hero h1{
+    font-size:27px;
+  }
 
-        column-gap: 14px;
-      }
+  .hero-text{
+    font-size:11px;
+  }
 
-      .card-icon {
-        grid-row:
-          span 2;
+  .tiktok-visual{
+    transform:
+      translateY(-50%)
+      scale(.85);
 
-        margin-bottom: 0;
-      }
+    right:-18px;
+  }
 
-      .card h3 {
-        align-self: end;
+  .feature{
+    min-height:130px;
+  }
 
-        margin-bottom: 5px;
-      }
+}
 
-      .card p {
-        align-self: start;
-      }
+</style>
 
-      .stats {
-        padding:
-          0 14px;
-
-        margin-bottom: 45px;
-      }
-
-      .stats-box {
-        grid-template-columns:
-          repeat(2, 1fr);
-
-        gap: 10px;
-
-        padding: 14px;
-      }
-
-      .stat {
-        border-right: 0;
-
-        border-bottom:
-          1px solid
-          rgba(255,255,255,0.08);
-
-        padding:
-          13px 5px;
-      }
-
-      .stat:nth-child(3),
-      .stat:nth-child(4) {
-        border-bottom: 0;
-      }
-
-      .stat strong {
-        font-size: 20px;
-      }
-
-      .cta {
-        padding:
-          0 14px;
-      }
-
-      .cta-box {
-        padding:
-          30px 18px;
-      }
-
-      .cta-box h2 {
-        font-size: 22px;
-      }
-    }
-
-
-    /* ==========================================
-       SMALL PHONES
-    ========================================== */
-
-    @media (max-width: 380px) {
-
-      .hero h1 {
-        font-size: 34px;
-      }
-
-      .logo {
-        font-size: 16px;
-      }
-
-      .login-small {
-        font-size: 11px;
-      }
-
-      .card {
-        grid-template-columns:
-          44px 1fr;
-      }
-
-      .card-icon {
-        width: 44px;
-        height: 44px;
-
-        font-size: 21px;
-      }
-    }
-
-  </style>
 </head>
 
 
 <body>
 
 
-  <!-- ==========================================
-       HEADER
-  ========================================== -->
+<!-- ==================================================
+     HEADER
+================================================== -->
 
-  <header>
+<header>
 
-    <nav class="nav">
+  <nav class="nav">
 
-      <div class="logo">
-        Free<span>Followers</span>Tik
+    <div class="logo">
+      Free<span>Followers</span>Tik
+    </div>
+
+    <div class="nav-right">
+
+      <a
+        href="/api/tiktok/login"
+        class="login"
+      >
+        Login
+      </a>
+
+    </div>
+
+  </nav>
+
+</header>
+
+
+
+<!-- ==================================================
+     MAIN
+================================================== -->
+
+<main>
+
+
+  <!-- HERO -->
+
+  <section class="hero">
+
+    <div class="hero-content">
+
+      <div class="hero-small">
+        🚀 TikTok Creator Platform
       </div>
-
-      <div class="nav-right">
-
-        <a
-          class="login-small"
-          href="/api/tiktok/login"
-        >
-          Login
-        </a>
-
-      </div>
-
-    </nav>
-
-  </header>
-
-
-  <!-- ==========================================
-       HERO
-  ========================================== -->
-
-  <main>
-
-    <section class="hero">
-
-      <div class="coin one">
-        🎵
-      </div>
-
-      <div class="coin two">
-        🎵
-      </div>
-
-
-      <div class="badge">
-        🚀 TikTok Growth Platform
-      </div>
-
 
       <h1>
         Grow Your TikTok
         <span>With Coins</span>
       </h1>
 
-
       <p class="hero-text">
-
-        FreeFollowersTik helps TikTok creators
-        promote their profiles, earn coins and
-        manage their creator growth in one place.
-
+        Earn coins, promote your TikTok
+        and manage your creator growth
+        from one simple platform.
       </p>
 
-
       <a
-        class="login-button"
         href="/api/tiktok/login"
+        class="hero-button"
       >
         🎵 Continue with TikTok
       </a>
 
-
-      <div class="bonus">
+      <div class="hero-bonus">
         🎁 New users receive 30 free coins
       </div>
 
-    </section>
+    </div>
 
 
-    <!-- ==========================================
-         FEATURES
-    ========================================== -->
+    <!-- TikTok visual -->
 
-    <section class="features">
+    <div class="tiktok-visual">
 
-      <div class="section-title">
+      <div class="tiktok-glow"></div>
 
-        <h2>
-          Everything You Need
-        </h2>
-
-        <p>
-          Simple tools to grow your TikTok account.
-        </p>
-
+      <div class="tiktok-box">
+        ♪
       </div>
-
-
-      <div class="feature-grid">
-
-
-        <div class="card">
-
-          <div class="card-icon">
-            🎁
-          </div>
-
-          <h3>
-            Earn Coins
-          </h3>
-
-          <p>
-            Complete simple creator tasks
-            and earn coins for promotion.
-          </p>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="card-icon">
-            🚀
-          </div>
-
-          <h3>
-            Promote Your TikTok
-          </h3>
-
-          <p>
-            Use your coins to promote your
-            TikTok and reach more users.
-          </p>
-
-        </div>
-
-
-        <div class="card">
-
-          <div class="card-icon">
-            🪙
-          </div>
-
-          <h3>
-            Coin Wallet
-          </h3>
-
-          <p>
-            Track your balance, transactions
-            and promotion spending.
-          </p>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- ==========================================
-         STATISTICS
-    ========================================== -->
-
-    <section class="stats">
-
-      <div class="stats-box">
-
-
-        <div class="stat">
-
-          <strong>
-            50K+
-          </strong>
-
-          <span>
-            Active Users
-          </span>
-
-        </div>
-
-
-        <div class="stat">
-
-          <strong>
-            1M+
-          </strong>
-
-          <span>
-            Tasks Completed
-          </span>
-
-        </div>
-
-
-        <div class="stat">
-
-          <strong>
-            10M+
-          </strong>
-
-          <span>
-            Coins Distributed
-          </span>
-
-        </div>
-
-
-        <div class="stat">
-
-          <strong>
-            100%
-          </strong>
-
-          <span>
-            Secure Platform
-          </span>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- ==========================================
-         CTA
-    ========================================== -->
-
-    <section class="cta">
-
-      <div class="cta-box">
-
-        <h2>
-          Ready to Grow Your TikTok? 🚀
-        </h2>
-
-        <p>
-          Connect your TikTok account and
-          start earning coins today.
-        </p>
-
-        <a
-          class="login-button"
-          href="/api/tiktok/login"
-        >
-          🎵 Continue with TikTok
-        </a>
-
-      </div>
-
-    </section>
-
-  </main>
-
-
-  <!-- ==========================================
-       FOOTER
-  ========================================== -->
-
-  <footer>
-
-    <p>
-      © 2026 FreeFollowersTik.
-      All rights reserved.
-    </p>
-
-    <div>
-
-      <a href="/terms">
-        Terms of Service
-      </a>
-
-      <a href="/privacy">
-        Privacy Policy
-      </a>
 
     </div>
 
-  </footer>
+  </section>
+
+
+
+  <!-- ==================================================
+       ADSENSE SPACE
+  ================================================== -->
+
+  <div class="ad-wrapper">
+
+    <!--
+      ADSENSE WILL GO HERE AFTER APPROVAL.
+
+      Example:
+
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client="YOUR-PUBLISHER-ID"
+        data-ad-slot="YOUR-AD-SLOT"
+        data-ad-format="auto"
+        data-full-width-responsive="true">
+      </ins>
+
+    -->
+
+    <span class="ad-label">
+      Advertisement
+    </span>
+
+  </div>
+
+
+
+  <!-- ==================================================
+       FEATURES
+  ================================================== -->
+
+  <h2 class="section-title">
+    Everything You Need
+  </h2>
+
+
+  <section class="feature-grid">
+
+
+    <div class="feature">
+
+      <div class="feature-icon">
+        🎁
+      </div>
+
+      <h3>
+        Earn Coins
+      </h3>
+
+      <p>
+        Complete creator tasks
+        and earn coins.
+      </p>
+
+    </div>
+
+
+    <div class="feature">
+
+      <div class="feature-icon">
+        🚀
+      </div>
+
+      <h3>
+        Promote
+      </h3>
+
+      <p>
+        Use coins to promote
+        your TikTok.
+      </p>
+
+    </div>
+
+
+    <div class="feature">
+
+      <div class="feature-icon">
+        🪙
+      </div>
+
+      <h3>
+        Coin Wallet
+      </h3>
+
+      <p>
+        Manage coins and
+        transactions.
+      </p>
+
+    </div>
+
+
+  </section>
+
+
+
+  <!-- ==================================================
+       SECOND AD
+  ================================================== -->
+
+  <div class="ad-wrapper">
+
+    <!-- AdSense second placement -->
+
+    <span class="ad-label">
+      Advertisement
+    </span>
+
+  </div>
+
+
+
+  <!-- ==================================================
+       CTA
+  ================================================== -->
+
+  <section class="cta">
+
+    <h2>
+      Ready to Grow Your TikTok? 🚀
+    </h2>
+
+    <p>
+      Connect your TikTok account
+      and receive your 30 free coins.
+    </p>
+
+    <a
+      href="/api/tiktok/login"
+      class="hero-button"
+    >
+      🎵 Continue with TikTok
+    </a>
+
+  </section>
+
+
+</main>
+
+
+
+<!-- ==================================================
+     FOOTER
+================================================== -->
+
+<footer>
+
+  <p>
+    © 2026 FreeFollowersTik.
+    All rights reserved.
+  </p>
+
+  <div>
+
+    <a href="/terms">
+      Terms
+    </a>
+
+    <a href="/privacy">
+      Privacy
+    </a>
+
+  </div>
+
+</footer>
 
 
 </body>
