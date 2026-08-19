@@ -2,11 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Promote - FreeFollowersTik</title>
 
@@ -31,7 +27,6 @@
     .nav {
       max-width: 750px;
       margin: auto;
-
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -136,7 +131,7 @@
       display: flex;
       justify-content: space-between;
       gap: 15px;
-      padding: 8px 0;
+      padding: 9px 0;
       font-size: 14px;
     }
 
@@ -205,6 +200,26 @@
       display: none !important;
     }
 
+    .result {
+      margin-top: 20px;
+      padding: 18px;
+      background: #f0fdf4;
+      border-radius: 12px;
+      display: none;
+    }
+
+    .result h3 {
+      margin: 0 0 12px;
+      color: #166534;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 7px 0;
+      font-size: 14px;
+    }
+
     footer {
       background: #111;
       color: #9ca3af;
@@ -233,403 +248,742 @@
 
 <body>
 
-  <!-- ==========================================
-       HEADER
-  ========================================== -->
+<header>
+  <div class="nav">
 
-  <header>
-
-    <div class="nav">
-
-      <div class="logo">
-        Free<span>FollowersTik</span>
-      </div>
-
-      <a
-        href="/dashboard.html"
-        class="back"
-      >
-        ← Dashboard
-      </a>
-
+    <div class="logo">
+      Free<span>FollowersTik</span>
     </div>
 
-  </header>
+    <a
+      href="/dashboard.html"
+      class="back"
+    >
+      ← Dashboard
+    </a>
+
+  </div>
+</header>
 
 
-  <main>
+<main>
 
-    <!-- ==========================================
-         TITLE
-    ========================================== -->
+  <section class="title">
 
-    <section class="title">
+    <h1>🚀 Promote TikTok</h1>
 
-      <h1>
-        🚀 Promote TikTok
-      </h1>
+    <p>
+      Use your coins to promote your TikTok account.
+    </p>
 
-      <p>
-        Use your coins to promote your TikTok account.
-      </p>
+  </section>
+
+
+  <div
+    id="loading"
+    class="loading"
+  >
+    Loading your account...
+  </div>
+
+
+  <div
+    id="content"
+    class="hidden"
+  >
+
+    <!-- BALANCE -->
+
+    <section class="balance">
+
+      <small>
+        Available Coins
+      </small>
+
+      <strong id="coinBalance">
+        0 🪙
+      </strong>
 
     </section>
 
 
-    <!-- ==========================================
-         LOADING
-    ========================================== -->
+    <!-- FORM -->
 
-    <div
-      id="loading"
-      class="loading"
-    >
-      Loading your account...
-    </div>
+    <section class="card">
 
+      <form id="promotionForm">
 
-    <!-- ==========================================
-         CONTENT
-    ========================================== -->
+        <div class="field">
 
-    <div
-      id="content"
-      class="hidden"
-    >
+          <label for="tiktokUrl">
+            TikTok Profile URL
+          </label>
 
-      <!-- ========================================
-           BALANCE
-      ========================================= -->
-
-      <section class="balance">
-
-        <small>
-          Available Coins
-        </small>
-
-        <strong id="coinBalance">
-          0 🪙
-        </strong>
-
-      </section>
-
-
-      <!-- ========================================
-           PROMOTION FORM
-      ========================================= -->
-
-      <section class="card">
-
-        <form id="promotionForm">
-
-          <!-- TikTok URL -->
-
-          <div class="field">
-
-            <label for="tiktokUrl">
-              TikTok Profile URL
-            </label>
-
-            <input
-              id="tiktokUrl"
-              type="url"
-              placeholder="https://www.tiktok.com/@username"
-              required
-            >
-
-          </div>
-
-
-          <!-- Username -->
-
-          <div class="field">
-
-            <label for="tiktokUsername">
-              TikTok Username
-            </label>
-
-            <input
-              id="tiktokUsername"
-              type="text"
-              placeholder="@username"
-              maxlength="100"
-              required
-            >
-
-          </div>
-
-
-          <!-- Coins -->
-
-          <div class="field">
-
-            <label for="coins">
-              Coins to Spend
-            </label>
-
-            <input
-              id="coins"
-              type="number"
-              min="60"
-              step="1"
-              placeholder="60"
-              required
-            >
-
-          </div>
-
-
-          <!-- INFO -->
-
-          <div class="info">
-
-            <div class="info-row">
-
-              <span>
-                Minimum
-              </span>
-
-              <strong>
-                60 🪙
-              </strong>
-
-            </div>
-
-
-            <div class="info-row">
-
-              <span>
-                Followers
-              </span>
-
-              <strong id="followers">
-                6
-              </strong>
-
-            </div>
-
-
-            <div class="info-row">
-
-              <span>
-                Coins
-              </span>
-
-              <strong id="cost">
-                60 🪙
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <div class="minimum">
-
-            💡 60 coins = 6 followers.
-            Every additional 10 coins gives another follower.
-
-          </div>
-
-
-          <!-- SUBMIT -->
-
-          <button
-            id="submitBtn"
-            class="submit-btn"
-            type="submit"
+          <input
+            id="tiktokUrl"
+            type="url"
+            placeholder="https://www.tiktok.com/@username"
+            required
           >
-            🚀 Create Promotion
-          </button>
+
+        </div>
 
 
-          <!-- MESSAGE -->
+        <div class="field">
 
-          <div
-            id="message"
-            class="message"
-          ></div>
+          <label for="tiktokUsername">
+            TikTok Username
+          </label>
 
-        </form>
+          <input
+            id="tiktokUsername"
+            type="text"
+            placeholder="@username"
+            maxlength="100"
+            required
+          >
 
-      </section>
-
-    </div>
-
-  </main>
-
-
-  <!-- ==========================================
-       FOOTER
-  ========================================== -->
-
-  <footer>
-
-    <p>
-      © 2026 FreeFollowersTik
-    </p>
-
-    <div>
-
-      <a href="/dashboard.html">
-        Dashboard
-      </a>
-
-      <a href="/terms">
-        Terms
-      </a>
-
-      <a href="/privacy">
-        Privacy
-      </a>
-
-    </div>
-
-  </footer>
+        </div>
 
 
-  <!-- ==========================================
-       JAVASCRIPT
-  ========================================== -->
+        <div class="field">
 
-  <script>
+          <label for="coins">
+            Coins to Spend
+          </label>
 
-    let currentCoins = 0;
+          <input
+            id="coins"
+            type="number"
+            min="60"
+            step="10"
+            placeholder="60"
+            required
+          >
 
-    const MINIMUM_COINS = 60;
+        </div>
 
 
-    const loading =
-      document.getElementById(
-        "loading"
+        <div class="info">
+
+          <div class="info-row">
+
+            <span>
+              Minimum
+            </span>
+
+            <strong>
+              60 🪙
+            </strong>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span>
+              Followers
+            </span>
+
+            <strong id="followers">
+              6
+            </strong>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span>
+              Cost
+            </span>
+
+            <strong id="cost">
+              60 🪙
+            </strong>
+
+          </div>
+
+
+          <div class="info-row">
+
+            <span>
+              Balance after
+            </span>
+
+            <strong id="balanceAfter">
+              0 🪙
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <div class="minimum">
+
+          💡 60 coins = 6 followers.
+          Every additional 10 coins gives 1 additional follower.
+
+        </div>
+
+
+        <button
+          id="submitBtn"
+          class="submit-btn"
+          type="submit"
+        >
+          🚀 Create Promotion
+        </button>
+
+
+        <div
+          id="message"
+          class="message"
+        ></div>
+
+
+        <!-- SUCCESS RESULT -->
+
+        <div
+          id="result"
+          class="result"
+        >
+
+          <h3>
+            ✅ Promotion Created
+          </h3>
+
+          <div class="result-row">
+
+            <span>
+              Promotion ID
+            </span>
+
+            <strong id="resultId">
+              -
+            </strong>
+
+          </div>
+
+          <div class="result-row">
+
+            <span>
+              Followers
+            </span>
+
+            <strong id="resultFollowers">
+              -
+            </strong>
+
+          </div>
+
+          <div class="result-row">
+
+            <span>
+              Coins spent
+            </span>
+
+            <strong id="resultSpent">
+              -
+            </strong>
+
+          </div>
+
+          <div class="result-row">
+
+            <span>
+              New balance
+            </span>
+
+            <strong id="resultBalance">
+              -
+            </strong>
+
+          </div>
+
+        </div>
+
+      </form>
+
+    </section>
+
+  </div>
+
+</main>
+
+
+<footer>
+
+  <p>
+    © 2026 FreeFollowersTik
+  </p>
+
+  <div>
+
+    <a href="/dashboard.html">
+      Dashboard
+    </a>
+
+    <a href="/terms">
+      Terms
+    </a>
+
+    <a href="/privacy">
+      Privacy
+    </a>
+
+  </div>
+
+</footer>
+
+
+<script>
+
+  const MINIMUM_COINS = 60;
+  const COINS_PER_FOLLOWER = 10;
+
+  let currentCoins = 0;
+
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+  const content =
+    document.getElementById(
+      "content"
+    );
+
+  const form =
+    document.getElementById(
+      "promotionForm"
+    );
+
+  const coinsInput =
+    document.getElementById(
+      "coins"
+    );
+
+  const followers =
+    document.getElementById(
+      "followers"
+    );
+
+  const cost =
+    document.getElementById(
+      "cost"
+    );
+
+  const balanceAfter =
+    document.getElementById(
+      "balanceAfter"
+    );
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+  const submitBtn =
+    document.getElementById(
+      "submitBtn"
+    );
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+
+  /* ==========================================
+     MESSAGE
+  ========================================== */
+
+  function showMessage(
+    text,
+    type
+  ) {
+
+    message.textContent =
+      text;
+
+    message.className =
+      `message ${type}`;
+
+  }
+
+
+  /* ==========================================
+     BALANCE DISPLAY
+  ========================================== */
+
+  function updateBalanceDisplay() {
+
+    document.getElementById(
+      "coinBalance"
+    ).textContent =
+      `${currentCoins} 🪙`;
+
+  }
+
+
+  /* ==========================================
+     CALCULATE PREVIEW
+  ========================================== */
+
+  function updateCalculation() {
+
+    const coins =
+      Math.floor(
+        Number(
+          coinsInput.value
+        )
       );
 
-    const content =
-      document.getElementById(
-        "content"
-      );
 
-    const form =
-      document.getElementById(
-        "promotionForm"
-      );
-
-    const coinsInput =
-      document.getElementById(
-        "coins"
-      );
-
-    const followers =
-      document.getElementById(
-        "followers"
-      );
-
-    const cost =
-      document.getElementById(
-        "cost"
-      );
-
-    const message =
-      document.getElementById(
-        "message"
-      );
-
-    const submitBtn =
-      document.getElementById(
-        "submitBtn"
-      );
-
-
-    /* ==========================================
-       MESSAGE
-    ========================================== */
-
-    function showMessage(
-      text,
-      type
+    if (
+      !Number.isInteger(coins) ||
+      coins < MINIMUM_COINS
     ) {
 
-      message.textContent =
-        text;
+      followers.textContent =
+        "0";
 
-      message.className =
-        `message ${type}`;
+      cost.textContent =
+        "0 🪙";
 
+      balanceAfter.textContent =
+        `${currentCoins} 🪙`;
+
+      return;
     }
 
 
-    /* ==========================================
-       UPDATE CALCULATION
-    ========================================== */
+    const followerCount =
+      coins /
+      COINS_PER_FOLLOWER;
 
-    function updateCalculation() {
 
-      let coins =
-        Number(
-          coinsInput.value
+    followers.textContent =
+      followerCount;
+
+
+    cost.textContent =
+      `${coins} 🪙`;
+
+
+    const remaining =
+      currentCoins -
+      coins;
+
+
+    balanceAfter.textContent =
+      `${Math.max(
+        0,
+        remaining
+      )} 🪙`;
+
+  }
+
+
+  coinsInput.addEventListener(
+    "input",
+    updateCalculation
+  );
+
+
+  /* ==========================================
+     LOAD USER
+  ========================================== */
+
+  async function loadUser() {
+
+    try {
+
+      const response =
+        await fetch(
+          "/api/me",
+          {
+            credentials:
+              "include"
+          }
         );
 
 
+      const data =
+        await response.json();
+
+
       if (
-        !Number.isFinite(coins) ||
-        coins < MINIMUM_COINS
+        response.status === 401
       ) {
 
-        followers.textContent =
-          "0";
+        window.location.href =
+          "/";
 
-        cost.textContent =
-          "0 🪙";
+        return;
+
+      }
+
+
+      if (
+        !response.ok ||
+        !data.success ||
+        !data.user
+      ) {
+
+        throw new Error(
+          data.message ||
+          "Could not load account"
+        );
+
+      }
+
+
+      currentCoins =
+        Number(
+          data.user.coins || 0
+        );
+
+
+      updateBalanceDisplay();
+
+
+      loading.style.display =
+        "none";
+
+      content.classList.remove(
+        "hidden"
+      );
+
+
+      updateCalculation();
+
+    } catch (error) {
+
+      console.error(
+        "Load user error:",
+        error
+      );
+
+      loading.textContent =
+        error.message ||
+        "Could not load your account.";
+
+    }
+
+  }
+
+
+  /* ==========================================
+     CREATE PROMOTION
+  ========================================== */
+
+  form.addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      const tiktokUrl =
+        document.getElementById(
+          "tiktokUrl"
+        ).value.trim();
+
+
+      const tiktokUsername =
+        document.getElementById(
+          "tiktokUsername"
+        ).value.trim();
+
+
+      const coins =
+        Math.floor(
+          Number(
+            coinsInput.value
+          )
+        );
+
+
+      /* ======================================
+         CLIENT VALIDATION
+      ====================================== */
+
+      if (!tiktokUrl) {
+
+        showMessage(
+          "Please enter your TikTok profile URL.",
+          "error"
+        );
 
         return;
       }
 
 
-      coins =
-        Math.floor(coins);
+      if (!tiktokUsername) {
 
-
-      /*
-        60 coins = 6 followers.
-        Every additional 10 coins
-        gives 1 additional follower.
-      */
-
-      const followerCount =
-        Math.floor(
-          coins / 10
+        showMessage(
+          "Please enter your TikTok username.",
+          "error"
         );
 
-
-      followers.textContent =
-        followerCount;
-
-
-      cost.textContent =
-        `${coins} 🪙`;
-
-    }
+        return;
+      }
 
 
-    coinsInput.addEventListener(
-      "input",
-      updateCalculation
-    );
+      if (
+        !Number.isInteger(coins) ||
+        coins < MINIMUM_COINS
+      ) {
+
+        showMessage(
+          "Insufficient promotion amount. Minimum is 60 coins.",
+          "error"
+        );
+
+        return;
+      }
 
 
-    /* ==========================================
-       LOAD USER
-    ========================================== */
+      if (
+        coins % COINS_PER_FOLLOWER !== 0
+      ) {
 
-    async function loadUser() {
+        showMessage(
+          "Coins must be a multiple of 10: 60, 70, 80, 90...",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (
+        coins > currentCoins
+      ) {
+
+        showMessage(
+          `Insufficient coins. You have ${currentCoins} coins.`,
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (
+        !tiktokUrl
+          .toLowerCase()
+          .includes("tiktok.com")
+      ) {
+
+        showMessage(
+          "Please enter a valid TikTok URL.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      /* ======================================
+         DISABLE BUTTON
+      ====================================== */
+
+      submitBtn.disabled =
+        true;
+
+      submitBtn.textContent =
+        "Creating promotion...";
+
+      message.className =
+        "message";
+
+      result.style.display =
+        "none";
+
 
       try {
 
+        /* ====================================
+           OPTIONAL SERVER PREVIEW
+        ==================================== */
+
+        const previewResponse =
+          await fetch(
+            "/api/promotions/preview",
+            {
+              method: "POST",
+
+              credentials:
+                "include",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Accept":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+                coins
+              })
+            }
+          );
+
+
+        const previewData =
+          await previewResponse.json();
+
+
+        if (
+          !previewResponse.ok ||
+          !previewData.success
+        ) {
+
+          throw new Error(
+            previewData.message ||
+            "Promotion validation failed"
+          );
+
+        }
+
+
+        /* ====================================
+           CREATE PROMOTION
+        ==================================== */
+
         const response =
           await fetch(
-            "/api/me",
+            "/api/promotions",
             {
-              credentials: "include"
+              method: "POST",
+
+              credentials:
+                "include",
+
+              headers: {
+                "Content-Type":
+                  "application/json",
+
+                "Accept":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                tiktok_username:
+                  tiktokUsername,
+
+                tiktok_url:
+                  tiktokUrl,
+
+                coins
+              })
             }
           );
 
@@ -639,320 +993,132 @@
 
 
         if (
-          response.status === 401
-        ) {
-
-          window.location.href =
-            "/";
-
-          return;
-
-        }
-
-
-        if (
           !response.ok ||
-          !data.success ||
-          !data.user
+          !data.success
         ) {
 
           throw new Error(
             data.message ||
-            "Could not load account"
+            "Could not create promotion"
           );
 
         }
 
 
-        currentCoins =
-          Number(
-            data.user.coins || 0
-          );
+        /* ====================================
+           SERVER IS SOURCE OF TRUTH
+        ==================================== */
+
+        if (
+          data.coins !== undefined
+        ) {
+
+          currentCoins =
+            Number(
+              data.coins
+            );
+
+        } else if (
+          data.wallet &&
+          data.wallet.new_balance !==
+            undefined
+        ) {
+
+          currentCoins =
+            Number(
+              data.wallet.new_balance
+            );
+
+        }
+
+
+        updateBalanceDisplay();
+
+
+        /* ====================================
+           SHOW SUCCESS
+        ==================================== */
+
+        showMessage(
+          data.message ||
+          "Promotion created successfully.",
+          "success"
+        );
+
+
+        const promotion =
+          data.promotion || {};
 
 
         document.getElementById(
-          "coinBalance"
+          "resultId"
+        ).textContent =
+          promotion.id || "-";
+
+
+        document.getElementById(
+          "resultFollowers"
+        ).textContent =
+          `${promotion.followers || 0}`;
+
+
+        document.getElementById(
+          "resultSpent"
+        ).textContent =
+          `${promotion.coins || coins} 🪙`;
+
+
+        document.getElementById(
+          "resultBalance"
         ).textContent =
           `${currentCoins} 🪙`;
 
 
-        loading.style.display =
-          "none";
+        result.style.display =
+          "block";
 
-        content.classList.remove(
-          "hidden"
-        );
+
+        form.reset();
+
+
+        updateCalculation();
 
 
       } catch (error) {
 
         console.error(
-          "Load user error:",
+          "Create promotion error:",
           error
         );
 
 
-        loading.textContent =
-          "Could not load your account.";
+        showMessage(
+          error.message ||
+          "Could not create promotion.",
+          "error"
+        );
+
+      } finally {
+
+        submitBtn.disabled =
+          false;
+
+        submitBtn.textContent =
+          "🚀 Create Promotion";
 
       }
 
     }
+  );
 
 
-    /* ==========================================
-       CREATE PROMOTION
-    ========================================== */
+  /* ==========================================
+     START
+  ========================================== */
 
-    form.addEventListener(
-      "submit",
-      async function(event) {
+  loadUser();
 
-        event.preventDefault();
-
-
-        const tiktokUrl =
-          document.getElementById(
-            "tiktokUrl"
-          ).value.trim();
-
-
-        const tiktokUsername =
-          document.getElementById(
-            "tiktokUsername"
-          ).value.trim();
-
-
-        const coins =
-          Math.floor(
-            Number(
-              coinsInput.value
-            )
-          );
-
-
-        /* ======================================
-           VALIDATION
-        ====================================== */
-
-        if (!tiktokUrl) {
-
-          showMessage(
-            "Please enter your TikTok profile URL.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (!tiktokUsername) {
-
-          showMessage(
-            "Please enter your TikTok username.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (
-          !Number.isInteger(coins) ||
-          coins < MINIMUM_COINS
-        ) {
-
-          showMessage(
-            "Insufficient promotion amount. Minimum is 60 coins.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (
-          coins > currentCoins
-        ) {
-
-          showMessage(
-            `Insufficient coins. You have ${currentCoins} coins.`,
-            "error"
-          );
-
-          return;
-        }
-
-
-        /*
-          Basic TikTok URL validation.
-        */
-
-        if (
-          !tiktokUrl.includes(
-            "tiktok.com"
-          )
-        ) {
-
-          showMessage(
-            "Please enter a valid TikTok URL.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* ======================================
-           SEND TO BACKEND
-        ====================================== */
-
-        submitBtn.disabled =
-          true;
-
-        submitBtn.textContent =
-          "Creating promotion...";
-
-
-        try {
-
-          const response =
-            await fetch(
-              "/api/promotions",
-              {
-                method: "POST",
-
-                credentials: "include",
-
-                headers: {
-                  "Content-Type":
-                    "application/json",
-
-                  "Accept":
-                    "application/json"
-                },
-
-                body: JSON.stringify({
-
-                  tiktok_username:
-                    tiktokUsername,
-
-                  tiktok_url:
-                    tiktokUrl,
-
-                  promotion_type:
-                    "followers",
-
-                  coins_cost:
-                    coins,
-
-                  target_count:
-                    Math.floor(
-                      coins / 10
-                    )
-
-                })
-              }
-            );
-
-
-          const data =
-            await response.json();
-
-
-          if (
-            !response.ok ||
-            !data.success
-          ) {
-
-            throw new Error(
-              data.message ||
-              "Could not create promotion"
-            );
-
-          }
-
-
-          /*
-            Update local balance.
-          */
-
-          if (
-            data.coins !== undefined
-          ) {
-
-            currentCoins =
-              Number(
-                data.coins
-              );
-
-          } else {
-
-            currentCoins =
-              currentCoins -
-              coins;
-
-          }
-
-
-          document.getElementById(
-            "coinBalance"
-          ).textContent =
-            `${currentCoins} 🪙`;
-
-
-          showMessage(
-            data.message ||
-            "Promotion created successfully.",
-            "success"
-          );
-
-
-          form.reset();
-
-          followers.textContent =
-            "6";
-
-          cost.textContent =
-            "60 🪙";
-
-
-        } catch (error) {
-
-          console.error(
-            "Create promotion error:",
-            error
-          );
-
-
-          showMessage(
-            error.message ||
-            "Could not create promotion.",
-            "error"
-          );
-
-
-        } finally {
-
-          submitBtn.disabled =
-            false;
-
-          submitBtn.textContent =
-            "🚀 Create Promotion";
-
-        }
-
-      }
-    );
-
-
-    /* ==========================================
-       START
-    ========================================== */
-
-    loadUser();
-
-  </script>
+</script>
 
 </body>
 </html>
