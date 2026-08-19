@@ -4,6 +4,10 @@ const { query, pool } = require("./db");
 
 const router = express.Router();
 
+/* ==========================================
+   TIKTOK CONFIG
+========================================== */
+
 const TIKTOK_AUTH_URL =
   "https://www.tiktok.com/v2/auth/authorize/";
 
@@ -20,17 +24,27 @@ const TIKTOK_USER_URL =
 
 function createState() {
   const timestamp = Date.now().toString();
-  const random = crypto.randomBytes(32).toString("hex");
 
-  const data = `${timestamp}.${random}`;
+  const random =
+    crypto.randomBytes(32).toString("hex");
 
-  const signature = crypto
-    .createHmac(
-      "sha256",
-      process.env.TIKTOK_CLIENT_SECRET
-    )
-    .update(data)
-    .digest("hex");
+  const data =
+    `${timestamp}.${random}`;
+
+  const secret =
+    process.env.TIKTOK_CLIENT_SECRET;
+
+  if (!secret) {
+    throw new Error(
+      "TIKTOK_CLIENT_SECRET is missing"
+    );
+  }
+
+  const signature =
+    crypto
+      .createHmac("sha256", secret)
+      .update(data)
+      .digest("hex");
 
   return `${data}.${signature}`;
 }
@@ -38,17 +52,25 @@ function createState() {
 
 function verifyState(state) {
   try {
-    if (!state) return false;
+    if (!state) {
+      return false;
+    }
 
-    const parts = state.split(".");
+    const parts =
+      state.split(".");
 
     if (parts.length !== 3) {
       return false;
     }
 
-    const [timestamp, random, signature] = parts;
+    const [
+      timestamp,
+      random,
+      signature
+    ] = parts;
 
-    const age = Date.now() - Number(timestamp);
+    const age =
+      Date.now() - Number(timestamp);
 
     if (
       !Number.isFinite(age) ||
@@ -58,15 +80,21 @@ function verifyState(state) {
       return false;
     }
 
-    const data = `${timestamp}.${random}`;
+    const data =
+      `${timestamp}.${random}`;
 
-    const expected = crypto
-      .createHmac(
-        "sha256",
-        process.env.TIKTOK_CLIENT_SECRET
-      )
-      .update(data)
-      .digest("hex");
+    const secret =
+      process.env.TIKTOK_CLIENT_SECRET;
+
+    if (!secret) {
+      return false;
+    }
+
+    const expected =
+      crypto
+        .createHmac("sha256", secret)
+        .update(data)
+        .digest("hex");
 
     const signatureBuffer =
       Buffer.from(signature, "hex");
@@ -87,6 +115,7 @@ function verifyState(state) {
     );
 
   } catch (error) {
+
     console.error(
       "State verification error:",
       error
@@ -122,7 +151,9 @@ function parseCookies(cookieHeader = "") {
       const index =
         item.indexOf("=");
 
-      if (index === -1) return;
+      if (index === -1) {
+        return;
+      }
 
       const key =
         item.slice(0, index).trim();
@@ -131,10 +162,14 @@ function parseCookies(cookieHeader = "") {
         item.slice(index + 1).trim();
 
       try {
+
         cookies[key] =
           decodeURIComponent(value);
+
       } catch {
-        cookies[key] = value;
+
+        cookies[key] =
+          value;
       }
     });
 
@@ -142,15 +177,27 @@ function parseCookies(cookieHeader = "") {
 }
 
 
+/* ==========================================
+   COOKIE
+========================================== */
+
 function setCookie(
   res,
   name,
   value,
   maxAge
 ) {
+
   res.setHeader(
     "Set-Cookie",
-    `${name}=${encodeURIComponent(value)}; Path=/; HttpOnly; Secure; SameSite=None; Max-Age=${maxAge}`
+    [
+      `${name}=${encodeURIComponent(value)}`,
+      "Path=/",
+      "HttpOnly",
+      "Secure",
+      "SameSite=Lax",
+      `Max-Age=${maxAge}`
+    ].join("; ")
   );
 }
 
@@ -159,12 +206,39 @@ function clearCookie(
   res,
   name
 ) {
+
   setCookie(
     res,
     name,
     "",
     0
   );
+}
+
+
+/* ==========================================
+   ENVIRONMENT CHECK
+========================================== */
+
+function checkTikTokEnvironment() {
+
+  const required = [
+    "TIKTOK_CLIENT_KEY",
+    "TIKTOK_CLIENT_SECRET",
+    "TIKTOK_REDIRECT_URI"
+  ];
+
+  const missing =
+    required.filter(
+      (key) => !process.env[key]
+    );
+
+  return {
+    valid:
+      missing.length === 0,
+
+    missing
+  };
 }
 
 
@@ -178,26 +252,49 @@ router.get(
 
     try {
 
+      const environment =
+        checkTikTokEnvironment();
+
+      if (!environment.valid) {
+
+        return res.status(500).json({
+
+          success: false,
+
+          message:
+            "TikTok environment variables are missing",
+
+          missing:
+            environment.missing
+        });
+      }
+
+
       const clientKey =
         process.env.TIKTOK_CLIENT_KEY;
-
-      const clientSecret =
-        process.env.TIKTOK_CLIENT_SECRET;
 
       const redirectUri =
         process.env.TIKTOK_REDIRECT_URI;
 
 
+      /*
+       * TikTok Web Login requires
+       * an HTTPS static redirect URI.
+       */
+
       if (
-        !clientKey ||
-        !clientSecret ||
-        !redirectUri
+        !redirectUri.startsWith("https://")
       ) {
 
         return res.status(500).json({
+
           success: false,
+
           message:
-            "TikTok environment variables are missing"
+            "TIKTOK_REDIRECT_URI must use HTTPS",
+
+          redirect_uri:
+            redirectUri
         });
       }
 
@@ -207,28 +304,51 @@ router.get(
 
 
       const params =
-        new URLSearchParams({
+        new URLSearchParams();
 
-          client_key:
-            clientKey,
+      params.set(
+        "client_key",
+        clientKey
+      );
 
-          response_type:
-            "code",
+      params.set(
+        "response_type",
+        "code"
+      );
 
-          scope:
-            "user.info.basic",
+      params.set(
+        "scope",
+        "user.info.basic"
+      );
 
-          redirect_uri:
-            redirectUri,
+      params.set(
+        "redirect_uri",
+        redirectUri
+      );
 
-          state
-        });
+      params.set(
+        "state",
+        state
+      );
+
+
+      const authorizationUrl =
+        `${TIKTOK_AUTH_URL}?${params.toString()}`;
+
+
+      console.log(
+        "TikTok authorization started"
+      );
+
+      console.log(
+        "Redirect URI:",
+        redirectUri
+      );
 
 
       return res.redirect(
-        `${TIKTOK_AUTH_URL}?${params.toString()}`
+        authorizationUrl
       );
-
 
     } catch (error) {
 
@@ -238,7 +358,9 @@ router.get(
       );
 
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not start TikTok login"
       });
@@ -274,10 +396,22 @@ router.get(
 
       if (error) {
 
+        console.error(
+          "TikTok OAuth error:",
+          {
+            error,
+            error_description
+          }
+        );
+
         return res.status(400).json({
+
           success: false,
+
           message:
-            error_description || error
+            error_description ||
+            error ||
+            "TikTok authorization failed"
         });
       }
 
@@ -289,7 +423,9 @@ router.get(
       if (!code || !state) {
 
         return res.status(400).json({
+
           success: false,
+
           message:
             "Missing TikTok code or state"
         });
@@ -303,7 +439,9 @@ router.get(
       if (!verifyState(state)) {
 
         return res.status(403).json({
+
           success: false,
+
           message:
             "Invalid or expired OAuth state"
         });
@@ -311,11 +449,57 @@ router.get(
 
 
       /* ======================================
-         EXCHANGE CODE FOR ACCESS TOKEN
+         TOKEN EXCHANGE
       ====================================== */
 
       const redirectUri =
         process.env.TIKTOK_REDIRECT_URI;
+
+
+      if (!redirectUri) {
+
+        return res.status(500).json({
+
+          success: false,
+
+          message:
+            "TIKTOK_REDIRECT_URI is missing"
+        });
+      }
+
+
+      const tokenBody =
+        new URLSearchParams();
+
+      tokenBody.set(
+        "client_key",
+        process.env.TIKTOK_CLIENT_KEY
+      );
+
+      tokenBody.set(
+        "client_secret",
+        process.env.TIKTOK_CLIENT_SECRET
+      );
+
+      tokenBody.set(
+        "code",
+        code
+      );
+
+      tokenBody.set(
+        "grant_type",
+        "authorization_code"
+      );
+
+      tokenBody.set(
+        "redirect_uri",
+        redirectUri
+      );
+
+
+      console.log(
+        "Exchanging TikTok authorization code..."
+      );
 
 
       const tokenResponse =
@@ -333,27 +517,7 @@ router.get(
             },
 
             body:
-              new URLSearchParams({
-
-                client_key:
-                  process.env.TIKTOK_CLIENT_KEY,
-
-                client_secret:
-                  process.env.TIKTOK_CLIENT_SECRET,
-
-                code:
-                  code,
-
-                grant_type:
-                  "authorization_code",
-
-                /* IMPORTANT:
-                   Must match login redirect_uri
-                */
-
-                redirect_uri:
-                  redirectUri
-              })
+              tokenBody.toString()
           }
         );
 
@@ -381,11 +545,12 @@ router.get(
             "Could not get TikTok access token",
 
           error:
-            tokenData.error || null,
+            tokenData.error ||
+            null,
 
           log_id:
-            tokenData.log_id || null
-
+            tokenData.log_id ||
+            null
         });
       }
 
@@ -394,9 +559,18 @@ router.get(
          GET TIKTOK USER
       ====================================== */
 
+      const profileUrl =
+        new URL(TIKTOK_USER_URL);
+
+      profileUrl.searchParams.set(
+        "fields",
+        "open_id,union_id,display_name,avatar_url"
+      );
+
+
       const profileResponse =
         await fetch(
-          `${TIKTOK_USER_URL}?fields=open_id,display_name,avatar_url`,
+          profileUrl.toString(),
           {
             method: "GET",
 
@@ -428,14 +602,26 @@ router.get(
 
           message:
             profileData.error?.message ||
+            profileData.error_description ||
             "Could not get TikTok profile"
-
         });
       }
 
 
       const tiktokUser =
         profileData.data.user;
+
+
+      if (!tiktokUser.open_id) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "TikTok did not return open_id"
+        });
+      }
 
 
       /* ======================================
@@ -448,7 +634,7 @@ router.get(
 
 
       /* ======================================
-         FIND EXISTING USER
+         FIND USER
       ====================================== */
 
       const existingUserResult =
@@ -466,11 +652,12 @@ router.get(
 
 
       let user;
+
       let isNewUser = false;
 
 
       /* ======================================
-         NEW USER
+         CREATE NEW USER
       ====================================== */
 
       if (
@@ -484,42 +671,67 @@ router.get(
           await client.query(
             `
             INSERT INTO users (
+
               tiktok_open_id,
+
               tiktok_union_id,
+
               display_name,
+
               avatar_url,
+
               access_token,
+
               refresh_token,
+
               access_token_expires_at,
+
               refresh_token_expires_at,
+
               coins
+
             )
 
             VALUES (
+
               $1,
+
               $2,
+
               $3,
+
               $4,
+
               $5,
+
               $6,
 
               CASE
+
                 WHEN $7::INTEGER IS NOT NULL
+
                 THEN NOW() +
                   ($7::INTEGER *
                    INTERVAL '1 second')
+
                 ELSE NULL
+
               END,
 
               CASE
+
                 WHEN $8::INTEGER IS NOT NULL
+
                 THEN NOW() +
                   ($8::INTEGER *
                    INTERVAL '1 second')
+
                 ELSE NULL
+
               END,
 
               30
+
             )
 
             RETURNING *
@@ -528,7 +740,8 @@ router.get(
 
               tiktokUser.open_id,
 
-              null,
+              tiktokUser.union_id ||
+                null,
 
               tiktokUser.display_name ||
                 null,
@@ -546,7 +759,6 @@ router.get(
 
               tokenData.refresh_expires_in ||
                 null
-
             ]
           );
 
@@ -562,13 +774,19 @@ router.get(
         await client.query(
           `
           INSERT INTO welcome_bonuses (
+
             user_id,
+
             coins_awarded
+
           )
 
           VALUES (
+
             $1,
+
             30
+
           )
           `,
           [
@@ -584,25 +802,43 @@ router.get(
         await client.query(
           `
           INSERT INTO coin_transactions (
+
             user_id,
+
             type,
+
             amount,
+
             balance_before,
+
             balance_after,
+
             reference_type,
+
             reference_id,
+
             description
+
           )
 
           VALUES (
+
             $1,
+
             'welcome_bonus',
+
             30,
+
             0,
+
             30,
+
             'welcome_bonus',
+
             NULL,
+
             '30 coin welcome bonus'
+
           )
           `,
           [
@@ -628,39 +864,53 @@ router.get(
 
             SET
 
-              display_name =
-                $2,
+              tiktok_union_id =
+                COALESCE(
+                  $2,
+                  tiktok_union_id
+                ),
 
-              avatar_url =
+              display_name =
                 $3,
 
-              access_token =
+              avatar_url =
                 $4,
+
+              access_token =
+                $5,
 
               refresh_token =
                 COALESCE(
-                  $5,
+                  $6,
                   refresh_token
                 ),
 
               access_token_expires_at =
                 CASE
-                  WHEN $6::INTEGER IS NOT NULL
+
+                  WHEN $7::INTEGER IS NOT NULL
+
                   THEN NOW() +
-                    ($6::INTEGER *
+                    ($7::INTEGER *
                      INTERVAL '1 second')
+
                   ELSE
                     access_token_expires_at
+
                 END,
 
               refresh_token_expires_at =
                 CASE
-                  WHEN $7::INTEGER IS NOT NULL
+
+                  WHEN $8::INTEGER IS NOT NULL
+
                   THEN NOW() +
-                    ($7::INTEGER *
+                    ($8::INTEGER *
                      INTERVAL '1 second')
+
                   ELSE
                     refresh_token_expires_at
+
                 END,
 
               updated_at =
@@ -673,6 +923,9 @@ router.get(
             [
 
               user.id,
+
+              tiktokUser.union_id ||
+                null,
 
               tiktokUser.display_name ||
                 null,
@@ -690,7 +943,6 @@ router.get(
 
               tokenData.refresh_expires_in ||
                 null
-
             ]
           );
 
@@ -707,30 +959,48 @@ router.get(
       await client.query(
         `
         INSERT INTO tiktok_accounts (
+
           user_id,
+
           open_id,
+
           display_name,
+
           avatar_url,
+
           is_verified
+
         )
 
         VALUES (
+
           $1,
+
           $2,
+
           $3,
+
           $4,
+
           TRUE
+
         )
 
         ON CONFLICT (open_id)
 
         DO UPDATE SET
 
+          user_id =
+            EXCLUDED.user_id,
+
           display_name =
             EXCLUDED.display_name,
 
           avatar_url =
             EXCLUDED.avatar_url,
+
+          is_verified =
+            TRUE,
 
           updated_at =
             NOW()
@@ -746,7 +1016,6 @@ router.get(
 
           tiktokUser.avatar_url ||
             null
-
         ]
       );
 
@@ -768,16 +1037,24 @@ router.get(
       await client.query(
         `
         INSERT INTO sessions (
+
           user_id,
+
           session_token_hash,
+
           expires_at
+
         )
 
         VALUES (
+
           $1,
+
           $2,
+
           NOW() +
             INTERVAL '30 days'
+
         )
         `,
         [
@@ -785,7 +1062,6 @@ router.get(
           user.id,
 
           sessionTokenHash
-
         ]
       );
 
@@ -800,65 +1076,50 @@ router.get(
 
 
       /* ======================================
-         SESSION COOKIE
+         SET SESSION COOKIE
       ====================================== */
 
       setCookie(
         res,
+
         "session_token",
+
         sessionToken,
+
         60 * 60 * 24 * 30
       );
 
 
       /* ======================================
-         SUCCESS
+         REDIRECT TO DASHBOARD
       ====================================== */
 
-      return res.json({
+      const dashboardUrl =
+        isNewUser
+          ? "/dashboard.html?welcome=1"
+          : "/dashboard.html";
 
-        success:
-          true,
 
-        message:
-          isNewUser
-            ? "Welcome to FreeFollowersTik"
-            : "TikTok login successful",
+      console.log(
+        `TikTok login successful for user ${user.id}`
+      );
 
-        new_user:
-          isNewUser,
 
-        welcome_bonus:
-          isNewUser
-            ? 30
-            : 0,
-
-        user: {
-
-          id:
-            user.id,
-
-          display_name:
-            user.display_name,
-
-          avatar_url:
-            user.avatar_url,
-
-          coins:
-            user.coins
-
-        }
-
-      });
+      return res.redirect(
+        dashboardUrl
+      );
 
 
     } catch (error) {
 
       try {
+
         await client.query(
           "ROLLBACK"
         );
+
       } catch (rollbackError) {
+
         console.error(
           "Rollback error:",
           rollbackError
@@ -874,25 +1135,16 @@ router.get(
 
       return res.status(500).json({
 
-        success:
-          false,
+        success: false,
 
         message:
-          "TikTok authentication failed",
-
-        error:
-          process.env.NODE_ENV ===
-          "production"
-            ? undefined
-            : error.message
-
+          "TikTok authentication failed"
       });
 
 
     } finally {
 
       client.release();
-
     }
   }
 );
@@ -922,12 +1174,10 @@ router.get(
 
         return res.status(401).json({
 
-          success:
-            false,
+          success: false,
 
           message:
             "Not logged in"
-
         });
       }
 
@@ -989,12 +1239,10 @@ router.get(
 
         return res.status(401).json({
 
-          success:
-            false,
+          success: false,
 
           message:
             "Session expired"
-
         });
       }
 
@@ -1015,23 +1263,19 @@ router.get(
 
         return res.status(403).json({
 
-          success:
-            false,
+          success: false,
 
           message:
             "Account is not active"
-
         });
       }
 
 
       return res.json({
 
-        success:
-          true,
+        success: true,
 
         user
-
       });
 
 
@@ -1045,12 +1289,10 @@ router.get(
 
       return res.status(500).json({
 
-        success:
-          false,
+        success: false,
 
         message:
           "Could not get user"
-
       });
     }
   }
@@ -1088,7 +1330,9 @@ router.post(
         await query(
           `
           DELETE FROM sessions
-          WHERE session_token_hash = $1
+
+          WHERE
+            session_token_hash = $1
           `,
           [
             sessionHash
@@ -1105,12 +1349,10 @@ router.post(
 
       return res.json({
 
-        success:
-          true,
+        success: true,
 
         message:
           "Logged out successfully"
-
       });
 
 
@@ -1124,12 +1366,10 @@ router.post(
 
       return res.status(500).json({
 
-        success:
-          false,
+        success: false,
 
         message:
           "Logout failed"
-
       });
     }
   }
