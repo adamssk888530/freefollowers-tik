@@ -10,6 +10,7 @@ const promotionRoutes = require("./promotion");
 const taskQueueRoutes = require("./taskQueue");
 
 const { testDatabase } = require("./db");
+const { initDatabase } = require("./init-db");
 
 const app = express();
 
@@ -71,7 +72,6 @@ app.get("/", (req, res) => {
   );
 });
 
-
 app.get("/terms", (req, res) => {
   res.sendFile(
     path.join(
@@ -80,7 +80,6 @@ app.get("/terms", (req, res) => {
     )
   );
 });
-
 
 app.get("/privacy", (req, res) => {
   res.sendFile(
@@ -140,16 +139,50 @@ app.use((req, res) => {
 
 
 // ==========================================
-// SERVER
+// START SERVER
 // ==========================================
 
 const PORT =
   process.env.PORT || 3000;
 
-app.listen(PORT, () => {
 
-  console.log(
-    `FreeFollowersTik server running on port ${PORT}`
-  );
+async function startServer() {
 
-});
+  try {
+
+    console.log("Connecting to database...");
+
+    await testDatabase();
+
+    console.log("Database connected.");
+
+    console.log("Initializing database tables...");
+
+    await initDatabase();
+
+    console.log("Database tables are ready.");
+
+    app.listen(PORT, () => {
+
+      console.log(
+        `FreeFollowersTik server running on port ${PORT}`
+      );
+
+    });
+
+  } catch (error) {
+
+    console.error(
+      "❌ Server startup failed:"
+    );
+
+    console.error(error);
+
+    process.exit(1);
+
+  }
+
+}
+
+
+startServer();
