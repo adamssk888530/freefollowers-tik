@@ -10,7 +10,7 @@
 
   <meta name="theme-color" content="#050505">
 
-  <title>Dashboard - FreeFollowersTik</title>
+  <title>FreeFollowersTik Dashboard</title>
 
   <style>
 
@@ -24,83 +24,35 @@
       padding: 0;
     }
 
-    html {
-      background: #050505;
-      scroll-behavior: smooth;
-    }
-
+    html,
     body {
-      margin: 0;
+      width: 100%;
+      height: 100%;
+
       background: #050505;
       color: #ffffff;
+
       font-family:
         Arial,
         Helvetica,
         sans-serif;
 
-      min-height: 100vh;
-      overflow-x: hidden;
-
-      padding-bottom: 92px;
+      overflow: hidden;
     }
 
-    button,
-    a {
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    a,
+    button {
       font-family: inherit;
     }
 
     a {
-      color: inherit;
       text-decoration: none;
-    }
-
-
-    /* =========================================
-       BACKGROUND
-    ========================================= */
-
-    body::before {
-      content: "";
-
-      position: fixed;
-
-      width: 300px;
-      height: 300px;
-
-      left: -180px;
-      top: 180px;
-
-      background: #fe2c55;
-
-      filter: blur(150px);
-
-      opacity: 0.10;
-
-      pointer-events: none;
-
-      z-index: -1;
-    }
-
-    body::after {
-      content: "";
-
-      position: fixed;
-
-      width: 300px;
-      height: 300px;
-
-      right: -180px;
-      top: 500px;
-
-      background: #00f2ea;
-
-      filter: blur(150px);
-
-      opacity: 0.07;
-
-      pointer-events: none;
-
-      z-index: -1;
+      color: inherit;
     }
 
 
@@ -108,12 +60,11 @@
        HEADER
     ========================================= */
 
-    .top-header {
+    .header {
 
-      height: 72px;
+      height: 58px;
 
-      padding:
-        0 22px;
+      width: 100%;
 
       display: flex;
 
@@ -121,21 +72,20 @@
 
       justify-content: space-between;
 
-      position: sticky;
+      padding:
+        0 14px;
 
-      top: 0;
-
-      z-index: 100;
-
-      background:
-        rgba(5, 5, 5, 0.94);
-
-      backdrop-filter:
-        blur(18px);
+      background: #050505;
 
       border-bottom:
         1px solid
         rgba(255,255,255,0.08);
+
+      flex-shrink: 0;
+
+      position: relative;
+
+      z-index: 50;
     }
 
     .header-left {
@@ -144,13 +94,15 @@
 
       align-items: center;
 
-      gap: 18px;
+      gap: 11px;
+
+      min-width: 0;
     }
 
-    .menu-open-btn {
+    .menu-button {
 
-      width: 42px;
-      height: 42px;
+      width: 38px;
+      height: 38px;
 
       border: 0;
 
@@ -158,27 +110,31 @@
 
       color: white;
 
-      font-size: 32px;
+      font-size: 29px;
+
+      line-height: 1;
+
+      cursor: pointer;
 
       display: flex;
 
       align-items: center;
 
       justify-content: center;
-
-      cursor: pointer;
     }
 
     .logo {
 
-      font-size: 24px;
+      font-size: 20px;
 
       font-weight: 900;
 
-      letter-spacing: -1px;
+      white-space: nowrap;
+
+      letter-spacing: -0.8px;
     }
 
-    .logo .pink {
+    .logo-pink {
 
       color: #fe2c55;
     }
@@ -189,14 +145,14 @@
 
       align-items: center;
 
-      gap: 17px;
+      gap: 11px;
     }
 
     .notification {
 
       position: relative;
 
-      font-size: 28px;
+      font-size: 25px;
 
       line-height: 1;
     }
@@ -208,58 +164,68 @@
       top: -8px;
       right: -7px;
 
-      min-width: 22px;
-      height: 22px;
+      width: 21px;
+      height: 21px;
 
       display: flex;
 
       align-items: center;
-      justify-content: center;
 
-      border-radius: 50%;
+      justify-content: center;
 
       background: #fe2c55;
 
       color: white;
 
-      font-size: 11px;
+      border-radius: 50%;
+
+      border:
+        2px solid
+        #050505;
+
+      font-size: 10px;
 
       font-weight: 800;
-
-      border: 2px solid #050505;
     }
 
-    .header-avatar {
+    .avatar {
 
-      width: 46px;
-      height: 46px;
+      width: 40px;
+      height: 40px;
 
       border-radius: 50%;
 
       object-fit: cover;
 
+      background: #222;
+
       border:
         2px solid
-        #ffffff;
-
-      background: #222;
+        white;
     }
 
 
     /* =========================================
-       PAGE
+       MAIN SCREEN
     ========================================= */
 
-    .page {
+    .screen {
+
+      height:
+        calc(100vh - 58px);
 
       width: 100%;
 
-      max-width: 900px;
-
-      margin: auto;
+      overflow: hidden;
 
       padding:
-        18px 22px 30px;
+        8px 12px 68px;
+
+      display: flex;
+
+      flex-direction: column;
+
+      gap: 7px;
     }
 
 
@@ -269,60 +235,60 @@
 
     .hero {
 
-      position: relative;
+      height: 175px;
+
+      min-height: 175px;
 
       width: 100%;
 
-      min-height: 300px;
-
-      border-radius: 24px;
+      position: relative;
 
       overflow: hidden;
 
       border:
         1px solid
-        rgba(255,255,255,0.16);
+        rgba(255,255,255,0.20);
+
+      border-radius: 19px;
 
       background:
         radial-gradient(
-          circle at 75% 50%,
-          rgba(0,242,234,0.13),
-          transparent 28%
-        ),
-        radial-gradient(
-          circle at 55% 40%,
-          rgba(254,44,85,0.18),
+          circle at 65% 45%,
+          rgba(254,44,85,0.25),
           transparent 35%
         ),
+        radial-gradient(
+          circle at 90% 50%,
+          rgba(0,242,234,0.20),
+          transparent 30%
+        ),
         #080808;
-
-      margin-bottom: 18px;
     }
 
-    .hero-content {
+    .hero-text {
 
       position: relative;
 
-      z-index: 3;
+      z-index: 5;
 
-      width: 58%;
+      width: 62%;
 
       padding:
-        30px 28px;
+        17px 15px;
     }
 
-    .hero-small {
+    .welcome {
 
-      color: #dddddd;
+      color: #d9d9d9;
 
-      font-size: 18px;
+      font-size: 13px;
 
-      margin-bottom: 8px;
+      margin-bottom: 4px;
     }
 
     .hero-name {
 
-      font-size: 38px;
+      font-size: 25px;
 
       line-height: 1.05;
 
@@ -330,89 +296,111 @@
 
       text-transform: uppercase;
 
-      margin-bottom: 8px;
+      margin-bottom: 3px;
 
       word-break: break-word;
     }
 
-    .hero-name .robot {
+    .wave {
 
-      font-size: 26px;
-    }
+      font-size: 22px;
 
-    .hero-wave {
-
-      font-size: 34px;
-
-      margin-bottom: 10px;
+      margin-bottom: 2px;
     }
 
     .hero-description {
 
-      color: #a9a9a9;
+      color: #a8a8a8;
 
-      font-size: 16px;
+      font-size: 11px;
 
-      line-height: 1.55;
+      line-height: 1.35;
 
-      max-width: 360px;
+      max-width: 260px;
     }
-
-    /*
-      HERO ART
-
-      Wannan placeholder ne.
-      Idan kana da hoton hero na kanka,
-      saka URL/path ɗin hoton a #heroImage.
-    */
 
     .hero-art {
 
       position: absolute;
 
       right: 0;
-      bottom: 0;
+      top: 0;
 
-      width: 48%;
+      width: 52%;
+
       height: 100%;
-
-      overflow: hidden;
     }
 
-    .hero-glow {
+    .pink-glow {
 
       position: absolute;
 
-      width: 230px;
-      height: 230px;
+      width: 170px;
+      height: 170px;
 
-      right: 35px;
-      top: 45px;
+      right: 50px;
+      top: 10px;
 
       border-radius: 50%;
 
       background:
         radial-gradient(
           circle,
-          rgba(254,44,85,0.75),
-          rgba(0,242,234,0.25),
-          transparent 70%
+          rgba(254,44,85,0.65),
+          transparent 68%
         );
 
-      filter: blur(25px);
+      filter: blur(20px);
+    }
+
+    .person {
+
+      position: absolute;
+
+      right: 47px;
+      bottom: 0;
+
+      width: 86px;
+      height: 110px;
+
+      border-radius:
+        50px 50px 18px 18px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #111111,
+          #242424
+        );
+
+      border:
+        1px solid
+        rgba(254,44,85,0.55);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 47px;
+
+      box-shadow:
+        0 0 28px
+        rgba(254,44,85,0.25);
     }
 
     .tiktok-box {
 
       position: absolute;
 
-      width: 125px;
-      height: 125px;
+      right: 5px;
+      top: 45px;
 
-      right: 22px;
-      top: 65px;
+      width: 70px;
+      height: 70px;
 
-      border-radius: 22px;
+      border-radius: 17px;
 
       border:
         2px solid
@@ -421,88 +409,57 @@
       display: flex;
 
       align-items: center;
+
       justify-content: center;
 
-      background:
-        rgba(0,242,234,0.04);
+      font-size: 39px;
 
-      box-shadow:
-        0 0 25px
-        rgba(0,242,234,0.30),
-        inset 0 0 25px
-        rgba(254,44,85,0.15);
-
-      font-size: 65px;
-    }
-
-    .person-placeholder {
-
-      position: absolute;
-
-      right: 105px;
-      bottom: 0;
-
-      width: 145px;
-      height: 180px;
-
-      border-radius:
-        80px 80px 20px 20px;
+      color: white;
 
       background:
-        linear-gradient(
-          145deg,
-          #111,
-          #222
-        );
-
-      border:
-        2px solid
-        rgba(254,44,85,0.55);
+        rgba(0,242,234,0.05);
 
       box-shadow:
-        0 0 35px
-        rgba(254,44,85,0.25);
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      font-size: 75px;
+        0 0 20px
+        rgba(0,242,234,0.30);
     }
 
 
     /* =========================================
-       STATISTICS
+       STATS
     ========================================= */
 
     .stats {
+
+      height: 92px;
+
+      min-height: 92px;
+
+      width: 100%;
 
       display: grid;
 
       grid-template-columns:
         repeat(4, 1fr);
 
+      overflow: hidden;
+
       border:
         1px solid
         rgba(255,255,255,0.15);
 
-      border-radius: 22px;
-
-      overflow: hidden;
+      border-radius: 17px;
 
       background:
         rgba(255,255,255,0.025);
-
-      margin-bottom: 24px;
     }
 
     .stat {
 
-      min-height: 150px;
+      min-width: 0;
 
       padding:
-        20px 18px;
+        9px 7px;
 
       border-right:
         1px solid
@@ -510,36 +467,62 @@
     }
 
     .stat:last-child {
-
       border-right: 0;
     }
 
-    .stat-label {
+    .stat-title {
 
-      color: #d2d2d2;
+      color: #d5d5d5;
 
-      font-size: 14px;
+      font-size: 9px;
 
-      margin-bottom: 14px;
+      white-space: nowrap;
+
+      margin-bottom: 5px;
     }
 
     .stat-number {
 
-      font-size: 35px;
+      font-size: 22px;
+
+      line-height: 1;
 
       font-weight: 800;
 
-      margin-bottom: 10px;
+      margin-bottom: 5px;
     }
 
-    .coin-icon {
+    .coin {
 
-      font-size: 29px;
+      font-size: 18px;
     }
 
-    .stat-change {
+    .buy {
 
-      font-size: 14px;
+      display: inline-block;
+
+      padding:
+        4px 7px;
+
+      border-radius: 7px;
+
+      border:
+        1px solid
+        #fe2c55;
+
+      color: #ff5074;
+
+      background:
+        rgba(254,44,85,0.08);
+
+      font-size: 8px;
+
+      font-weight: 700;
+    }
+
+    .change {
+
+      font-size: 9px;
 
       font-weight: 700;
     }
@@ -556,44 +539,22 @@
       color: #b04cff;
     }
 
-    .buy-mini {
-
-      display: inline-block;
-
-      margin-top: 3px;
-
-      padding:
-        9px 14px;
-
-      border-radius: 9px;
-
-      border:
-        1px solid
-        #fe2c55;
-
-      background:
-        rgba(254,44,85,0.10);
-
-      color: #ff4d72;
-
-      font-size: 13px;
-
-      font-weight: 700;
-    }
-
 
     /* =========================================
-       SECTION TITLE
+       MAIN ACTION TITLE
     ========================================= */
 
-    .section-title {
+    .actions-title {
 
-      font-size: 22px;
+      height: 18px;
+
+      min-height: 18px;
+
+      font-size: 16px;
 
       font-weight: 800;
 
-      margin:
-        4px 0 12px 4px;
+      padding-left: 3px;
     }
 
 
@@ -602,6 +563,10 @@
     ========================================= */
 
     .actions {
+
+      height: 91px;
+
+      min-height: 91px;
 
       display: grid;
 
@@ -612,198 +577,195 @@
         1px solid
         rgba(255,255,255,0.15);
 
-      border-radius: 22px;
+      border-radius: 17px;
 
       overflow: hidden;
 
       background:
         rgba(255,255,255,0.025);
-
-      margin-bottom: 18px;
     }
 
     .action {
 
-      min-height: 145px;
-
-      padding:
-        20px 18px;
+      min-width: 0;
 
       display: flex;
 
       align-items: center;
 
-      gap: 15px;
+      gap: 7px;
+
+      padding:
+        7px 8px;
 
       border-right:
         1px solid
         rgba(255,255,255,0.12);
-
-      transition:
-        0.2s;
     }
 
     .action:last-child {
-
       border-right: 0;
-    }
-
-    .action:hover {
-
-      background:
-        rgba(255,255,255,0.04);
     }
 
     .action-icon {
 
-      width: 68px;
-      height: 68px;
+      width: 43px;
+      height: 43px;
 
-      min-width: 68px;
+      min-width: 43px;
 
       border-radius: 50%;
 
       display: flex;
 
       align-items: center;
+
       justify-content: center;
 
-      font-size: 35px;
-
-      background:
-        rgba(254,44,85,0.07);
+      font-size: 23px;
 
       border:
         1px solid
         #fe2c55;
 
+      background:
+        rgba(254,44,85,0.07);
+
       box-shadow:
-        0 0 20px
+        0 0 15px
         rgba(254,44,85,0.18);
     }
 
     .action:nth-child(3)
     .action-icon {
 
-      border-color: #00f2ea;
+      border-color:
+        #00f2ea;
 
       box-shadow:
-        0 0 20px
+        0 0 15px
         rgba(0,242,234,0.18);
     }
 
     .action h3 {
 
-      font-size: 18px;
+      font-size: 13px;
 
-      margin-bottom: 5px;
+      line-height: 1.1;
+
+      margin-bottom: 3px;
     }
 
     .action p {
 
       color: #999;
 
-      font-size: 13px;
+      font-size: 9px;
 
-      line-height: 1.35;
+      line-height: 1.2;
     }
 
 
     /* =========================================
-       TIKTOK ACCOUNT
+       ACCOUNT
     ========================================= */
 
-    .account-card {
+    .account {
 
-      min-height: 95px;
+      height: 68px;
+
+      min-height: 68px;
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 9px;
+
+      padding:
+        8px 10px;
 
       border:
         1px solid
         rgba(255,255,255,0.15);
 
-      border-radius: 20px;
-
-      padding:
-        15px 20px;
-
-      display: flex;
-
-      align-items: center;
-
-      gap: 15px;
+      border-radius: 16px;
 
       background:
         rgba(255,255,255,0.025);
-
-      margin-bottom: 18px;
     }
 
-    .tiktok-logo {
+    .tiktok-icon {
 
-      width: 62px;
-      height: 62px;
+      width: 42px;
+      height: 42px;
 
-      border-radius: 13px;
+      min-width: 42px;
+
+      border-radius: 11px;
 
       border:
         1px solid
-        rgba(255,255,255,0.35);
+        rgba(255,255,255,0.30);
+
+      background: #050505;
 
       display: flex;
 
       align-items: center;
+
       justify-content: center;
 
-      font-size: 35px;
-
-      background: #050505;
+      font-size: 25px;
     }
 
     .account-info {
 
       flex: 1;
+
+      min-width: 0;
     }
 
     .account-info h3 {
 
-      font-size: 18px;
+      font-size: 13px;
 
-      margin-bottom: 6px;
+      margin-bottom: 3px;
     }
 
     .account-info p {
 
       color: #00e676;
 
-      font-size: 14px;
+      font-size: 10px;
     }
 
-    .active-badge {
-
-      background:
-        rgba(0,230,118,0.12);
-
-      color: #00e676;
-
-      border:
-        1px solid
-        rgba(0,230,118,0.35);
+    .active {
 
       padding:
-        10px 17px;
+        6px 10px;
 
       border-radius: 30px;
 
-      font-size: 14px;
+      color: #00e676;
+
+      background:
+        rgba(0,230,118,0.10);
+
+      border:
+        1px solid
+        rgba(0,230,118,0.30);
+
+      font-size: 9px;
 
       font-weight: 700;
     }
 
-    .arrow {
-
-      font-size: 32px;
+    .account-arrow {
 
       color: #aaa;
+
+      font-size: 24px;
     }
 
 
@@ -811,23 +773,22 @@
        ADSENSE AREA
     ========================================= */
 
-    .ad-section {
+    .ad {
+
+      height: 44px;
+
+      min-height: 44px;
 
       width: 100%;
 
-      margin:
-        18px 0;
-
       border:
         1px solid
-        rgba(255,255,255,0.10);
+        rgba(255,255,255,0.08);
 
-      border-radius: 20px;
+      border-radius: 12px;
 
       background:
         #090909;
-
-      min-height: 110px;
 
       display: flex;
 
@@ -840,69 +801,53 @@
 
     .ad-label {
 
-      color: #555;
+      color: #4d4d4d;
 
-      font-size: 11px;
-
-      letter-spacing: 1px;
+      font-size: 8px;
 
       text-transform: uppercase;
+
+      letter-spacing: 1px;
     }
-
-    /*
-      ADSENSE:
-
-      Bayan ka samu AdSense approval,
-      za ka iya saka Google AdSense code
-      a cikin wannan .ad-section.
-
-      Misali:
-
-      <ins class="adsbygoogle"
-           style="display:block"
-           data-ad-client="ca-pub-XXXXXXXX"
-           data-ad-slot="XXXXXXXX"
-           data-ad-format="auto"
-           data-full-width-responsive="true"></ins>
-
-    */
 
 
     /* =========================================
-       BOTTOM PROMOTION
+       PROMOTION
     ========================================= */
 
     .promotion {
 
-      min-height: 175px;
+      height: 105px;
 
-      border:
-        1px solid
-        rgba(254,44,85,0.40);
+      min-height: 105px;
 
-      border-radius: 22px;
+      width: 100%;
+
+      position: relative;
 
       overflow: hidden;
 
-      position: relative;
+      border:
+        1px solid
+        rgba(254,44,85,0.45);
+
+      border-radius: 16px;
 
       background:
         radial-gradient(
           circle at 80% 50%,
-          rgba(254,44,85,0.22),
-          transparent 35%
+          rgba(254,44,85,0.25),
+          transparent 40%
         ),
         #0b0508;
-
-      margin-bottom: 18px;
     }
 
     .promotion-content {
 
-      width: 58%;
+      width: 65%;
 
       padding:
-        25px 22px;
+        12px 14px;
 
       position: relative;
 
@@ -913,54 +858,52 @@
 
       color: #aaa;
 
-      font-size: 13px;
+      font-size: 9px;
 
-      margin-bottom: 8px;
+      margin-bottom: 3px;
     }
 
     .promotion h2 {
 
-      font-size: 24px;
+      font-size: 14px;
 
       line-height: 1.15;
 
-      margin-bottom: 15px;
+      margin-bottom: 7px;
     }
 
-    .promotion-btn {
+    .promotion-button {
 
       display: inline-block;
 
-      background:
-        linear-gradient(
-          135deg,
-          #fe2c55,
-          #ff174f
-        );
-
       padding:
-        11px 18px;
+        5px 10px;
 
-      border-radius: 9px;
+      border-radius: 6px;
+
+      background:
+        #fe2c55;
+
+      color: white;
+
+      font-size: 9px;
 
       font-weight: 700;
-
-      font-size: 13px;
     }
 
     .megaphone {
 
       position: absolute;
 
-      right: 25px;
-      top: 30px;
+      right: 7px;
+      top: 20px;
 
-      font-size: 100px;
+      font-size: 62px;
 
       filter:
         drop-shadow(
-          0 0 18px
-          rgba(254,44,85,0.45)
+          0 0 15px
+          rgba(254,44,85,0.55)
         );
     }
 
@@ -973,21 +916,13 @@
 
       position: fixed;
 
-      left: 50%;
+      left: 8px;
+      right: 8px;
+      bottom: 6px;
 
-      bottom: 12px;
+      height: 60px;
 
-      transform:
-        translateX(-50%);
-
-      width:
-        calc(100% - 24px);
-
-      max-width: 850px;
-
-      height: 76px;
-
-      z-index: 200;
+      z-index: 100;
 
       display: grid;
 
@@ -998,20 +933,23 @@
         1px solid
         rgba(255,255,255,0.18);
 
-      border-radius: 24px;
+      border-radius: 18px;
 
       background:
-        rgba(8,8,8,0.96);
-
-      backdrop-filter:
-        blur(20px);
+        rgba(8,8,8,0.97);
 
       box-shadow:
-        0 10px 40px
+        0 5px 25px
         rgba(0,0,0,0.55);
     }
 
-    .nav-item {
+    .bottom-item {
+
+      border: 0;
+
+      background: transparent;
+
+      color: #999;
 
       display: flex;
 
@@ -1021,93 +959,74 @@
 
       justify-content: center;
 
-      gap: 5px;
+      gap: 2px;
 
-      color: #a0a0a0;
-
-      font-size: 12px;
+      font-size: 8px;
 
       cursor: pointer;
-
-      border: 0;
-
-      background: transparent;
     }
 
-    .nav-icon {
+    .bottom-icon {
 
-      font-size: 25px;
+      font-size: 19px;
 
       line-height: 1;
     }
 
-    .nav-item.active {
+    .bottom-item.active {
 
       color: #fe2c55;
     }
 
-    .nav-item.active
-    .nav-icon {
-
-      filter:
-        drop-shadow(
-          0 0 8px
-          rgba(254,44,85,0.5)
-        );
-    }
-
 
     /* =========================================
-       MENU DRAWER
+       MENU
     ========================================= */
 
-    .menu-overlay {
+    .overlay {
 
       position: fixed;
 
       inset: 0;
 
       background:
-        rgba(0,0,0,0.65);
+        rgba(0,0,0,0.70);
 
-      z-index: 300;
+      z-index: 200;
 
       opacity: 0;
 
       pointer-events: none;
 
-      transition: 0.25s;
+      transition: 0.2s;
     }
 
-    .menu-overlay.show {
+    .overlay.show {
 
       opacity: 1;
 
       pointer-events: auto;
     }
 
-    .side-menu {
+    .menu {
 
       position: fixed;
 
       left: 0;
-
       top: 0;
-
       bottom: 0;
 
-      width: 300px;
+      width: 280px;
 
       max-width: 82%;
 
       background:
         #090909;
 
-      border-right:
-        1px solid
-        rgba(255,255,255,0.12);
+      z-index: 201;
 
-      z-index: 301;
+      padding:
+        20px;
 
       transform:
         translateX(-100%);
@@ -1115,17 +1034,18 @@
       transition:
         transform 0.25s;
 
-      padding:
-        22px;
+      border-right:
+        1px solid
+        rgba(255,255,255,0.12);
     }
 
-    .side-menu.show {
+    .menu.show {
 
       transform:
         translateX(0);
     }
 
-    .menu-head {
+    .menu-header {
 
       display: flex;
 
@@ -1133,7 +1053,7 @@
 
       justify-content: space-between;
 
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
 
     .menu-title {
@@ -1143,7 +1063,7 @@
       font-weight: 800;
     }
 
-    .close-menu {
+    .close {
 
       width: 38px;
       height: 38px;
@@ -1153,40 +1073,41 @@
       border-radius: 10px;
 
       background:
-        rgba(255,255,255,0.06);
+        rgba(255,255,255,0.07);
 
       color: white;
 
-      font-size: 20px;
+      font-size: 18px;
     }
 
     .menu-link {
 
       width: 100%;
 
+      height: 47px;
+
       display: flex;
 
       align-items: center;
 
-      gap: 14px;
-
-      padding:
-        14px;
-
-      margin-bottom: 8px;
-
-      border-radius: 12px;
-
-      color: #ddd;
-
-      font-size: 15px;
-
-      background:
-        transparent;
+      gap: 12px;
 
       border: 0;
 
+      border-radius: 11px;
+
+      background: transparent;
+
+      color: #ddd;
+
+      font-size: 14px;
+
       text-align: left;
+
+      padding:
+        0 13px;
+
+      margin-bottom: 7px;
     }
 
     .menu-link:hover {
@@ -1197,11 +1118,11 @@
       color: #fe2c55;
     }
 
-    .menu-logout {
-
-      margin-top: 25px;
+    .logout {
 
       color: #ff3158;
+
+      margin-top: 15px;
     }
 
 
@@ -1209,7 +1130,7 @@
        LOADING
     ========================================= */
 
-    .loading-screen {
+    .loading {
 
       position: fixed;
 
@@ -1227,15 +1148,13 @@
 
       flex-direction: column;
 
-      gap: 18px;
+      gap: 13px;
     }
 
-    .loader {
+    .spinner {
 
-      width: 46px;
-      height: 46px;
-
-      border-radius: 50%;
+      width: 42px;
+      height: 42px;
 
       border:
         3px solid
@@ -1247,15 +1166,17 @@
       border-right-color:
         #00f2ea;
 
+      border-radius: 50%;
+
       animation:
         spin 0.8s linear infinite;
     }
 
     .loading-text {
 
-      color: #aaa;
+      color: #888;
 
-      font-size: 13px;
+      font-size: 12px;
     }
 
     @keyframes spin {
@@ -1271,26 +1192,35 @@
        ERROR
     ========================================= */
 
-    .error-box {
+    .error {
 
       display: none;
 
-      padding: 18px;
+      position: fixed;
 
-      margin: 20px;
+      left: 12px;
+      right: 12px;
 
-      border-radius: 15px;
+      top: 75px;
+
+      z-index: 500;
+
+      padding: 14px;
+
+      border-radius: 12px;
 
       background:
-        rgba(254,44,85,0.10);
+        rgba(254,44,85,0.12);
 
       border:
         1px solid
         rgba(254,44,85,0.35);
 
-      color: #ff6b89;
+      color: #ff6684;
 
       text-align: center;
+
+      font-size: 12px;
     }
 
 
@@ -1300,9 +1230,20 @@
 
     @media (min-width: 701px) {
 
+      html,
       body {
 
-        padding-bottom: 30px;
+        overflow: hidden;
+      }
+
+      .screen {
+
+        max-width: 900px;
+
+        margin: auto;
+
+        padding:
+          12px 20px 20px;
       }
 
       .bottom-nav {
@@ -1310,198 +1251,62 @@
         display: none;
       }
 
-    }
-
-
-    /* =========================================
-       MOBILE
-    ========================================= */
-
-    @media (max-width: 700px) {
-
-      .top-header {
-
-        height: 68px;
-
-        padding:
-          0 18px;
-      }
-
-      .header-left {
-
-        gap: 10px;
-      }
-
-      .menu-open-btn {
-
-        width: 38px;
-        height: 38px;
-
-        font-size: 29px;
-      }
-
-      .logo {
-
-        font-size: 20px;
-      }
-
-      .header-right {
-
-        gap: 11px;
-      }
-
-      .notification {
-
-        font-size: 25px;
-      }
-
-      .header-avatar {
-
-        width: 42px;
-        height: 42px;
-      }
-
-      .page {
-
-        padding:
-          12px 14px 25px;
-      }
-
       .hero {
 
-        min-height: 280px;
+        height: 220px;
 
-        border-radius: 20px;
-      }
-
-      .hero-content {
-
-        width: 62%;
-
-        padding:
-          22px 18px;
-      }
-
-      .hero-small {
-
-        font-size: 16px;
+        min-height: 220px;
       }
 
       .hero-name {
 
-        font-size: 32px;
-      }
-
-      .hero-wave {
-
-        font-size: 28px;
+        font-size: 38px;
       }
 
       .hero-description {
 
-        font-size: 14px;
+        font-size: 15px;
       }
 
-      .hero-art {
+      .hero-text {
 
-        width: 55%;
-      }
-
-      .person-placeholder {
-
-        width: 115px;
-        height: 145px;
-
-        right: 70px;
-
-        font-size: 60px;
-      }
-
-      .tiktok-box {
-
-        width: 95px;
-        height: 95px;
-
-        right: 8px;
-        top: 70px;
-
-        font-size: 50px;
+        padding: 28px;
       }
 
       .stats {
 
-        grid-template-columns:
-          repeat(4, 1fr);
+        height: 120px;
 
-        border-radius: 18px;
+        min-height: 120px;
       }
 
       .stat {
 
-        min-height: 130px;
-
         padding:
-          16px 9px;
+          15px 14px;
       }
 
-      .stat-label {
-
-        font-size: 11px;
-
-        white-space: nowrap;
-
-        margin-bottom: 12px;
-      }
-
-      .stat-number {
-
-        font-size: 29px;
-      }
-
-      .coin-icon {
-
-        font-size: 24px;
-      }
-
-      .buy-mini {
-
-        font-size: 11px;
-
-        padding:
-          8px 8px;
-      }
-
-      .stat-change {
+      .stat-title {
 
         font-size: 12px;
       }
 
-      .section-title {
+      .stat-number {
 
-        font-size: 20px;
-
-        margin-left: 3px;
+        font-size: 31px;
       }
 
       .actions {
 
-        border-radius: 18px;
+        height: 110px;
+
+        min-height: 110px;
       }
 
       .action {
 
-        min-height: 130px;
-
         padding:
-          15px 9px;
-
-        flex-direction: column;
-
-        justify-content: center;
-
-        text-align: center;
-
-        gap: 8px;
+          12px 18px;
       }
 
       .action-icon {
@@ -1510,126 +1315,34 @@
         height: 58px;
 
         min-width: 58px;
-
-        font-size: 30px;
       }
 
-      .action h3 {
+      .account {
 
-        font-size: 16px;
+        height: 78px;
+
+        min-height: 78px;
       }
 
-      .action p {
+      .ad {
 
-        font-size: 11px;
-      }
+        height: 55px;
 
-      .account-card {
-
-        min-height: 88px;
-
-        padding:
-          13px;
-
-        border-radius: 18px;
-      }
-
-      .tiktok-logo {
-
-        width: 53px;
-        height: 53px;
-
-        min-width: 53px;
-
-        font-size: 30px;
-      }
-
-      .account-info h3 {
-
-        font-size: 16px;
-      }
-
-      .account-info p {
-
-        font-size: 12px;
-      }
-
-      .active-badge {
-
-        padding:
-          8px 12px;
-
-        font-size: 12px;
-      }
-
-      .arrow {
-
-        font-size: 26px;
-      }
-
-      .ad-section {
-
-        min-height: 95px;
-
-        border-radius: 16px;
+        min-height: 55px;
       }
 
       .promotion {
 
-        min-height: 165px;
+        height: 125px;
 
-        border-radius: 18px;
-      }
-
-      .promotion-content {
-
-        width: 63%;
-
-        padding:
-          22px 18px;
-      }
-
-      .promotion h2 {
-
-        font-size: 20px;
-      }
-
-      .megaphone {
-
-        right: 8px;
-
-        top: 38px;
-
-        font-size: 80px;
-      }
-
-      .bottom-nav {
-
-        bottom: 8px;
-
-        height: 72px;
-
-        width:
-          calc(100% - 18px);
-
-        border-radius: 21px;
-      }
-
-      .nav-icon {
-
-        font-size: 23px;
-      }
-
-      .nav-item {
-
-        font-size: 10px;
+        min-height: 125px;
       }
 
     }
 
 
     /* =========================================
-       VERY SMALL PHONES
+       SMALL PHONES
     ========================================= */
 
     @media (max-width: 380px) {
@@ -1639,61 +1352,179 @@
         font-size: 17px;
       }
 
-      .header-avatar {
+      .header {
 
-        width: 38px;
-        height: 38px;
+        padding:
+          0 10px;
+      }
+
+      .screen {
+
+        padding:
+          7px 9px 67px;
+
+        gap: 6px;
+      }
+
+      .hero {
+
+        height: 166px;
+
+        min-height: 166px;
+      }
+
+      .hero-text {
+
+        padding:
+          15px 12px;
       }
 
       .hero-name {
 
-        font-size: 27px;
+        font-size: 23px;
       }
 
       .hero-description {
 
-        font-size: 12px;
+        font-size: 10px;
       }
 
-      .person-placeholder {
+      .person {
 
-        right: 55px;
+        right: 39px;
 
-        width: 100px;
+        width: 78px;
+        height: 100px;
+
+        font-size: 41px;
       }
 
       .tiktok-box {
 
-        width: 78px;
-        height: 78px;
+        width: 63px;
+        height: 63px;
 
-        font-size: 40px;
+        top: 43px;
+
+        font-size: 34px;
+      }
+
+      .stats {
+
+        height: 88px;
+
+        min-height: 88px;
       }
 
       .stat {
 
         padding:
-          14px 6px;
+          8px 5px;
       }
 
-      .stat-label {
+      .stat-title {
 
-        font-size: 9px;
+        font-size: 8px;
       }
 
       .stat-number {
 
-        font-size: 25px;
+        font-size: 20px;
+      }
+
+      .buy {
+
+        font-size: 7px;
+
+        padding:
+          4px 5px;
+      }
+
+      .actions {
+
+        height: 87px;
+
+        min-height: 87px;
+      }
+
+      .action {
+
+        padding:
+          5px 4px;
+
+        gap: 4px;
+      }
+
+      .action-icon {
+
+        width: 39px;
+        height: 39px;
+
+        min-width: 39px;
+
+        font-size: 20px;
       }
 
       .action h3 {
 
-        font-size: 14px;
+        font-size: 12px;
       }
 
       .action p {
 
-        font-size: 10px;
+        font-size: 8px;
+      }
+
+      .account {
+
+        height: 64px;
+
+        min-height: 64px;
+      }
+
+      .tiktok-icon {
+
+        width: 38px;
+        height: 38px;
+
+        min-width: 38px;
+
+        font-size: 22px;
+      }
+
+      .account-info h3 {
+
+        font-size: 12px;
+      }
+
+      .account-info p {
+
+        font-size: 9px;
+      }
+
+      .active {
+
+        font-size: 8px;
+
+        padding:
+          5px 7px;
+      }
+
+      .promotion {
+
+        height: 99px;
+
+        min-height: 99px;
+      }
+
+      .promotion h2 {
+
+        font-size: 13px;
+      }
+
+      .megaphone {
+
+        font-size: 55px;
       }
 
     }
@@ -1710,11 +1541,11 @@
   ========================================= -->
 
   <div
-    id="loadingScreen"
-    class="loading-screen"
+    id="loading"
+    class="loading"
   >
 
-    <div class="loader"></div>
+    <div class="spinner"></div>
 
     <div class="loading-text">
       Loading your dashboard...
@@ -1728,8 +1559,8 @@
   ========================================= -->
 
   <div
-    id="errorBox"
-    class="error-box"
+    id="error"
+    class="error"
   >
     Could not load your account.
   </div>
@@ -1739,20 +1570,21 @@
        HEADER
   ========================================= -->
 
-  <header class="top-header">
+  <header class="header">
 
     <div class="header-left">
 
       <button
-        id="menuOpenBtn"
-        class="menu-open-btn"
-        aria-label="Open menu"
+        id="openMenu"
+        class="menu-button"
+        type="button"
+        aria-label="Menu"
       >
         ☰
       </button>
 
       <div class="logo">
-        Free<span class="pink">Followers</span>Tik
+        Free<span class="logo-pink">Followers</span>Tik
       </div>
 
     </div>
@@ -1771,8 +1603,8 @@
       </div>
 
       <img
-        id="headerAvatar"
-        class="header-avatar"
+        id="avatar"
+        class="avatar"
         src=""
         alt="Profile"
       >
@@ -1783,10 +1615,10 @@
 
 
   <!-- =========================================
-       MAIN
+       SCREEN
   ========================================= -->
 
-  <main class="page">
+  <main class="screen">
 
 
     <!-- =======================================
@@ -1795,9 +1627,9 @@
 
     <section class="hero">
 
-      <div class="hero-content">
+      <div class="hero-text">
 
-        <div class="hero-small">
+        <div class="welcome">
           Welcome back,
         </div>
 
@@ -1805,11 +1637,10 @@
           id="heroName"
           class="hero-name"
         >
-          ADAMS AI SOLUTIONS
-          <span class="robot">🤖</span>
+          ADAMS AI SOLUTIONS 🤖
         </div>
 
-        <div class="hero-wave">
+        <div class="wave">
           👋
         </div>
 
@@ -1822,9 +1653,9 @@
 
       <div class="hero-art">
 
-        <div class="hero-glow"></div>
+        <div class="pink-glow"></div>
 
-        <div class="person-placeholder">
+        <div class="person">
           👨‍💻
         </div>
 
@@ -1838,7 +1669,7 @@
 
 
     <!-- =======================================
-         STATISTICS
+         STATS
     ======================================== -->
 
     <section class="stats">
@@ -1846,17 +1677,17 @@
 
       <div class="stat">
 
-        <div class="stat-label">
+        <div class="stat-title">
           Coins Balance
         </div>
 
         <div class="stat-number">
 
-          <span id="coinBalance">
+          <span id="coins">
             0
           </span>
 
-          <span class="coin-icon">
+          <span class="coin">
             🪙
           </span>
 
@@ -1864,7 +1695,7 @@
 
         <a
           href="/buy-coins.html"
-          class="buy-mini"
+          class="buy"
         >
           💳 Buy Coins
         </a>
@@ -1874,7 +1705,7 @@
 
       <div class="stat">
 
-        <div class="stat-label">
+        <div class="stat-title">
           Total Earned
         </div>
 
@@ -1882,7 +1713,7 @@
           1,250
         </div>
 
-        <div class="stat-change green">
+        <div class="change green">
           ↑ +12%
         </div>
 
@@ -1891,7 +1722,7 @@
 
       <div class="stat">
 
-        <div class="stat-label">
+        <div class="stat-title">
           Total Spent
         </div>
 
@@ -1899,7 +1730,7 @@
           480
         </div>
 
-        <div class="stat-change red">
+        <div class="change red">
           ↓ -5%
         </div>
 
@@ -1908,7 +1739,7 @@
 
       <div class="stat">
 
-        <div class="stat-label">
+        <div class="stat-title">
           Referrals
         </div>
 
@@ -1916,7 +1747,7 @@
           32
         </div>
 
-        <div class="stat-change purple">
+        <div class="change purple">
           ↑ +8%
         </div>
 
@@ -1930,9 +1761,9 @@
          MAIN ACTIONS
     ======================================== -->
 
-    <h2 class="section-title">
+    <div class="actions-title">
       Main Actions
-    </h2>
+    </div>
 
 
     <section class="actions">
@@ -2017,10 +1848,9 @@
          TIKTOK ACCOUNT
     ======================================== -->
 
-    <section class="account-card">
+    <section class="account">
 
-
-      <div class="tiktok-logo">
+      <div class="tiktok-icon">
         ♪
       </div>
 
@@ -2040,16 +1870,15 @@
 
       <div
         id="activeBadge"
-        class="active-badge"
+        class="active"
       >
         ✓ Active
       </div>
 
 
-      <div class="arrow">
+      <div class="account-arrow">
         ›
       </div>
-
 
     </section>
 
@@ -2058,18 +1887,18 @@
          ADSENSE
     ======================================== -->
 
-    <section class="ad-section">
+    <section class="ad">
 
       <div class="ad-label">
         Advertisement
       </div>
 
       <!--
-        GOOGLE ADSENSE CODE ZA A SAKA ANAN.
+        ADSENSE CODE ZAI SHIGA ANAN
+        BAYAN GOOGLE ADSENSE YA APPROVE WEBSITE.
 
-        Bayan AdSense ya approve website ɗinka,
-        zaka saka <ins class="adsbygoogle">...</ins>
-        a nan.
+        Kada ka saka AdSense code har sai
+        Google ya baka AdSense ad code.
       -->
 
     </section>
@@ -2080,7 +1909,6 @@
     ======================================== -->
 
     <section class="promotion">
-
 
       <div class="promotion-content">
 
@@ -2095,7 +1923,7 @@
 
         <a
           href="/promote.html"
-          class="promotion-btn"
+          class="promotion-button"
         >
           Learn More
         </a>
@@ -2107,7 +1935,6 @@
         📣
       </div>
 
-
     </section>
 
 
@@ -2115,7 +1942,7 @@
 
 
   <!-- =========================================
-       BOTTOM NAV
+       BOTTOM NAVIGATION
   ========================================= -->
 
   <nav class="bottom-nav">
@@ -2123,10 +1950,10 @@
 
     <a
       href="/dashboard.html"
-      class="nav-item active"
+      class="bottom-item active"
     >
 
-      <div class="nav-icon">
+      <div class="bottom-icon">
         🏠
       </div>
 
@@ -2139,10 +1966,10 @@
 
     <a
       href="/earn.html"
-      class="nav-item"
+      class="bottom-item"
     >
 
-      <div class="nav-icon">
+      <div class="bottom-icon">
         🎁
       </div>
 
@@ -2155,10 +1982,10 @@
 
     <a
       href="/promote.html"
-      class="nav-item"
+      class="bottom-item"
     >
 
-      <div class="nav-icon">
+      <div class="bottom-icon">
         🚀
       </div>
 
@@ -2171,10 +1998,10 @@
 
     <a
       href="/transactions.html"
-      class="nav-item"
+      class="bottom-item"
     >
 
-      <div class="nav-icon">
+      <div class="bottom-icon">
         ▤
       </div>
 
@@ -2186,11 +2013,12 @@
 
 
     <button
-      id="menuBottomBtn"
-      class="nav-item"
+      id="bottomMenu"
+      class="bottom-item"
+      type="button"
     >
 
-      <div class="nav-icon">
+      <div class="bottom-icon">
         •••
       </div>
 
@@ -2209,8 +2037,8 @@
   ========================================= -->
 
   <div
-    id="menuOverlay"
-    class="menu-overlay"
+    id="overlay"
+    class="overlay"
   ></div>
 
 
@@ -2219,20 +2047,20 @@
   ========================================= -->
 
   <aside
-    id="sideMenu"
-    class="side-menu"
+    id="menu"
+    class="menu"
   >
 
-
-    <div class="menu-head">
+    <div class="menu-header">
 
       <div class="menu-title">
         Menu
       </div>
 
       <button
-        id="closeMenuBtn"
-        class="close-menu"
+        id="closeMenu"
+        class="close"
+        type="button"
       >
         ✕
       </button>
@@ -2244,8 +2072,7 @@
       href="/dashboard.html"
       class="menu-link"
     >
-      🏠
-      Dashboard
+      🏠 Dashboard
     </a>
 
 
@@ -2253,8 +2080,7 @@
       href="/earn.html"
       class="menu-link"
     >
-      🎁
-      Earn Coins
+      🎁 Earn Coins
     </a>
 
 
@@ -2262,8 +2088,7 @@
       href="/promote.html"
       class="menu-link"
     >
-      🚀
-      Promote
+      🚀 Promote
     </a>
 
 
@@ -2271,8 +2096,7 @@
       href="/buy-coins.html"
       class="menu-link"
     >
-      💳
-      Buy Coins
+      💳 Buy Coins
     </a>
 
 
@@ -2280,8 +2104,7 @@
       href="/transactions.html"
       class="menu-link"
     >
-      📋
-      Transactions
+      📋 Transactions
     </a>
 
 
@@ -2289,19 +2112,17 @@
       href="/settings.html"
       class="menu-link"
     >
-      ⚙️
-      Settings
+      ⚙️ Settings
     </a>
 
 
     <button
-      id="logoutBtn"
-      class="menu-link menu-logout"
+      id="logout"
+      class="menu-link logout"
+      type="button"
     >
-      🚪
-      Logout
+      🚪 Logout
     </button>
-
 
   </aside>
 
@@ -2317,119 +2138,95 @@
        ELEMENTS
     ========================================= */
 
-    const loadingScreen =
-      document.getElementById(
-        "loadingScreen"
-      );
+    const loading =
+      document.getElementById("loading");
 
-    const errorBox =
-      document.getElementById(
-        "errorBox"
-      );
+    const error =
+      document.getElementById("error");
 
-    const coinBalance =
-      document.getElementById(
-        "coinBalance"
-      );
+    const coins =
+      document.getElementById("coins");
 
     const heroName =
-      document.getElementById(
-        "heroName"
-      );
+      document.getElementById("heroName");
 
-    const headerAvatar =
-      document.getElementById(
-        "headerAvatar"
-      );
+    const avatar =
+      document.getElementById("avatar");
 
     const accountStatus =
-      document.getElementById(
-        "accountStatus"
-      );
+      document.getElementById("accountStatus");
 
     const activeBadge =
-      document.getElementById(
-        "activeBadge"
-      );
+      document.getElementById("activeBadge");
 
 
     /* =========================================
-       MENU
+       MENU ELEMENTS
     ========================================= */
 
-    const sideMenu =
-      document.getElementById(
-        "sideMenu"
-      );
+    const menu =
+      document.getElementById("menu");
 
-    const menuOverlay =
-      document.getElementById(
-        "menuOverlay"
-      );
+    const overlay =
+      document.getElementById("overlay");
 
-    const menuOpenBtn =
-      document.getElementById(
-        "menuOpenBtn"
-      );
+    const openMenu =
+      document.getElementById("openMenu");
 
-    const menuBottomBtn =
-      document.getElementById(
-        "menuBottomBtn"
-      );
+    const bottomMenu =
+      document.getElementById("bottomMenu");
 
-    const closeMenuBtn =
-      document.getElementById(
-        "closeMenuBtn"
-      );
+    const closeMenu =
+      document.getElementById("closeMenu");
 
 
-    function openMenu() {
+    /* =========================================
+       OPEN MENU
+    ========================================= */
 
-      sideMenu.classList.add(
-        "show"
-      );
+    function showMenu() {
 
-      menuOverlay.classList.add(
-        "show"
-      );
+      menu.classList.add("show");
+
+      overlay.classList.add("show");
 
     }
 
 
-    function closeMenu() {
+    /* =========================================
+       CLOSE MENU
+    ========================================= */
 
-      sideMenu.classList.remove(
-        "show"
-      );
+    function hideMenu() {
 
-      menuOverlay.classList.remove(
-        "show"
-      );
+      menu.classList.remove("show");
+
+      overlay.classList.remove("show");
 
     }
 
 
-    menuOpenBtn.addEventListener(
+    openMenu.addEventListener(
       "click",
-      openMenu
+      showMenu
     );
 
 
-    menuBottomBtn.addEventListener(
+    bottomMenu.addEventListener(
       "click",
-      openMenu
+      showMenu
     );
 
 
-    closeMenuBtn.addEventListener(
+    closeMenu.addEventListener(
       "click",
-      closeMenu
+      hideMenu
     );
 
 
-    menuOverlay.addEventListener(
+    overlay.addEventListener(
       "click",
-      closeMenu
+      hideMenu
     );
 
 
@@ -2514,7 +2311,7 @@
            COINS
         ===================================== */
 
-        coinBalance.textContent =
+        coins.textContent =
           Number(
             user.coins || 0
           ).toLocaleString();
@@ -2528,25 +2325,28 @@
           user.avatar_url
         ) {
 
-          headerAvatar.src =
+          avatar.src =
             user.avatar_url;
 
         } else {
 
-          headerAvatar.src =
+          avatar.src =
             "data:image/svg+xml," +
             encodeURIComponent(`
               <svg xmlns="http://www.w3.org/2000/svg"
                    width="100"
                    height="100">
-                <rect width="100"
-                      height="100"
-                      fill="#222"/>
-                <text x="50"
-                      y="58"
-                      text-anchor="middle"
-                      font-size="45"
-                      fill="white">👤</text>
+                <rect
+                  width="100"
+                  height="100"
+                  fill="#222"/>
+                <text
+                  x="50"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="42">
+                  👤
+                </text>
               </svg>
             `);
 
@@ -2607,30 +2407,30 @@
 
 
         /* =====================================
-           SHOW DASHBOARD
+           HIDE LOADING
         ===================================== */
 
-        loadingScreen.style.display =
+        loading.style.display =
           "none";
 
 
-      } catch (error) {
+      } catch (err) {
 
         console.error(
           "Dashboard error:",
-          error
+          err
         );
 
 
-        loadingScreen.style.display =
+        loading.style.display =
           "none";
 
 
-        errorBox.style.display =
+        error.style.display =
           "block";
 
 
-        errorBox.textContent =
+        error.textContent =
           "Could not connect to the server. Please try again.";
 
       }
@@ -2642,17 +2442,17 @@
        LOGOUT
     ========================================= */
 
-    async function logout() {
+    async function logoutUser() {
 
       const button =
         document.getElementById(
-          "logoutBtn"
+          "logout"
         );
 
 
       button.disabled = true;
 
-      button.innerHTML =
+      button.textContent =
         "⏳ Logging out...";
 
 
@@ -2672,11 +2472,11 @@
           }
         );
 
-      } catch (error) {
+      } catch (err) {
 
         console.error(
           "Logout error:",
-          error
+          err
         );
 
       }
@@ -2689,12 +2489,10 @@
 
 
     document
-      .getElementById(
-        "logoutBtn"
-      )
+      .getElementById("logout")
       .addEventListener(
         "click",
-        logout
+        logoutUser
       );
 
 
