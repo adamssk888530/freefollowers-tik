@@ -2,805 +2,1721 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
+  <meta name="theme-color" content="#050505">
 
   <title>Promote - FreeFollowersTik</title>
 
   <style>
+
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      background: #050505;
+      color: #ffffff;
+      font-family: Arial, Helvetica, sans-serif;
+      overflow-x: hidden;
     }
 
     body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f6f8;
-      color: #111827;
+      min-height: 100vh;
     }
 
-    header {
-      background: #111;
-      color: #fff;
-      padding: 16px 20px;
+    a {
+      text-decoration: none;
+      color: inherit;
     }
 
-    .nav {
-      max-width: 750px;
-      margin: auto;
+    button,
+    input {
+      font-family: inherit;
+    }
+
+
+    /* =========================================
+       HEADER
+    ========================================= */
+
+    .header {
+      height: 58px;
+      width: 100%;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
+
+      padding: 0 14px;
+
+      background: #050505;
+
+      border-bottom:
+        1px solid
+        rgba(255,255,255,0.08);
+
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      min-width: 0;
+    }
+
+    .menu-button {
+      width: 38px;
+      height: 38px;
+
+      border: 0;
+      background: transparent;
+      color: white;
+
+      font-size: 29px;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .logo {
-      font-size: 21px;
-      font-weight: 800;
+      font-size: 20px;
+      font-weight: 900;
+      white-space: nowrap;
+      letter-spacing: -0.8px;
     }
 
-    .logo span {
+    .logo-pink {
       color: #fe2c55;
     }
 
-    .back {
-      color: #fff;
-      text-decoration: none;
-      font-size: 14px;
-      font-weight: 700;
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    main {
+    .notification {
+      position: relative;
+      font-size: 23px;
+    }
+
+    .notification-count {
+      position: absolute;
+
+      top: -8px;
+      right: -7px;
+
+      width: 19px;
+      height: 19px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: #fe2c55;
+      color: white;
+
+      border-radius: 50%;
+      border: 2px solid #050505;
+
+      font-size: 9px;
+      font-weight: 800;
+    }
+
+    .header-avatar {
+      width: 39px;
+      height: 39px;
+
+      border-radius: 50%;
+      object-fit: cover;
+
+      background: #222;
+
+      border: 2px solid white;
+    }
+
+
+    /* =========================================
+       PAGE
+    ========================================= */
+
+    .page {
+      width: 100%;
       max-width: 700px;
+
       margin: auto;
-      padding: 30px 20px 60px;
+
+      padding:
+        12px 12px 85px;
     }
 
-    .title {
-      text-align: center;
-      margin-bottom: 25px;
+
+    /* =========================================
+       TITLE
+    ========================================= */
+
+    .page-title {
+      margin-bottom: 10px;
     }
 
-    .title h1 {
-      margin: 0 0 8px;
-      font-size: 30px;
+    .page-title h1 {
+      font-size: 25px;
+      line-height: 1.1;
+      margin-bottom: 5px;
     }
 
-    .title p {
-      margin: 0;
-      color: #6b7280;
+    .page-title p {
+      color: #999;
+      font-size: 11px;
     }
+
+
+    /* =========================================
+       BALANCE
+    ========================================= */
 
     .balance {
-      background: #111;
-      color: #fff;
+      width: 100%;
+
+      padding: 14px 15px;
+
       border-radius: 16px;
-      padding: 22px;
-      text-align: center;
-      margin-bottom: 20px;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.15);
+
+      background:
+        radial-gradient(
+          circle at 90% 50%,
+          rgba(254,44,85,0.20),
+          transparent 45%
+        ),
+        #090909;
+
+      margin-bottom: 9px;
     }
 
-    .balance small {
-      color: #d1d5db;
+    .balance-label {
+      color: #999;
+      font-size: 10px;
+      margin-bottom: 5px;
     }
 
-    .balance strong {
-      display: block;
-      margin-top: 6px;
+    .balance-number {
+      font-size: 27px;
+      font-weight: 900;
       color: #fbbf24;
-      font-size: 32px;
     }
+
+
+    /* =========================================
+       TIKTOK ACCOUNT
+    ========================================= */
+
+    .account {
+      width: 100%;
+
+      min-height: 70px;
+
+      display: flex;
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 10px;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.15);
+
+      border-radius: 16px;
+
+      background:
+        rgba(255,255,255,0.025);
+
+      margin-bottom: 9px;
+    }
+
+    .account-avatar {
+      width: 47px;
+      height: 47px;
+
+      min-width: 47px;
+
+      border-radius: 50%;
+
+      object-fit: cover;
+
+      background: #222;
+
+      border:
+        2px solid
+        rgba(254,44,85,0.65);
+    }
+
+    .account-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .account-title {
+      font-size: 10px;
+      color: #888;
+      margin-bottom: 3px;
+    }
+
+    .account-name {
+      font-size: 14px;
+      font-weight: 800;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .account-status {
+      margin-top: 3px;
+
+      color: #00e676;
+
+      font-size: 9px;
+    }
+
+    .connected {
+      padding: 5px 8px;
+
+      border-radius: 30px;
+
+      background:
+        rgba(0,230,118,0.10);
+
+      border:
+        1px solid
+        rgba(0,230,118,0.25);
+
+      color: #00e676;
+
+      font-size: 8px;
+      font-weight: 800;
+    }
+
+
+    /* =========================================
+       MAIN CARD
+    ========================================= */
 
     .card {
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 18px;
-      padding: 25px;
-    }
-
-    .field {
-      margin-bottom: 18px;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 8px;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .field input {
       width: 100%;
-      padding: 14px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      outline: none;
-      font-size: 15px;
+
+      padding: 15px;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.15);
+
+      border-radius: 17px;
+
+      background:
+        rgba(255,255,255,0.025);
     }
 
-    .field input:focus {
+
+    /* =========================================
+       SECTION LABEL
+    ========================================= */
+
+    .section-label {
+      font-size: 14px;
+      font-weight: 800;
+
+      margin-bottom: 10px;
+    }
+
+
+    /* =========================================
+       COINS INPUT
+    ========================================= */
+
+    .input-label {
+      display: block;
+
+      color: #aaa;
+
+      font-size: 10px;
+
+      margin-bottom: 6px;
+    }
+
+    .coins-input-wrap {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .coins-input {
+      width: 100%;
+
+      height: 48px;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.18);
+
+      border-radius: 11px;
+
+      background: #080808;
+
+      color: white;
+
+      outline: none;
+
+      padding:
+        0 55px 0 13px;
+
+      font-size: 18px;
+
+      font-weight: 800;
+    }
+
+    .coins-input:focus {
       border-color: #fe2c55;
     }
 
-    .info {
-      background: #f9fafb;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
+    .coin-symbol {
+      position: absolute;
+
+      right: 13px;
+      top: 50%;
+
+      transform: translateY(-50%);
+
+      font-size: 20px;
     }
 
-    .info-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 9px 0;
-      font-size: 14px;
+
+    /* =========================================
+       QUICK AMOUNTS
+    ========================================= */
+
+    .quick-title {
+      color: #777;
+      font-size: 9px;
+      margin-bottom: 6px;
     }
 
-    .info-row span:first-child {
-      color: #6b7280;
+    .quick-buttons {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, 1fr);
+
+      gap: 6px;
+
+      margin-bottom: 12px;
     }
 
-    .info-row strong {
-      text-align: right;
-    }
+    .quick-btn {
+      height: 34px;
 
-    .minimum {
-      background: #fff7ed;
-      color: #9a3412;
-      padding: 13px;
-      border-radius: 10px;
-      font-size: 14px;
-      margin-bottom: 20px;
-    }
+      border:
+        1px solid
+        rgba(255,255,255,0.12);
 
-    .submit-btn {
-      width: 100%;
-      border: 0;
-      background: #fe2c55;
-      color: #fff;
-      padding: 15px;
-      border-radius: 10px;
-      font-size: 16px;
+      border-radius: 8px;
+
+      background:
+        rgba(255,255,255,0.04);
+
+      color: #ddd;
+
+      font-size: 10px;
       font-weight: 700;
+
       cursor: pointer;
     }
 
+    .quick-btn.active {
+      background:
+        rgba(254,44,85,0.12);
+
+      border-color:
+        #fe2c55;
+
+      color: #ff5074;
+    }
+
+
+    /* =========================================
+       PREVIEW
+    ========================================= */
+
+    .preview {
+      margin-top: 4px;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.10);
+
+      border-radius: 12px;
+
+      background: #080808;
+
+      overflow: hidden;
+    }
+
+    .preview-row {
+      min-height: 39px;
+
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      padding:
+        0 11px;
+
+      border-bottom:
+        1px solid
+        rgba(255,255,255,0.07);
+
+      font-size: 10px;
+    }
+
+    .preview-row:last-child {
+      border-bottom: 0;
+    }
+
+    .preview-row span {
+      color: #888;
+    }
+
+    .preview-row strong {
+      color: white;
+    }
+
+    .followers-value {
+      color: #00e676 !important;
+    }
+
+    .remaining-value {
+      color: #fbbf24 !important;
+    }
+
+
+    /* =========================================
+       INFO
+    ========================================= */
+
+    .info {
+      margin-top: 10px;
+
+      padding: 10px;
+
+      border-radius: 10px;
+
+      background:
+        rgba(254,44,85,0.07);
+
+      border:
+        1px solid
+        rgba(254,44,85,0.16);
+
+      color: #aaa;
+
+      font-size: 9px;
+
+      line-height: 1.5;
+    }
+
+
+    /* =========================================
+       SUBMIT
+    ========================================= */
+
+    .submit-btn {
+      width: 100%;
+
+      height: 47px;
+
+      margin-top: 12px;
+
+      border: 0;
+
+      border-radius: 11px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #fe2c55,
+          #ff0050
+        );
+
+      color: white;
+
+      font-size: 13px;
+
+      font-weight: 900;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 0 20px
+        rgba(254,44,85,0.18);
+    }
+
     .submit-btn:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: not-allowed;
     }
 
+
+    /* =========================================
+       MESSAGE
+    ========================================= */
+
     .message {
       display: none;
-      margin-top: 15px;
-      padding: 13px;
+
+      margin-top: 9px;
+
+      padding: 11px;
+
       border-radius: 10px;
-      font-size: 14px;
+
+      font-size: 10px;
+
       text-align: center;
     }
 
-    .success {
+    .message.success {
       display: block;
-      background: #f0fdf4;
-      color: #166534;
+
+      background:
+        rgba(0,230,118,0.10);
+
+      border:
+        1px solid
+        rgba(0,230,118,0.20);
+
+      color: #00e676;
     }
 
-    .error {
+    .message.error {
       display: block;
-      background: #fff1f2;
-      color: #be123c;
+
+      background:
+        rgba(254,44,85,0.10);
+
+      border:
+        1px solid
+        rgba(254,44,85,0.20);
+
+      color: #ff6684;
     }
 
-    .loading {
-      text-align: center;
-      padding: 50px 20px;
-      color: #6b7280;
-    }
 
-    .hidden {
-      display: none !important;
-    }
+    /* =========================================
+       RESULT
+    ========================================= */
 
     .result {
-      margin-top: 20px;
-      padding: 18px;
-      background: #f0fdf4;
-      border-radius: 12px;
       display: none;
+
+      margin-top: 10px;
+
+      padding: 12px;
+
+      border-radius: 12px;
+
+      background:
+        rgba(0,230,118,0.07);
+
+      border:
+        1px solid
+        rgba(0,230,118,0.18);
     }
 
-    .result h3 {
-      margin: 0 0 12px;
-      color: #166534;
+    .result-title {
+      color: #00e676;
+
+      font-size: 12px;
+
+      font-weight: 800;
+
+      margin-bottom: 8px;
     }
 
     .result-row {
       display: flex;
       justify-content: space-between;
-      padding: 7px 0;
+
+      padding: 5px 0;
+
+      font-size: 10px;
+    }
+
+    .result-row span {
+      color: #888;
+    }
+
+    .result-row strong {
+      color: white;
+    }
+
+
+    /* =========================================
+       AD
+    ========================================= */
+
+    .ad {
+      height: 50px;
+
+      margin-top: 9px;
+
+      border:
+        1px solid
+        rgba(255,255,255,0.08);
+
+      border-radius: 12px;
+
+      background: #090909;
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      overflow: hidden;
+    }
+
+    .ad-label {
+      color: #444;
+
+      font-size: 8px;
+
+      text-transform: uppercase;
+
+      letter-spacing: 1px;
+    }
+
+
+    /* =========================================
+       BOTTOM NAV
+    ========================================= */
+
+    .bottom-nav {
+      position: fixed;
+
+      left: 8px;
+      right: 8px;
+      bottom: 6px;
+
+      height: 60px;
+
+      z-index: 100;
+
+      display: grid;
+
+      grid-template-columns:
+        repeat(5, 1fr);
+
+      border:
+        1px solid
+        rgba(255,255,255,0.18);
+
+      border-radius: 18px;
+
+      background:
+        rgba(8,8,8,0.97);
+
+      box-shadow:
+        0 5px 25px
+        rgba(0,0,0,0.55);
+    }
+
+    .bottom-item {
+      border: 0;
+
+      background: transparent;
+
+      color: #999;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+      justify-content: center;
+
+      gap: 2px;
+
+      font-size: 8px;
+
+      cursor: pointer;
+    }
+
+    .bottom-icon {
+      font-size: 19px;
+      line-height: 1;
+    }
+
+    .bottom-item.active {
+      color: #fe2c55;
+    }
+
+
+    /* =========================================
+       MENU
+    ========================================= */
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+
+      background:
+        rgba(0,0,0,0.70);
+
+      z-index: 200;
+
+      opacity: 0;
+
+      pointer-events: none;
+
+      transition: 0.2s;
+    }
+
+    .overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .menu {
+      position: fixed;
+
+      left: 0;
+      top: 0;
+      bottom: 0;
+
+      width: 280px;
+      max-width: 82%;
+
+      background: #090909;
+
+      z-index: 201;
+
+      padding: 20px;
+
+      transform:
+        translateX(-100%);
+
+      transition:
+        transform 0.25s;
+
+      border-right:
+        1px solid
+        rgba(255,255,255,0.12);
+    }
+
+    .menu.show {
+      transform:
+        translateX(0);
+    }
+
+    .menu-header {
+      display: flex;
+
+      align-items: center;
+      justify-content: space-between;
+
+      margin-bottom: 25px;
+    }
+
+    .menu-title {
+      font-size: 21px;
+      font-weight: 800;
+    }
+
+    .close {
+      width: 38px;
+      height: 38px;
+
+      border: 0;
+      border-radius: 10px;
+
+      background:
+        rgba(255,255,255,0.07);
+
+      color: white;
+
+      font-size: 18px;
+    }
+
+    .menu-link {
+      width: 100%;
+      height: 47px;
+
+      display: flex;
+      align-items: center;
+
+      gap: 12px;
+
+      border: 0;
+      border-radius: 11px;
+
+      background: transparent;
+
+      color: #ddd;
+
       font-size: 14px;
+      text-align: left;
+
+      padding: 0 13px;
+
+      margin-bottom: 7px;
     }
 
-    footer {
-      background: #111;
-      color: #9ca3af;
-      text-align: center;
-      padding: 25px 20px;
-      font-size: 13px;
+    .menu-link:hover {
+      background:
+        rgba(254,44,85,0.10);
+
+      color: #fe2c55;
     }
 
-    footer a {
-      color: #fff;
-      text-decoration: none;
-      margin: 0 7px;
+    .logout {
+      color: #ff3158;
+      margin-top: 15px;
     }
 
-    @media (max-width: 550px) {
-      main {
-        padding: 25px 15px 50px;
+
+    /* =========================================
+       LOADING
+    ========================================= */
+
+    .loading {
+      position: fixed;
+
+      inset: 0;
+
+      z-index: 999;
+
+      background: #050505;
+
+      display: flex;
+
+      align-items: center;
+      justify-content: center;
+
+      flex-direction: column;
+
+      gap: 13px;
+    }
+
+    .spinner {
+      width: 42px;
+      height: 42px;
+
+      border:
+        3px solid
+        rgba(255,255,255,0.10);
+
+      border-top-color:
+        #fe2c55;
+
+      border-right-color:
+        #00f2ea;
+
+      border-radius: 50%;
+
+      animation:
+        spin 0.8s linear infinite;
+    }
+
+    .loading-text {
+      color: #888;
+      font-size: 12px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+
+    /* =========================================
+       DESKTOP
+    ========================================= */
+
+    @media (min-width: 701px) {
+
+      .page {
+        padding:
+          25px 20px 50px;
+      }
+
+      .bottom-nav {
+        display: none;
+      }
+
+      .page-title h1 {
+        font-size: 31px;
+      }
+
+      .balance {
+        padding: 22px;
       }
 
       .card {
-        padding: 20px;
+        padding: 24px;
       }
     }
+
+
+    /* =========================================
+       SMALL PHONES
+    ========================================= */
+
+    @media (max-width: 380px) {
+
+      .logo {
+        font-size: 17px;
+      }
+
+      .page {
+        padding:
+          10px 9px 82px;
+      }
+
+      .quick-buttons {
+        gap: 4px;
+      }
+
+      .quick-btn {
+        font-size: 9px;
+      }
+
+      .account-name {
+        font-size: 13px;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-<header>
-  <div class="nav">
 
-    <div class="logo">
-      Free<span>FollowersTik</span>
-    </div>
-
-    <a
-      href="/dashboard.html"
-      class="back"
-    >
-      ← Dashboard
-    </a>
-
-  </div>
-</header>
-
-
-<main>
-
-  <section class="title">
-
-    <h1>🚀 Promote TikTok</h1>
-
-    <p>
-      Use your coins to promote your TikTok account.
-    </p>
-
-  </section>
-
+  <!-- =========================================
+       LOADING
+  ========================================= -->
 
   <div
     id="loading"
     class="loading"
   >
-    Loading your account...
+
+    <div class="spinner"></div>
+
+    <div class="loading-text">
+      Loading your promotion...
+    </div>
+
   </div>
 
 
-  <div
-    id="content"
-    class="hidden"
-  >
+  <!-- =========================================
+       HEADER
+  ========================================= -->
 
-    <!-- BALANCE -->
+  <header class="header">
+
+    <div class="header-left">
+
+      <button
+        id="openMenu"
+        class="menu-button"
+        type="button"
+      >
+        ☰
+      </button>
+
+      <div class="logo">
+        Free<span class="logo-pink">Followers</span>Tik
+      </div>
+
+    </div>
+
+
+    <div class="header-right">
+
+      <div class="notification">
+
+        🔔
+
+        <span class="notification-count">
+          3
+        </span>
+
+      </div>
+
+      <img
+        id="headerAvatar"
+        class="header-avatar"
+        src=""
+        alt="Profile"
+      >
+
+    </div>
+
+  </header>
+
+
+  <!-- =========================================
+       PAGE
+  ========================================= -->
+
+  <main class="page">
+
+
+    <section class="page-title">
+
+      <h1>
+        🚀 Promote TikTok
+      </h1>
+
+      <p>
+        Use your coins to promote your TikTok account.
+      </p>
+
+    </section>
+
+
+    <!-- =========================================
+         BALANCE
+    ========================================= -->
 
     <section class="balance">
 
-      <small>
+      <div class="balance-label">
         Available Coins
-      </small>
+      </div>
 
-      <strong id="coinBalance">
+      <div
+        id="coinBalance"
+        class="balance-number"
+      >
         0 🪙
-      </strong>
+      </div>
 
     </section>
 
 
-    <!-- FORM -->
+    <!-- =========================================
+         CONNECTED ACCOUNT
+    ========================================= -->
+
+    <section class="account">
+
+      <img
+        id="accountAvatar"
+        class="account-avatar"
+        src=""
+        alt="TikTok profile"
+      >
+
+      <div class="account-info">
+
+        <div class="account-title">
+          Your TikTok Account
+        </div>
+
+        <div
+          id="accountName"
+          class="account-name"
+        >
+          TikTok User
+        </div>
+
+        <div
+          id="accountStatus"
+          class="account-status"
+        >
+          Connected and active
+        </div>
+
+      </div>
+
+      <div
+        id="connectedBadge"
+        class="connected"
+      >
+        ✓ Connected
+      </div>
+
+    </section>
+
+
+    <!-- =========================================
+         PROMOTION CARD
+    ========================================= -->
 
     <section class="card">
 
-      <form id="promotionForm">
+      <div class="section-label">
+        Promotion Budget
+      </div>
 
-        <div class="field">
 
-          <label for="tiktokUrl">
-            TikTok Profile URL
-          </label>
+      <label
+        class="input-label"
+        for="coinsInput"
+      >
+        Coins to spend
+      </label>
 
-          <input
-            id="tiktokUrl"
-            type="url"
-            placeholder="https://www.tiktok.com/@username"
-            required
-          >
 
+      <div class="coins-input-wrap">
+
+        <input
+          id="coinsInput"
+          class="coins-input"
+          type="number"
+          min="60"
+          step="10"
+          value="60"
+          inputmode="numeric"
+        >
+
+        <div class="coin-symbol">
+          🪙
         </div>
 
-
-        <div class="field">
-
-          <label for="tiktokUsername">
-            TikTok Username
-          </label>
-
-          <input
-            id="tiktokUsername"
-            type="text"
-            placeholder="@username"
-            maxlength="100"
-            required
-          >
-
-        </div>
+      </div>
 
 
-        <div class="field">
+      <!-- QUICK AMOUNTS -->
 
-          <label for="coins">
-            Coins to Spend
-          </label>
+      <div class="quick-title">
+        Quick select
+      </div>
 
-          <input
-            id="coins"
-            type="number"
-            min="60"
-            step="10"
-            placeholder="60"
-            required
-          >
-
-        </div>
-
-
-        <div class="info">
-
-          <div class="info-row">
-
-            <span>
-              Minimum
-            </span>
-
-            <strong>
-              60 🪙
-            </strong>
-
-          </div>
-
-
-          <div class="info-row">
-
-            <span>
-              Followers
-            </span>
-
-            <strong id="followers">
-              6
-            </strong>
-
-          </div>
-
-
-          <div class="info-row">
-
-            <span>
-              Cost
-            </span>
-
-            <strong id="cost">
-              60 🪙
-            </strong>
-
-          </div>
-
-
-          <div class="info-row">
-
-            <span>
-              Balance after
-            </span>
-
-            <strong id="balanceAfter">
-              0 🪙
-            </strong>
-
-          </div>
-
-        </div>
-
-
-        <div class="minimum">
-
-          💡 60 coins = 6 followers.
-          Every additional 10 coins gives 1 additional follower.
-
-        </div>
-
+      <div class="quick-buttons">
 
         <button
-          id="submitBtn"
-          class="submit-btn"
-          type="submit"
+          type="button"
+          class="quick-btn active"
+          data-coins="60"
         >
-          🚀 Create Promotion
+          60
         </button>
 
-
-        <div
-          id="message"
-          class="message"
-        ></div>
-
-
-        <!-- SUCCESS RESULT -->
-
-        <div
-          id="result"
-          class="result"
+        <button
+          type="button"
+          class="quick-btn"
+          data-coins="100"
         >
+          100
+        </button>
 
-          <h3>
-            ✅ Promotion Created
-          </h3>
+        <button
+          type="button"
+          class="quick-btn"
+          data-coins="200"
+        >
+          200
+        </button>
 
-          <div class="result-row">
+        <button
+          type="button"
+          class="quick-btn"
+          data-coins="500"
+        >
+          500
+        </button>
 
-            <span>
-              Promotion ID
-            </span>
+      </div>
 
-            <strong id="resultId">
-              -
-            </strong>
 
-          </div>
+      <!-- PREVIEW -->
 
-          <div class="result-row">
+      <div class="preview">
 
-            <span>
-              Followers
-            </span>
+        <div class="preview-row">
 
-            <strong id="resultFollowers">
-              -
-            </strong>
+          <span>
+            Minimum
+          </span>
 
-          </div>
-
-          <div class="result-row">
-
-            <span>
-              Coins spent
-            </span>
-
-            <strong id="resultSpent">
-              -
-            </strong>
-
-          </div>
-
-          <div class="result-row">
-
-            <span>
-              New balance
-            </span>
-
-            <strong id="resultBalance">
-              -
-            </strong>
-
-          </div>
+          <strong>
+            60 🪙
+          </strong>
 
         </div>
 
-      </form>
+
+        <div class="preview-row">
+
+          <span>
+            Estimated followers
+          </span>
+
+          <strong
+            id="followers"
+            class="followers-value"
+          >
+            6
+          </strong>
+
+        </div>
+
+
+        <div class="preview-row">
+
+          <span>
+            Promotion cost
+          </span>
+
+          <strong id="cost">
+            60 🪙
+          </strong>
+
+        </div>
+
+
+        <div class="preview-row">
+
+          <span>
+            Balance after promotion
+          </span>
+
+          <strong
+            id="balanceAfter"
+            class="remaining-value"
+          >
+            0 🪙
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="info">
+        💡 60 coins = 6 followers.
+        Every additional 10 coins gives 1 additional follower.
+        Final delivery depends on available eligible tasks.
+      </div>
+
+
+      <!-- SUBMIT -->
+
+      <button
+        id="submitBtn"
+        class="submit-btn"
+        type="button"
+      >
+        🚀 Create Promotion
+      </button>
+
+
+      <!-- MESSAGE -->
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+
+      <!-- RESULT -->
+
+      <div
+        id="result"
+        class="result"
+      >
+
+        <div class="result-title">
+          ✅ Promotion Created
+        </div>
+
+
+        <div class="result-row">
+
+          <span>
+            Promotion ID
+          </span>
+
+          <strong id="resultId">
+            -
+          </strong>
+
+        </div>
+
+
+        <div class="result-row">
+
+          <span>
+            Followers
+          </span>
+
+          <strong id="resultFollowers">
+            -
+          </strong>
+
+        </div>
+
+
+        <div class="result-row">
+
+          <span>
+            Coins spent
+          </span>
+
+          <strong id="resultSpent">
+            -
+          </strong>
+
+        </div>
+
+
+        <div class="result-row">
+
+          <span>
+            New balance
+          </span>
+
+          <strong id="resultBalance">
+            -
+          </strong>
+
+        </div>
+
+      </div>
 
     </section>
 
-  </div>
 
-</main>
+    <!-- =========================================
+         ADS
+    ========================================= -->
+
+    <section class="ad">
+
+      <div class="ad-label">
+        Advertisement
+      </div>
+
+      <!-- Google AdSense code goes here -->
+
+    </section>
 
 
-<footer>
+  </main>
 
-  <p>
-    © 2026 FreeFollowersTik
-  </p>
 
-  <div>
+  <!-- =========================================
+       BOTTOM NAV
+  ========================================= -->
 
-    <a href="/dashboard.html">
-      Dashboard
+  <nav class="bottom-nav">
+
+    <a
+      href="/dashboard.html"
+      class="bottom-item"
+    >
+
+      <div class="bottom-icon">
+        🏠
+      </div>
+
+      <span>
+        Dashboard
+      </span>
+
     </a>
 
-    <a href="/terms">
-      Terms
+
+    <a
+      href="/earn.html"
+      class="bottom-item"
+    >
+
+      <div class="bottom-icon">
+        🎁
+      </div>
+
+      <span>
+        Earn Coins
+      </span>
+
     </a>
 
-    <a href="/privacy">
-      Privacy
+
+    <a
+      href="/promote.html"
+      class="bottom-item active"
+    >
+
+      <div class="bottom-icon">
+        🚀
+      </div>
+
+      <span>
+        Promote
+      </span>
+
     </a>
 
-  </div>
 
-</footer>
+    <a
+      href="/transactions.html"
+      class="bottom-item"
+    >
 
+      <div class="bottom-icon">
+        ▤
+      </div>
 
-<script>
+      <span>
+        Transactions
+      </span>
 
-  const MINIMUM_COINS = 60;
-  const COINS_PER_FOLLOWER = 10;
-
-  let currentCoins = 0;
-
-
-  const loading =
-    document.getElementById(
-      "loading"
-    );
-
-  const content =
-    document.getElementById(
-      "content"
-    );
-
-  const form =
-    document.getElementById(
-      "promotionForm"
-    );
-
-  const coinsInput =
-    document.getElementById(
-      "coins"
-    );
-
-  const followers =
-    document.getElementById(
-      "followers"
-    );
-
-  const cost =
-    document.getElementById(
-      "cost"
-    );
-
-  const balanceAfter =
-    document.getElementById(
-      "balanceAfter"
-    );
-
-  const message =
-    document.getElementById(
-      "message"
-    );
-
-  const submitBtn =
-    document.getElementById(
-      "submitBtn"
-    );
-
-  const result =
-    document.getElementById(
-      "result"
-    );
+    </a>
 
 
-  /* ==========================================
-     MESSAGE
-  ========================================== */
+    <button
+      id="bottomMenu"
+      class="bottom-item"
+      type="button"
+    >
 
-  function showMessage(
-    text,
-    type
-  ) {
+      <div class="bottom-icon">
+        •••
+      </div>
 
-    message.textContent =
-      text;
+      <span>
+        Menu
+      </span>
 
-    message.className =
-      `message ${type}`;
+    </button>
 
-  }
-
-
-  /* ==========================================
-     BALANCE DISPLAY
-  ========================================== */
-
-  function updateBalanceDisplay() {
-
-    document.getElementById(
-      "coinBalance"
-    ).textContent =
-      `${currentCoins} 🪙`;
-
-  }
+  </nav>
 
 
-  /* ==========================================
-     CALCULATE PREVIEW
-  ========================================== */
+  <!-- =========================================
+       OVERLAY
+  ========================================= -->
 
-  function updateCalculation() {
-
-    const coins =
-      Math.floor(
-        Number(
-          coinsInput.value
-        )
-      );
+  <div
+    id="overlay"
+    class="overlay"
+  ></div>
 
 
-    if (
-      !Number.isInteger(coins) ||
-      coins < MINIMUM_COINS
-    ) {
+  <!-- =========================================
+       SIDE MENU
+  ========================================= -->
 
-      followers.textContent =
-        "0";
+  <aside
+    id="menu"
+    class="menu"
+  >
 
-      cost.textContent =
-        "0 🪙";
+    <div class="menu-header">
 
-      balanceAfter.textContent =
-        `${currentCoins} 🪙`;
+      <div class="menu-title">
+        Menu
+      </div>
 
-      return;
+      <button
+        id="closeMenu"
+        class="close"
+        type="button"
+      >
+        ✕
+      </button>
+
+    </div>
+
+
+    <a
+      href="/dashboard.html"
+      class="menu-link"
+    >
+      🏠 Dashboard
+    </a>
+
+
+    <a
+      href="/earn.html"
+      class="menu-link"
+    >
+      🎁 Earn Coins
+    </a>
+
+
+    <a
+      href="/promote.html"
+      class="menu-link"
+    >
+      🚀 Promote
+    </a>
+
+
+    <a
+      href="/buy-coins.html"
+      class="menu-link"
+    >
+      💳 Buy Coins
+    </a>
+
+
+    <a
+      href="/transactions.html"
+      class="menu-link"
+    >
+      📋 Transactions
+    </a>
+
+
+    <a
+      href="/settings.html"
+      class="menu-link"
+    >
+      ⚙️ Settings
+    </a>
+
+
+    <button
+      id="logout"
+      class="menu-link logout"
+      type="button"
+    >
+      🚪 Logout
+    </button>
+
+  </aside>
+
+
+  <script>
+
+    /* =========================================
+       CONSTANTS
+    ========================================= */
+
+    const MINIMUM_COINS = 60;
+
+    const COINS_PER_FOLLOWER = 10;
+
+
+    let currentCoins = 0;
+
+    let currentUser = null;
+
+
+    /* =========================================
+       ELEMENTS
+    ========================================= */
+
+    const loading =
+      document.getElementById("loading");
+
+    const coinBalance =
+      document.getElementById("coinBalance");
+
+    const coinsInput =
+      document.getElementById("coinsInput");
+
+    const followers =
+      document.getElementById("followers");
+
+    const cost =
+      document.getElementById("cost");
+
+    const balanceAfter =
+      document.getElementById("balanceAfter");
+
+    const submitBtn =
+      document.getElementById("submitBtn");
+
+    const message =
+      document.getElementById("message");
+
+    const result =
+      document.getElementById("result");
+
+
+    /* =========================================
+       DEFAULT AVATAR
+    ========================================= */
+
+    const defaultAvatar =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg"
+             width="100"
+             height="100">
+          <rect width="100"
+                height="100"
+                fill="#222"/>
+          <text x="50"
+                y="62"
+                text-anchor="middle"
+                font-size="42">
+            👤
+          </text>
+        </svg>
+      `);
+
+
+    /* =========================================
+       MESSAGE
+    ========================================= */
+
+    function showMessage(text, type) {
+
+      message.textContent = text;
+
+      message.className =
+        `message ${type}`;
+
     }
 
 
-    const followerCount =
-      coins /
-      COINS_PER_FOLLOWER;
+    /* =========================================
+       BALANCE
+    ========================================= */
 
+    function updateBalance() {
 
-    followers.textContent =
-      followerCount;
-
-
-    cost.textContent =
-      `${coins} 🪙`;
-
-
-    const remaining =
-      currentCoins -
-      coins;
-
-
-    balanceAfter.textContent =
-      `${Math.max(
-        0,
-        remaining
-      )} 🪙`;
-
-  }
-
-
-  coinsInput.addEventListener(
-    "input",
-    updateCalculation
-  );
-
-
-  /* ==========================================
-     LOAD USER
-  ========================================== */
-
-  async function loadUser() {
-
-    try {
-
-      const response =
-        await fetch(
-          "/api/me",
-          {
-            credentials:
-              "include"
-          }
-        );
-
-
-      const data =
-        await response.json();
-
-
-      if (
-        response.status === 401
-      ) {
-
-        window.location.href =
-          "/";
-
-        return;
-
-      }
-
-
-      if (
-        !response.ok ||
-        !data.success ||
-        !data.user
-      ) {
-
-        throw new Error(
-          data.message ||
-          "Could not load account"
-        );
-
-      }
-
-
-      currentCoins =
-        Number(
-          data.user.coins || 0
-        );
-
-
-      updateBalanceDisplay();
-
-
-      loading.style.display =
-        "none";
-
-      content.classList.remove(
-        "hidden"
-      );
-
-
-      updateCalculation();
-
-    } catch (error) {
-
-      console.error(
-        "Load user error:",
-        error
-      );
-
-      loading.textContent =
-        error.message ||
-        "Could not load your account.";
+      coinBalance.textContent =
+        `${currentCoins.toLocaleString()} 🪙`;
 
     }
 
-  }
 
+    /* =========================================
+       CALCULATION
+    ========================================= */
 
-  /* ==========================================
-     CREATE PROMOTION
-  ========================================== */
+    function updateCalculation() {
 
-  form.addEventListener(
-    "submit",
-    async function(event) {
-
-      event.preventDefault();
-
-
-      const tiktokUrl =
-        document.getElementById(
-          "tiktokUrl"
-        ).value.trim();
-
-
-      const tiktokUsername =
-        document.getElementById(
-          "tiktokUsername"
-        ).value.trim();
-
-
-      const coins =
+      let amount =
         Math.floor(
           Number(
             coinsInput.value
@@ -808,182 +1724,137 @@
         );
 
 
-      /* ======================================
-         CLIENT VALIDATION
-      ====================================== */
-
-      if (!tiktokUrl) {
-
-        showMessage(
-          "Please enter your TikTok profile URL.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!tiktokUsername) {
-
-        showMessage(
-          "Please enter your TikTok username.",
-          "error"
-        );
-
-        return;
-      }
-
-
       if (
-        !Number.isInteger(coins) ||
-        coins < MINIMUM_COINS
+        !Number.isInteger(amount) ||
+        amount < MINIMUM_COINS
       ) {
 
-        showMessage(
-          "Insufficient promotion amount. Minimum is 60 coins.",
-          "error"
-        );
+        followers.textContent =
+          "0";
+
+        cost.textContent =
+          "0 🪙";
+
+        balanceAfter.textContent =
+          `${currentCoins.toLocaleString()} 🪙`;
 
         return;
+
       }
 
 
-      if (
-        coins % COINS_PER_FOLLOWER !== 0
-      ) {
-
-        showMessage(
-          "Coins must be a multiple of 10: 60, 70, 80, 90...",
-          "error"
+      const estimatedFollowers =
+        Math.floor(
+          amount /
+          COINS_PER_FOLLOWER
         );
 
-        return;
-      }
+
+      followers.textContent =
+        estimatedFollowers.toLocaleString();
 
 
-      if (
-        coins > currentCoins
-      ) {
-
-        showMessage(
-          `Insufficient coins. You have ${currentCoins} coins.`,
-          "error"
-        );
-
-        return;
-      }
+      cost.textContent =
+        `${amount.toLocaleString()} 🪙`;
 
 
-      if (
-        !tiktokUrl
-          .toLowerCase()
-          .includes("tiktok.com")
-      ) {
+      balanceAfter.textContent =
+        `${Math.max(
+          0,
+          currentCoins - amount
+        ).toLocaleString()} 🪙`;
 
-        showMessage(
-          "Please enter a valid TikTok URL.",
-          "error"
-        );
-
-        return;
-      }
+    }
 
 
-      /* ======================================
-         DISABLE BUTTON
-      ====================================== */
+    /* =========================================
+       QUICK BUTTONS
+    ========================================= */
 
-      submitBtn.disabled =
-        true;
+    document
+      .querySelectorAll(".quick-btn")
+      .forEach(
+        function(button) {
 
-      submitBtn.textContent =
-        "Creating promotion...";
+          button.addEventListener(
+            "click",
+            function() {
 
-      message.className =
-        "message";
+              const amount =
+                Number(
+                  button.dataset.coins
+                );
 
-      result.style.display =
-        "none";
+
+              coinsInput.value =
+                amount;
 
 
-      try {
+              document
+                .querySelectorAll(".quick-btn")
+                .forEach(
+                  btn =>
+                    btn.classList.remove(
+                      "active"
+                    )
+                );
 
-        /* ====================================
-           OPTIONAL SERVER PREVIEW
-        ==================================== */
 
-        const previewResponse =
-          await fetch(
-            "/api/promotions/preview",
-            {
-              method: "POST",
+              button.classList.add(
+                "active"
+              );
 
-              credentials:
-                "include",
 
-              headers: {
-                "Content-Type":
-                  "application/json",
+              updateCalculation();
 
-                "Accept":
-                  "application/json"
-              },
-
-              body: JSON.stringify({
-                coins
-              })
             }
           );
 
+        }
+      );
 
-        const previewData =
-          await previewResponse.json();
 
+    coinsInput.addEventListener(
+      "input",
+      function() {
 
-        if (
-          !previewResponse.ok ||
-          !previewData.success
-        ) {
-
-          throw new Error(
-            previewData.message ||
-            "Promotion validation failed"
+        document
+          .querySelectorAll(".quick-btn")
+          .forEach(
+            btn =>
+              btn.classList.remove(
+                "active"
+              )
           );
 
-        }
+        updateCalculation();
+
+      }
+    );
 
 
-        /* ====================================
-           CREATE PROMOTION
-        ==================================== */
+    /* =========================================
+       LOAD USER
+    ========================================= */
+
+    async function loadUser() {
+
+      try {
 
         const response =
           await fetch(
-            "/api/promotions",
+            "/api/me",
             {
-              method: "POST",
+              method: "GET",
 
-              credentials:
-                "include",
+              credentials: "include",
 
               headers: {
-                "Content-Type":
-                  "application/json",
-
                 "Accept":
                   "application/json"
               },
 
-              body: JSON.stringify({
-
-                tiktok_username:
-                  tiktokUsername,
-
-                tiktok_url:
-                  tiktokUrl,
-
-                coins
-              })
+              cache: "no-store"
             }
           );
 
@@ -993,132 +1864,623 @@
 
 
         if (
+          response.status === 401
+        ) {
+
+          window.location.href =
+            "/";
+
+          return false;
+
+        }
+
+
+        if (
           !response.ok ||
-          !data.success
+          !data.success ||
+          !data.user
         ) {
 
           throw new Error(
             data.message ||
-            "Could not create promotion"
+            "Could not load account."
           );
 
         }
 
 
-        /* ====================================
-           SERVER IS SOURCE OF TRUTH
-        ==================================== */
+        currentUser =
+          data.user;
+
+
+        currentCoins =
+          Number(
+            currentUser.coins || 0
+          );
+
+
+        updateBalance();
+
+
+        /* ACCOUNT */
+
+        const displayName =
+          currentUser.display_name ||
+          currentUser.tiktok_username ||
+          "TikTok User";
+
+
+        document.getElementById(
+          "accountName"
+        ).textContent =
+          displayName;
+
+
+        document.getElementById(
+          "accountStatus"
+        ).textContent =
+          currentUser.is_banned
+            ? "Account suspended"
+            : currentUser.is_active === false
+              ? "Account inactive"
+              : "Connected and active";
+
+
+        const avatar =
+          currentUser.avatar_url ||
+          defaultAvatar;
+
+
+        document.getElementById(
+          "accountAvatar"
+        ).src =
+          avatar;
+
+
+        document.getElementById(
+          "headerAvatar"
+        ).src =
+          avatar;
+
 
         if (
-          data.coins !== undefined
+          currentUser.is_banned
         ) {
 
-          currentCoins =
-            Number(
-              data.coins
-            );
+          document.getElementById(
+            "connectedBadge"
+          ).textContent =
+            "✕ Banned";
 
-        } else if (
-          data.wallet &&
-          data.wallet.new_balance !==
-            undefined
-        ) {
-
-          currentCoins =
-            Number(
-              data.wallet.new_balance
-            );
+          document.getElementById(
+            "connectedBadge"
+          ).style.color =
+            "#ff3158";
 
         }
-
-
-        updateBalanceDisplay();
-
-
-        /* ====================================
-           SHOW SUCCESS
-        ==================================== */
-
-        showMessage(
-          data.message ||
-          "Promotion created successfully.",
-          "success"
-        );
-
-
-        const promotion =
-          data.promotion || {};
-
-
-        document.getElementById(
-          "resultId"
-        ).textContent =
-          promotion.id || "-";
-
-
-        document.getElementById(
-          "resultFollowers"
-        ).textContent =
-          `${promotion.followers || 0}`;
-
-
-        document.getElementById(
-          "resultSpent"
-        ).textContent =
-          `${promotion.coins || coins} 🪙`;
-
-
-        document.getElementById(
-          "resultBalance"
-        ).textContent =
-          `${currentCoins} 🪙`;
-
-
-        result.style.display =
-          "block";
-
-
-        form.reset();
 
 
         updateCalculation();
 
 
+        loading.style.display =
+          "none";
+
+
+        return true;
+
+
       } catch (error) {
 
         console.error(
-          "Create promotion error:",
+          "Load user error:",
           error
         );
 
 
-        showMessage(
-          error.message ||
-          "Could not create promotion.",
-          "error"
-        );
+        loading.innerHTML = `
+          <div style="
+            color:#ff6684;
+            text-align:center;
+            padding:20px;
+          ">
+            <div style="
+              font-size:30px;
+              margin-bottom:10px;
+            ">
+              ⚠️
+            </div>
 
-      } finally {
+            <div>
+              ${escapeHtml(
+                error.message ||
+                "Could not load your account."
+              )}
+            </div>
 
-        submitBtn.disabled =
-          false;
+            <button
+              onclick="location.reload()"
+              style="
+                margin-top:15px;
+                padding:10px 18px;
+                border:0;
+                border-radius:9px;
+                background:#fe2c55;
+                color:white;
+                font-weight:700;
+              "
+            >
+              Try Again
+            </button>
+          </div>
+        `;
 
-        submitBtn.textContent =
-          "🚀 Create Promotion";
+
+        return false;
 
       }
 
     }
-  );
 
 
-  /* ==========================================
-     START
-  ========================================== */
+    /* =========================================
+       CREATE PROMOTION
+    ========================================= */
 
-  loadUser();
+    submitBtn.addEventListener(
+      "click",
+      async function() {
 
-</script>
+        if (!currentUser) {
+
+          showMessage(
+            "Your account is not loaded yet.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (
+          currentUser.is_banned
+        ) {
+
+          showMessage(
+            "Your account is suspended.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        const amount =
+          Math.floor(
+            Number(
+              coinsInput.value
+            )
+          );
+
+
+        if (
+          !Number.isInteger(amount) ||
+          amount < MINIMUM_COINS
+        ) {
+
+          showMessage(
+            "Minimum promotion budget is 60 coins.",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (
+          amount % COINS_PER_FOLLOWER !== 0
+        ) {
+
+          showMessage(
+            "Coins must be a multiple of 10: 60, 70, 80, 90...",
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        if (
+          amount > currentCoins
+        ) {
+
+          showMessage(
+            `Insufficient coins. You have ${currentCoins.toLocaleString()} coins.`,
+            "error"
+          );
+
+          return;
+
+        }
+
+
+        submitBtn.disabled =
+          true;
+
+        submitBtn.textContent =
+          "Creating promotion...";
+
+        result.style.display =
+          "none";
+
+        message.className =
+          "message";
+
+
+        try {
+
+          /* =====================================
+             PREVIEW
+          ===================================== */
+
+          const previewResponse =
+            await fetch(
+              "/api/promotions/preview",
+              {
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+
+                  "Accept":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                  coins: amount
+                })
+              }
+            );
+
+
+          const previewData =
+            await previewResponse.json();
+
+
+          if (
+            !previewResponse.ok ||
+            !previewData.success
+          ) {
+
+            throw new Error(
+              previewData.message ||
+              "Promotion validation failed."
+            );
+
+          }
+
+
+          /* =====================================
+             CREATE PROMOTION
+          ===================================== */
+
+          /*
+             IMPORTANT:
+             We intentionally DO NOT send
+             tiktok_username or tiktok_url.
+
+             Backend should get the authenticated
+             TikTok account from the logged-in user.
+          */
+
+          const response =
+            await fetch(
+              "/api/promotions",
+              {
+                method: "POST",
+
+                credentials: "include",
+
+                headers: {
+                  "Content-Type":
+                    "application/json",
+
+                  "Accept":
+                    "application/json"
+                },
+
+                body: JSON.stringify({
+                  coins: amount
+                })
+              }
+            );
+
+
+          const data =
+            await response.json();
+
+
+          if (
+            !response.ok ||
+            !data.success
+          ) {
+
+            throw new Error(
+              data.message ||
+              "Could not create promotion."
+            );
+
+          }
+
+
+          /* =====================================
+             SERVER BALANCE
+          ===================================== */
+
+          if (
+            data.coins !== undefined
+          ) {
+
+            currentCoins =
+              Number(
+                data.coins
+              );
+
+          } else if (
+            data.wallet &&
+            data.wallet.new_balance !==
+              undefined
+          ) {
+
+            currentCoins =
+              Number(
+                data.wallet.new_balance
+              );
+
+          } else {
+
+            currentCoins =
+              Math.max(
+                0,
+                currentCoins - amount
+              );
+
+          }
+
+
+          updateBalance();
+
+
+          /* =====================================
+             SUCCESS
+          ===================================== */
+
+          showMessage(
+            data.message ||
+            "Promotion created successfully.",
+            "success"
+          );
+
+
+          const promotion =
+            data.promotion || {};
+
+
+          document.getElementById(
+            "resultId"
+          ).textContent =
+            promotion.id || "-";
+
+
+          document.getElementById(
+            "resultFollowers"
+          ).textContent =
+            Number(
+              promotion.followers ||
+              amount / COINS_PER_FOLLOWER
+            ).toLocaleString();
+
+
+          document.getElementById(
+            "resultSpent"
+          ).textContent =
+            `${Number(
+              promotion.coins ||
+              amount
+            ).toLocaleString()} 🪙`;
+
+
+          document.getElementById(
+            "resultBalance"
+          ).textContent =
+            `${currentCoins.toLocaleString()} 🪙`;
+
+
+          result.style.display =
+            "block";
+
+
+          coinsInput.value =
+            "60";
+
+
+          updateCalculation();
+
+
+        } catch (error) {
+
+          console.error(
+            "Promotion error:",
+            error
+          );
+
+
+          showMessage(
+            error.message ||
+            "Could not create promotion.",
+            "error"
+          );
+
+        } finally {
+
+          submitBtn.disabled =
+            false;
+
+          submitBtn.textContent =
+            "🚀 Create Promotion";
+
+        }
+
+      }
+    );
+
+
+    /* =========================================
+       MENU
+    ========================================= */
+
+    const menu =
+      document.getElementById("menu");
+
+    const overlay =
+      document.getElementById("overlay");
+
+    const openMenu =
+      document.getElementById("openMenu");
+
+    const bottomMenu =
+      document.getElementById("bottomMenu");
+
+    const closeMenu =
+      document.getElementById("closeMenu");
+
+
+    function showMenu() {
+
+      menu.classList.add("show");
+
+      overlay.classList.add("show");
+
+    }
+
+
+    function hideMenu() {
+
+      menu.classList.remove("show");
+
+      overlay.classList.remove("show");
+
+    }
+
+
+    openMenu.addEventListener(
+      "click",
+      showMenu
+    );
+
+    bottomMenu.addEventListener(
+      "click",
+      showMenu
+    );
+
+    closeMenu.addEventListener(
+      "click",
+      hideMenu
+    );
+
+    overlay.addEventListener(
+      "click",
+      hideMenu
+    );
+
+
+    /* =========================================
+       LOGOUT
+    ========================================= */
+
+    document
+      .getElementById("logout")
+      .addEventListener(
+        "click",
+        async function() {
+
+          const button =
+            document.getElementById(
+              "logout"
+            );
+
+
+          button.disabled =
+            true;
+
+          button.textContent =
+            "⏳ Logging out...";
+
+
+          try {
+
+            await fetch(
+              "/api/logout",
+              {
+                method: "POST",
+
+                credentials:
+                  "include",
+
+                headers: {
+                  "Accept":
+                    "application/json"
+                }
+              }
+            );
+
+          } catch (error) {
+
+            console.error(
+              "Logout error:",
+              error
+            );
+
+          }
+
+
+          window.location.href =
+            "/";
+
+        }
+      );
+
+
+    /* =========================================
+       ESCAPE HTML
+    ========================================= */
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+    }
+
+
+    /* =========================================
+       START
+    ========================================= */
+
+    loadUser();
+
+  </script>
 
 </body>
 </html>
