@@ -6,7 +6,10 @@ async function initDatabase() {
   try {
     await client.query("BEGIN");
 
-    // USERS
+    /* ==========================================
+       USERS
+    ========================================== */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS users (
         id SERIAL PRIMARY KEY,
@@ -34,7 +37,11 @@ async function initDatabase() {
       )
     `);
 
-    // TIKTOK ACCOUNTS
+
+    /* ==========================================
+       TIKTOK ACCOUNTS
+    ========================================== */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS tiktok_accounts (
         id SERIAL PRIMARY KEY,
@@ -44,6 +51,9 @@ async function initDatabase() {
           ON DELETE CASCADE,
 
         open_id TEXT UNIQUE NOT NULL,
+
+        username TEXT,
+        profile_deep_link TEXT,
 
         display_name TEXT,
         avatar_url TEXT,
@@ -55,7 +65,11 @@ async function initDatabase() {
       )
     `);
 
-    // WELCOME BONUSES
+
+    /* ==========================================
+       WELCOME BONUSES
+    ========================================== */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS welcome_bonuses (
         id SERIAL PRIMARY KEY,
@@ -72,7 +86,11 @@ async function initDatabase() {
       )
     `);
 
-    // COIN TRANSACTIONS
+
+    /* ==========================================
+       COIN TRANSACTIONS
+    ========================================== */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS coin_transactions (
         id SERIAL PRIMARY KEY,
@@ -97,7 +115,11 @@ async function initDatabase() {
       )
     `);
 
-    // SESSIONS
+
+    /* ==========================================
+       SESSIONS
+    ========================================== */
+
     await client.query(`
       CREATE TABLE IF NOT EXISTS sessions (
         id SERIAL PRIMARY KEY,
@@ -114,6 +136,74 @@ async function initDatabase() {
       )
     `);
 
+
+    /* ==========================================
+       PROMOTIONS
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS promotions (
+        id SERIAL PRIMARY KEY,
+
+        user_id INTEGER NOT NULL
+          REFERENCES users(id)
+          ON DELETE CASCADE,
+
+        tiktok_username TEXT NOT NULL,
+
+        tiktok_url TEXT NOT NULL,
+
+        promotion_type TEXT NOT NULL DEFAULT 'followers',
+
+        coins_cost INTEGER NOT NULL,
+
+        target_count INTEGER NOT NULL,
+
+        completed_count INTEGER NOT NULL DEFAULT 0,
+
+        status TEXT NOT NULL DEFAULT 'pending',
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+
+
+    /* ==========================================
+       PROMOTION TASKS
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS promotion_tasks (
+        id SERIAL PRIMARY KEY,
+
+        promotion_id INTEGER NOT NULL
+          REFERENCES promotions(id)
+          ON DELETE CASCADE,
+
+        worker_user_id INTEGER NOT NULL
+          REFERENCES users(id)
+          ON DELETE CASCADE,
+
+        status TEXT NOT NULL DEFAULT 'pending',
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        completed_at TIMESTAMPTZ,
+
+        UNIQUE(
+          promotion_id,
+          worker_user_id
+        )
+      )
+    `);
+
+
+    /* ==========================================
+       INDEXES
+    ========================================== */
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_sessions_token
       ON sessions(session_token_hash)
@@ -129,6 +219,47 @@ async function initDatabase() {
       ON coin_transactions(user_id)
     `);
 
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_tiktok_accounts_user
+      ON tiktok_accounts(user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_promotions_user
+      ON promotions(user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_promotions_status
+      ON promotions(status)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_promotion_tasks_worker
+      ON promotion_tasks(worker_user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_promotion_tasks_promotion
+      ON promotion_tasks(promotion_id)
+    `);
+
+
+    /* ==========================================
+       MIGRATION FOR EXISTING DATABASES
+    ========================================== */
+
+    await client.query(`
+      ALTER TABLE tiktok_accounts
+      ADD COLUMN IF NOT EXISTS username TEXT
+    `);
+
+    await client.query(`
+      ALTER TABLE tiktok_accounts
+      ADD COLUMN IF NOT EXISTS profile_deep_link TEXT
+    `);
+
+
     await client.query("COMMIT");
 
     console.log("✅ Database tables are ready");
@@ -137,7 +268,10 @@ async function initDatabase() {
 
     await client.query("ROLLBACK");
 
-    console.error("❌ Database initialization failed:");
+    console.error(
+      "❌ Database initialization failed:"
+    );
+
     console.error(error);
 
     throw error;
@@ -148,6 +282,7 @@ async function initDatabase() {
 
   }
 }
+
 
 module.exports = {
   initDatabase
