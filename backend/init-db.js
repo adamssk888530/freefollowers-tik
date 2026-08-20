@@ -161,17 +161,13 @@ async function initDatabase() {
 
         target_count INTEGER NOT NULL,
 
-        completed_count INTEGER NOT NULL
-          DEFAULT 0,
+        completed_count INTEGER NOT NULL DEFAULT 0,
 
-        status TEXT NOT NULL
-          DEFAULT 'pending',
+        status TEXT NOT NULL DEFAULT 'pending',
 
-        created_at TIMESTAMPTZ NOT NULL
-          DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
-        updated_at TIMESTAMPTZ NOT NULL
-          DEFAULT NOW()
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
     `);
 
@@ -192,11 +188,9 @@ async function initDatabase() {
           REFERENCES users(id)
           ON DELETE CASCADE,
 
-        status TEXT NOT NULL
-          DEFAULT 'pending',
+        status TEXT NOT NULL DEFAULT 'pending',
 
-        created_at TIMESTAMPTZ NOT NULL
-          DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
         completed_at TIMESTAMPTZ,
 
@@ -210,10 +204,6 @@ async function initDatabase() {
 
     /* ==========================================
        EARN COMPLETIONS
-       
-       Wannan table yana hana user
-       samun reward sau biyu daga
-       task guda.
     ========================================== */
 
     await client.query(`
@@ -228,16 +218,158 @@ async function initDatabase() {
           REFERENCES users(id)
           ON DELETE CASCADE,
 
-        reward_coins INTEGER NOT NULL
-          DEFAULT 5,
+        reward_coins INTEGER NOT NULL DEFAULT 5,
 
-        created_at TIMESTAMPTZ NOT NULL
-          DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
         UNIQUE(
           task_id,
           user_id
         )
+      )
+    `);
+
+
+    /* ==========================================
+       COIN PACKAGES
+       
+       Admin zai iya amfani da wannan
+       wajen tsara packages na Buy Coins.
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS coin_packages (
+        id SERIAL PRIMARY KEY,
+
+        name TEXT NOT NULL,
+
+        coins INTEGER NOT NULL,
+
+        price_amount NUMERIC(12,2) NOT NULL,
+
+        currency TEXT NOT NULL DEFAULT 'NGN',
+
+        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+
+
+    /* ==========================================
+       COIN ORDERS
+       
+       Wannan yana adana duk orders
+       da users suka fara.
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS coin_orders (
+        id SERIAL PRIMARY KEY,
+
+        user_id INTEGER NOT NULL
+          REFERENCES users(id)
+          ON DELETE CASCADE,
+
+        package_id INTEGER
+          REFERENCES coin_packages(id)
+          ON DELETE SET NULL,
+
+        order_reference TEXT UNIQUE NOT NULL,
+
+        coins INTEGER NOT NULL,
+
+        amount NUMERIC(12,2) NOT NULL,
+
+        currency TEXT NOT NULL DEFAULT 'NGN',
+
+        payment_provider TEXT,
+
+        payment_reference TEXT,
+
+        status TEXT NOT NULL DEFAULT 'pending',
+
+        paid_at TIMESTAMPTZ,
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+
+
+    /* ==========================================
+       PAYMENTS
+       
+       Wannan yana bada cikakken payment
+       history ga Admin.
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS payments (
+        id SERIAL PRIMARY KEY,
+
+        user_id INTEGER NOT NULL
+          REFERENCES users(id)
+          ON DELETE CASCADE,
+
+        order_id INTEGER
+          REFERENCES coin_orders(id)
+          ON DELETE SET NULL,
+
+        provider TEXT NOT NULL,
+
+        provider_reference TEXT,
+
+        amount NUMERIC(12,2) NOT NULL,
+
+        currency TEXT NOT NULL DEFAULT 'NGN',
+
+        status TEXT NOT NULL DEFAULT 'pending',
+
+        payment_method TEXT,
+
+        metadata JSONB,
+
+        paid_at TIMESTAMPTZ,
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+      )
+    `);
+
+
+    /* ==========================================
+       ADMIN AUDIT LOG
+       
+       Duk manyan actions na Admin
+       za a iya rikewa a nan.
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS admin_audit_logs (
+        id SERIAL PRIMARY KEY,
+
+        admin_user_id INTEGER
+          REFERENCES users(id)
+          ON DELETE SET NULL,
+
+        action TEXT NOT NULL,
+
+        target_user_id INTEGER
+          REFERENCES users(id)
+          ON DELETE SET NULL,
+
+        reference_type TEXT,
+
+        reference_id TEXT,
+
+        details JSONB,
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )
     `);
 
@@ -251,58 +383,94 @@ async function initDatabase() {
       ON sessions(session_token_hash)
     `);
 
-
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_sessions_user
       ON sessions(user_id)
     `);
-
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_coin_transactions_user
       ON coin_transactions(user_id)
     `);
 
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_coin_transactions_type
+      ON coin_transactions(type)
+    `);
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_tiktok_accounts_user
       ON tiktok_accounts(user_id)
     `);
 
-
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotions_user
       ON promotions(user_id)
     `);
-
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotions_status
       ON promotions(status)
     `);
 
-
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotion_tasks_worker
       ON promotion_tasks(worker_user_id)
     `);
-
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotion_tasks_promotion
       ON promotion_tasks(promotion_id)
     `);
 
-
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_earn_completions_user
       ON earn_completions(user_id)
     `);
 
-
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_earn_completions_task
       ON earn_completions(task_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_coin_orders_user
+      ON coin_orders(user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_coin_orders_status
+      ON coin_orders(status)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_coin_orders_created
+      ON coin_orders(created_at)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_payments_user
+      ON payments(user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_payments_status
+      ON payments(status)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_payments_created
+      ON payments(created_at)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_admin_audit_admin
+      ON admin_audit_logs(admin_user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_admin_audit_target
+      ON admin_audit_logs(target_user_id)
     `);
 
 
@@ -314,7 +482,6 @@ async function initDatabase() {
       ALTER TABLE tiktok_accounts
       ADD COLUMN IF NOT EXISTS username TEXT
     `);
-
 
     await client.query(`
       ALTER TABLE tiktok_accounts
