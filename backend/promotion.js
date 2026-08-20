@@ -14,32 +14,21 @@ const MAX_PROMOTION_COINS = 100000;
 ========================================== */
 
 function parseCookies(cookieHeader = "") {
-
   const cookies = {};
 
   cookieHeader.split(";").forEach((item) => {
-
     const index = item.indexOf("=");
 
     if (index === -1) return;
 
-    const key =
-      item.slice(0, index).trim();
-
-    const value =
-      item.slice(index + 1).trim();
+    const key = item.slice(0, index).trim();
+    const value = item.slice(index + 1).trim();
 
     try {
-
-      cookies[key] =
-        decodeURIComponent(value);
-
+      cookies[key] = decodeURIComponent(value);
     } catch {
-
       cookies[key] = value;
-
     }
-
   });
 
   return cookies;
@@ -47,25 +36,16 @@ function parseCookies(cookieHeader = "") {
 
 
 function hashToken(token) {
-
   return crypto
     .createHash("sha256")
     .update(token)
     .digest("hex");
-
 }
 
 
-/* ==========================================
-   CURRENT USER
-========================================== */
-
 async function getCurrentUser(req) {
-
   const cookies =
-    parseCookies(
-      req.headers.cookie || ""
-    );
+    parseCookies(req.headers.cookie || "");
 
   const sessionToken =
     cookies.session_token;
@@ -82,30 +62,22 @@ async function getCurrentUser(req) {
       `
       SELECT
         u.id,
-        u.display_name,
-        u.avatar_url,
         u.coins,
         u.is_active,
         u.is_banned,
         u.is_admin
-
       FROM sessions s
-
       INNER JOIN users u
         ON u.id = s.user_id
-
       WHERE
         s.session_token_hash = $1
         AND s.expires_at > NOW()
-
       LIMIT 1
       `,
       [sessionHash]
     );
 
-  if (
-    result.rows.length === 0
-  ) {
+  if (result.rows.length === 0) {
     return null;
   }
 
@@ -146,7 +118,9 @@ async function getTikTokAccount(userId) {
 
       WHERE user_id = $1
 
-      ORDER BY created_at DESC
+      ORDER BY
+        updated_at DESC NULLS LAST,
+        id DESC
 
       LIMIT 1
       `,
@@ -190,9 +164,7 @@ function isValidTikTokUrl(value) {
     );
 
   } catch {
-
     return false;
-
   }
 }
 
@@ -204,8 +176,7 @@ function isValidTikTokUrl(value) {
 function normalizeUsername(value) {
 
   let username =
-    String(value || "")
-      .trim();
+    String(value || "").trim();
 
   if (
     username.startsWith("@")
@@ -215,7 +186,6 @@ function normalizeUsername(value) {
   }
 
   return username;
-
 }
 
 
@@ -240,6 +210,7 @@ function validatePromotionCoins(value) {
 
   }
 
+
   if (
     coins < MIN_PROMOTION_COINS
   ) {
@@ -251,6 +222,7 @@ function validatePromotionCoins(value) {
     };
 
   }
+
 
   if (
     coins > MAX_PROMOTION_COINS
@@ -264,6 +236,7 @@ function validatePromotionCoins(value) {
 
   }
 
+
   if (
     coins % COINS_PER_FOLLOWER !== 0
   ) {
@@ -275,6 +248,7 @@ function validatePromotionCoins(value) {
     };
 
   }
+
 
   return {
     valid: true,
@@ -364,6 +338,50 @@ router.post(
       }
 
 
+      /* ======================================
+         CHECK CONNECTED TIKTOK
+      ====================================== */
+
+      const tiktokAccount =
+        await getTikTokAccount(
+          user.id
+        );
+
+
+      if (!tiktokAccount) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Please connect your TikTok account first."
+
+        });
+
+      }
+
+
+      const username =
+        normalizeUsername(
+          tiktokAccount.username
+        );
+
+
+      if (!username) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Your TikTok username could not be found. Please reconnect TikTok."
+
+        });
+
+      }
+
+
       const followers =
         coins /
         COINS_PER_FOLLOWER;
@@ -378,6 +396,12 @@ router.post(
           coins,
 
           followers,
+
+          tiktok_username:
+            username,
+
+          tiktok_url:
+            tiktokAccount.profile_deep_link,
 
           minimum_coins:
             MIN_PROMOTION_COINS,
@@ -435,13 +459,8 @@ router.post(
 
     try {
 
-      /* ======================================
-         AUTHENTICATED USER
-      ====================================== */
-
       const user =
         await getCurrentUser(req);
-
 
       if (!user) {
 
@@ -458,7 +477,7 @@ router.post(
 
 
       /* ======================================
-         COIN VALIDATION
+         VALIDATE COINS
       ====================================== */
 
       const validation =
@@ -498,12 +517,6 @@ router.post(
 
       /* ======================================
          GET CONNECTED TIKTOK ACCOUNT
-
-         IMPORTANT:
-         Frontend ba ya aika username/url.
-
-         Backend yana dauko account daga
-         tiktok_accounts ta user_id.
       ====================================== */
 
       const tiktokAccount =
@@ -519,7 +532,7 @@ router.post(
           success: false,
 
           message:
-            "No TikTok account is connected to your account. Please connect your TikTok account first."
+            "Please connect your TikTok account first."
 
         });
 
@@ -533,7 +546,6 @@ router.post(
 
 
       if (
-        !username ||
         username.length < 1 ||
         username.length > 100
       ) {
@@ -543,7 +555,7 @@ router.post(
           success: false,
 
           message:
-            "Your connected TikTok account does not have a valid username."
+            "Your TikTok username could not be found. Please reconnect TikTok."
 
         });
 
@@ -561,22 +573,22 @@ router.post(
           success: false,
 
           message:
-            "Your connected TikTok username is invalid."
+            "Invalid TikTok username stored in your account."
 
         });
 
       }
 
 
-      /* ======================================
-         CREATE TIKTOK URL
-      ====================================== */
-
       const tiktokUrl =
-        `https://www.tiktok.com/@${username}`;
+        String(
+          tiktokAccount.profile_deep_link ||
+          ""
+        ).trim();
 
 
       if (
+        !tiktokUrl ||
         !isValidTikTokUrl(
           tiktokUrl
         )
@@ -587,7 +599,7 @@ router.post(
           success: false,
 
           message:
-            "Could not create a valid TikTok URL."
+            "Your TikTok profile link could not be found. Please reconnect TikTok."
 
         });
 
@@ -612,7 +624,6 @@ router.post(
           `
           SELECT
             id,
-            display_name,
             coins,
             is_active,
             is_banned
@@ -669,7 +680,7 @@ router.post(
 
       const currentBalance =
         Number(
-          currentUser.coins || 0
+          currentUser.coins
         );
 
 
@@ -728,9 +739,7 @@ router.post(
 
           WHERE id = $2
 
-          RETURNING
-            id,
-            coins
+          RETURNING coins
           `,
           [
             balanceAfter,
@@ -783,9 +792,13 @@ router.post(
           `,
           [
             user.id,
+
             username,
+
             tiktokUrl,
+
             promotionCoins,
+
             targetFollowers
           ]
         );
@@ -843,11 +856,10 @@ router.post(
 
           balanceAfter,
 
-          String(
-            promotion.id
-          ),
+          String(promotion.id),
 
           `${promotionCoins} coins used for ${targetFollowers} follower promotion`
+
         ]
       );
 
@@ -873,7 +885,6 @@ router.post(
 
             AND NOT EXISTS (
               SELECT 1
-
               FROM promotion_tasks pt
 
               WHERE
@@ -933,6 +944,7 @@ router.post(
             `,
             [
               promotion.id,
+
               worker.id
             ]
           );
@@ -957,10 +969,6 @@ router.post(
         "COMMIT"
       );
 
-
-      /* ======================================
-         SUCCESS
-      ====================================== */
 
       return res.status(201).json({
 
@@ -1028,12 +1036,10 @@ router.post(
 
       } catch {}
 
-
       console.error(
         "Create promotion error:",
         error
       );
-
 
       return res.status(500).json({
 
@@ -1066,7 +1072,6 @@ router.get(
 
       const user =
         await getCurrentUser(req);
-
 
       if (!user) {
 
@@ -1125,7 +1130,6 @@ router.get(
         error
       );
 
-
       return res.status(500).json({
 
         success: false,
@@ -1153,7 +1157,6 @@ router.get(
 
       const user =
         await getCurrentUser(req);
-
 
       if (!user) {
 
@@ -1193,6 +1196,7 @@ router.get(
 
           WHERE
             id = $1
+
             AND user_id = $2
 
           LIMIT 1
@@ -1235,6 +1239,7 @@ router.get(
           remaining:
             Math.max(
               0,
+
               Number(
                 promotion.target_count
               ) -
@@ -1253,7 +1258,6 @@ router.get(
         "Get promotion details error:",
         error
       );
-
 
       return res.status(500).json({
 
