@@ -6,6 +6,7 @@ async function initDatabase() {
   try {
     await client.query("BEGIN");
 
+
     /* ==========================================
        USERS
     ========================================== */
@@ -153,19 +154,24 @@ async function initDatabase() {
 
         tiktok_url TEXT NOT NULL,
 
-        promotion_type TEXT NOT NULL DEFAULT 'followers',
+        promotion_type TEXT NOT NULL
+          DEFAULT 'followers',
 
         coins_cost INTEGER NOT NULL,
 
         target_count INTEGER NOT NULL,
 
-        completed_count INTEGER NOT NULL DEFAULT 0,
+        completed_count INTEGER NOT NULL
+          DEFAULT 0,
 
-        status TEXT NOT NULL DEFAULT 'pending',
+        status TEXT NOT NULL
+          DEFAULT 'pending',
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        updated_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW()
       )
     `);
 
@@ -186,9 +192,11 @@ async function initDatabase() {
           REFERENCES users(id)
           ON DELETE CASCADE,
 
-        status TEXT NOT NULL DEFAULT 'pending',
+        status TEXT NOT NULL
+          DEFAULT 'pending',
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
         completed_at TIMESTAMPTZ,
 
@@ -202,6 +210,10 @@ async function initDatabase() {
 
     /* ==========================================
        EARN COMPLETIONS
+       
+       Wannan table yana hana user
+       samun reward sau biyu daga
+       task guda.
     ========================================== */
 
     await client.query(`
@@ -216,9 +228,11 @@ async function initDatabase() {
           REFERENCES users(id)
           ON DELETE CASCADE,
 
-        reward_coins INTEGER NOT NULL,
+        reward_coins INTEGER NOT NULL
+          DEFAULT 5,
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
         UNIQUE(
           task_id,
@@ -237,45 +251,54 @@ async function initDatabase() {
       ON sessions(session_token_hash)
     `);
 
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_sessions_user
       ON sessions(user_id)
     `);
+
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_coin_transactions_user
       ON coin_transactions(user_id)
     `);
 
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_tiktok_accounts_user
       ON tiktok_accounts(user_id)
     `);
+
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotions_user
       ON promotions(user_id)
     `);
 
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotions_status
       ON promotions(status)
     `);
+
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotion_tasks_worker
       ON promotion_tasks(worker_user_id)
     `);
 
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_promotion_tasks_promotion
       ON promotion_tasks(promotion_id)
     `);
 
+
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_earn_completions_user
       ON earn_completions(user_id)
     `);
+
 
     await client.query(`
       CREATE INDEX IF NOT EXISTS idx_earn_completions_task
@@ -284,13 +307,14 @@ async function initDatabase() {
 
 
     /* ==========================================
-       MIGRATION FOR EXISTING DATABASES
+       MIGRATIONS
     ========================================== */
 
     await client.query(`
       ALTER TABLE tiktok_accounts
       ADD COLUMN IF NOT EXISTS username TEXT
     `);
+
 
     await client.query(`
       ALTER TABLE tiktok_accounts
@@ -304,7 +328,9 @@ async function initDatabase() {
 
     await client.query("COMMIT");
 
-    console.log("✅ Database tables are ready");
+    console.log(
+      "✅ Database tables are ready"
+    );
 
   } catch (error) {
 
