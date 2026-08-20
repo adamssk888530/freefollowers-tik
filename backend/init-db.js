@@ -161,13 +161,17 @@ async function initDatabase() {
 
         target_count INTEGER NOT NULL,
 
-        completed_count INTEGER NOT NULL DEFAULT 0,
+        completed_count INTEGER NOT NULL
+          DEFAULT 0,
 
-        status TEXT NOT NULL DEFAULT 'pending',
+        status TEXT NOT NULL
+          DEFAULT 'pending',
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        updated_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW()
       )
     `);
 
@@ -188,9 +192,11 @@ async function initDatabase() {
           REFERENCES users(id)
           ON DELETE CASCADE,
 
-        status TEXT NOT NULL DEFAULT 'pending',
+        status TEXT NOT NULL
+          DEFAULT 'pending',
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
         completed_at TIMESTAMPTZ,
 
@@ -218,9 +224,11 @@ async function initDatabase() {
           REFERENCES users(id)
           ON DELETE CASCADE,
 
-        reward_coins INTEGER NOT NULL DEFAULT 5,
+        reward_coins INTEGER NOT NULL
+          DEFAULT 5,
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
         UNIQUE(
           task_id,
@@ -231,10 +239,59 @@ async function initDatabase() {
 
 
     /* ==========================================
-       COIN PACKAGES
+       FIX ORPHAN coin_packages TYPE
        
-       Admin zai iya amfani da wannan
-       wajen tsara packages na Buy Coins.
+       Wannan yana gyara error:
+       duplicate key value violates unique constraint
+       "pg_type_typename_nsp_index"
+       
+       Ba ya goge users ko coins.
+    ========================================== */
+
+    await client.query(`
+      DO $$
+      DECLARE
+        existing_type TEXT;
+      BEGIN
+
+        SELECT t.typtype
+        INTO existing_type
+
+        FROM pg_type t
+
+        INNER JOIN pg_namespace n
+          ON n.oid = t.typnamespace
+
+        WHERE
+          t.typname = 'coin_packages'
+          AND n.nspname = 'public'
+
+          AND NOT EXISTS (
+            SELECT 1
+            FROM pg_class c
+            WHERE c.oid = t.typrelid
+          )
+
+        LIMIT 1;
+
+
+        IF existing_type IS NOT NULL THEN
+
+          IF existing_type IN ('c', 'e', 'd') THEN
+
+            EXECUTE 'DROP TYPE IF EXISTS public.coin_packages';
+
+          END IF;
+
+        END IF;
+
+      END
+      $$;
+    `);
+
+
+    /* ==========================================
+       COIN PACKAGES
     ========================================== */
 
     await client.query(`
@@ -247,22 +304,23 @@ async function initDatabase() {
 
         price_amount NUMERIC(12,2) NOT NULL,
 
-        currency TEXT NOT NULL DEFAULT 'NGN',
+        currency TEXT NOT NULL
+          DEFAULT 'NGN',
 
-        is_active BOOLEAN NOT NULL DEFAULT TRUE,
+        is_active BOOLEAN NOT NULL
+          DEFAULT TRUE,
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        updated_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW()
       )
     `);
 
 
     /* ==========================================
        COIN ORDERS
-       
-       Wannan yana adana duk orders
-       da users suka fara.
     ========================================== */
 
     await client.query(`
@@ -283,28 +341,29 @@ async function initDatabase() {
 
         amount NUMERIC(12,2) NOT NULL,
 
-        currency TEXT NOT NULL DEFAULT 'NGN',
+        currency TEXT NOT NULL
+          DEFAULT 'NGN',
 
         payment_provider TEXT,
 
         payment_reference TEXT,
 
-        status TEXT NOT NULL DEFAULT 'pending',
+        status TEXT NOT NULL
+          DEFAULT 'pending',
 
         paid_at TIMESTAMPTZ,
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        updated_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW()
       )
     `);
 
 
     /* ==========================================
        PAYMENTS
-       
-       Wannan yana bada cikakken payment
-       history ga Admin.
     ========================================== */
 
     await client.query(`
@@ -325,9 +384,11 @@ async function initDatabase() {
 
         amount NUMERIC(12,2) NOT NULL,
 
-        currency TEXT NOT NULL DEFAULT 'NGN',
+        currency TEXT NOT NULL
+          DEFAULT 'NGN',
 
-        status TEXT NOT NULL DEFAULT 'pending',
+        status TEXT NOT NULL
+          DEFAULT 'pending',
 
         payment_method TEXT,
 
@@ -335,18 +396,17 @@ async function initDatabase() {
 
         paid_at TIMESTAMPTZ,
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW(),
 
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        updated_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW()
       )
     `);
 
 
     /* ==========================================
-       ADMIN AUDIT LOG
-       
-       Duk manyan actions na Admin
-       za a iya rikewa a nan.
+       ADMIN AUDIT LOGS
     ========================================== */
 
     await client.query(`
@@ -369,7 +429,8 @@ async function initDatabase() {
 
         details JSONB,
 
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        created_at TIMESTAMPTZ NOT NULL
+          DEFAULT NOW()
       )
     `);
 
