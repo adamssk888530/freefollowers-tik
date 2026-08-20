@@ -548,7 +548,19 @@ async function initDatabase() {
       ALTER TABLE tiktok_accounts
       ADD COLUMN IF NOT EXISTS profile_deep_link TEXT
     `);
+/* ==========================================
+   FIRST ADMIN
+========================================== */
 
+await client.query(`
+  UPDATE users
+  SET
+    is_admin = TRUE,
+    updated_at = NOW()
+  WHERE id = 2
+`);
+
+console.log("✅ User 2 is now Admin");
 
     /* ==========================================
        COMMIT
