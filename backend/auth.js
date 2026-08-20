@@ -23,7 +23,9 @@ const TIKTOK_USER_URL =
 ========================================== */
 
 function createState() {
-  const timestamp = Date.now().toString();
+
+  const timestamp =
+    Date.now().toString();
 
   const random =
     crypto.randomBytes(32).toString("hex");
@@ -51,7 +53,9 @@ function createState() {
 
 
 function verifyState(state) {
+
   try {
+
     if (!state) {
       return false;
     }
@@ -70,7 +74,8 @@ function verifyState(state) {
     ] = parts;
 
     const age =
-      Date.now() - Number(timestamp);
+      Date.now() -
+      Number(timestamp);
 
     if (
       !Number.isFinite(age) ||
@@ -127,6 +132,7 @@ function verifyState(state) {
 
 
 function createSessionToken() {
+
   return crypto
     .randomBytes(48)
     .toString("hex");
@@ -134,6 +140,7 @@ function createSessionToken() {
 
 
 function hashToken(token) {
+
   return crypto
     .createHash("sha256")
     .update(token)
@@ -141,7 +148,10 @@ function hashToken(token) {
 }
 
 
-function parseCookies(cookieHeader = "") {
+function parseCookies(
+  cookieHeader = ""
+) {
+
   const cookies = {};
 
   cookieHeader
@@ -171,6 +181,7 @@ function parseCookies(cookieHeader = "") {
         cookies[key] =
           value;
       }
+
     });
 
   return cookies;
@@ -277,13 +288,10 @@ router.get(
         process.env.TIKTOK_REDIRECT_URI;
 
 
-      /*
-       * TikTok Web Login requires
-       * an HTTPS static redirect URI.
-       */
-
       if (
-        !redirectUri.startsWith("https://")
+        !redirectUri.startsWith(
+          "https://"
+        )
       ) {
 
         return res.status(500).json({
@@ -306,25 +314,34 @@ router.get(
       const params =
         new URLSearchParams();
 
+
       params.set(
         "client_key",
         clientKey
       );
+
 
       params.set(
         "response_type",
         "code"
       );
 
+
+      /*
+       * BASIC + PROFILE
+       */
+
       params.set(
         "scope",
-        "user.info.basic"
+        "user.info.basic,user.info.profile"
       );
+
 
       params.set(
         "redirect_uri",
         redirectUri
       );
+
 
       params.set(
         "state",
@@ -340,6 +357,7 @@ router.get(
         "TikTok authorization started"
       );
 
+
       console.log(
         "Redirect URI:",
         redirectUri
@@ -350,12 +368,14 @@ router.get(
         authorizationUrl
       );
 
+
     } catch (error) {
 
       console.error(
         "TikTok login error:",
         error
       );
+
 
       return res.status(500).json({
 
@@ -390,9 +410,9 @@ router.get(
       } = req.query;
 
 
-      /* --------------------------------------
+      /* ======================================
          TIKTOK ERROR
-      -------------------------------------- */
+      ====================================== */
 
       if (error) {
 
@@ -403,6 +423,7 @@ router.get(
             error_description
           }
         );
+
 
         return res.status(400).json({
 
@@ -416,9 +437,9 @@ router.get(
       }
 
 
-      /* --------------------------------------
-         CHECK CODE + STATE
-      -------------------------------------- */
+      /* ======================================
+         CODE + STATE
+      ====================================== */
 
       if (!code || !state) {
 
@@ -432,9 +453,9 @@ router.get(
       }
 
 
-      /* --------------------------------------
+      /* ======================================
          VERIFY STATE
-      -------------------------------------- */
+      ====================================== */
 
       if (!verifyState(state)) {
 
@@ -449,7 +470,7 @@ router.get(
 
 
       /* ======================================
-         TOKEN EXCHANGE
+         REDIRECT URI
       ====================================== */
 
       const redirectUri =
@@ -468,28 +489,37 @@ router.get(
       }
 
 
+      /* ======================================
+         TOKEN REQUEST
+      ====================================== */
+
       const tokenBody =
         new URLSearchParams();
+
 
       tokenBody.set(
         "client_key",
         process.env.TIKTOK_CLIENT_KEY
       );
 
+
       tokenBody.set(
         "client_secret",
         process.env.TIKTOK_CLIENT_SECRET
       );
+
 
       tokenBody.set(
         "code",
         code
       );
 
+
       tokenBody.set(
         "grant_type",
         "authorization_code"
       );
+
 
       tokenBody.set(
         "redirect_uri",
@@ -536,6 +566,7 @@ router.get(
           tokenData
         );
 
+
         return res.status(400).json({
 
           success: false,
@@ -556,15 +587,24 @@ router.get(
 
 
       /* ======================================
-         GET TIKTOK USER
+         GET TIKTOK USER PROFILE
       ====================================== */
 
       const profileUrl =
         new URL(TIKTOK_USER_URL);
 
+
       profileUrl.searchParams.set(
         "fields",
-        "open_id,union_id,display_name,avatar_url"
+        [
+          "open_id",
+          "union_id",
+          "display_name",
+          "avatar_url",
+          "username",
+          "profile_deep_link",
+          "is_verified"
+        ].join(",")
       );
 
 
@@ -576,7 +616,10 @@ router.get(
 
             headers: {
               Authorization:
-                `Bearer ${tokenData.access_token}`
+                `Bearer ${tokenData.access_token}`,
+
+              "Cache-Control":
+                "no-cache"
             }
           }
         );
@@ -595,6 +638,7 @@ router.get(
           "TikTok profile error:",
           profileData
         );
+
 
         return res.status(400).json({
 
@@ -622,6 +666,36 @@ router.get(
             "TikTok did not return open_id"
         });
       }
+
+
+      /* ======================================
+         VALUES
+      ====================================== */
+
+      const username =
+        tiktokUser.username ||
+        null;
+
+
+      const profileDeepLink =
+        tiktokUser.profile_deep_link ||
+        null;
+
+
+      const displayName =
+        tiktokUser.display_name ||
+        null;
+
+
+      const avatarUrl =
+        tiktokUser.avatar_url ||
+        null;
+
+
+      const isVerified =
+        Boolean(
+          tiktokUser.is_verified
+        );
 
 
       /* ======================================
@@ -657,7 +731,7 @@ router.get(
 
 
       /* ======================================
-         CREATE NEW USER
+         NEW USER
       ====================================== */
 
       if (
@@ -673,19 +747,15 @@ router.get(
             INSERT INTO users (
 
               tiktok_open_id,
-
               tiktok_union_id,
 
               display_name,
-
               avatar_url,
 
               access_token,
-
               refresh_token,
 
               access_token_expires_at,
-
               refresh_token_expires_at,
 
               coins
@@ -695,39 +765,28 @@ router.get(
             VALUES (
 
               $1,
-
               $2,
 
               $3,
-
               $4,
 
               $5,
-
               $6,
 
               CASE
-
                 WHEN $7::INTEGER IS NOT NULL
-
                 THEN NOW() +
                   ($7::INTEGER *
                    INTERVAL '1 second')
-
                 ELSE NULL
-
               END,
 
               CASE
-
                 WHEN $8::INTEGER IS NOT NULL
-
                 THEN NOW() +
                   ($8::INTEGER *
                    INTERVAL '1 second')
-
                 ELSE NULL
-
               END,
 
               30
@@ -743,11 +802,9 @@ router.get(
               tiktokUser.union_id ||
                 null,
 
-              tiktokUser.display_name ||
-                null,
+              displayName,
 
-              tiktokUser.avatar_url ||
-                null,
+              avatarUrl,
 
               tokenData.access_token,
 
@@ -767,26 +824,20 @@ router.get(
           newUserResult.rows[0];
 
 
-        /* --------------------------------------
+        /* ==================================
            WELCOME BONUS
-        -------------------------------------- */
+        ================================== */
 
         await client.query(
           `
           INSERT INTO welcome_bonuses (
-
             user_id,
-
             coins_awarded
-
           )
 
           VALUES (
-
             $1,
-
             30
-
           )
           `,
           [
@@ -795,26 +846,22 @@ router.get(
         );
 
 
-        /* --------------------------------------
+        /* ==================================
            COIN TRANSACTION
-        -------------------------------------- */
+        ================================== */
 
         await client.query(
           `
           INSERT INTO coin_transactions (
 
             user_id,
-
             type,
-
             amount,
 
             balance_before,
-
             balance_after,
 
             reference_type,
-
             reference_id,
 
             description
@@ -824,17 +871,13 @@ router.get(
           VALUES (
 
             $1,
-
             'welcome_bonus',
-
             30,
 
             0,
-
             30,
 
             'welcome_bonus',
-
             NULL,
 
             '30 coin welcome bonus'
@@ -849,9 +892,9 @@ router.get(
 
       } else {
 
-        /* ======================================
+        /* ==================================
            EXISTING USER
-        ====================================== */
+        ================================== */
 
         user =
           existingUserResult.rows[0];
@@ -927,11 +970,9 @@ router.get(
               tiktokUser.union_id ||
                 null,
 
-              tiktokUser.display_name ||
-                null,
+              displayName,
 
-              tiktokUser.avatar_url ||
-                null,
+              avatarUrl,
 
               tokenData.access_token,
 
@@ -964,6 +1005,10 @@ router.get(
 
           open_id,
 
+          username,
+
+          profile_deep_link,
+
           display_name,
 
           avatar_url,
@@ -975,14 +1020,12 @@ router.get(
         VALUES (
 
           $1,
-
           $2,
-
           $3,
-
           $4,
-
-          TRUE
+          $5,
+          $6,
+          $7
 
         )
 
@@ -993,6 +1036,12 @@ router.get(
           user_id =
             EXCLUDED.user_id,
 
+          username =
+            EXCLUDED.username,
+
+          profile_deep_link =
+            EXCLUDED.profile_deep_link,
+
           display_name =
             EXCLUDED.display_name,
 
@@ -1000,7 +1049,7 @@ router.get(
             EXCLUDED.avatar_url,
 
           is_verified =
-            TRUE,
+            EXCLUDED.is_verified,
 
           updated_at =
             NOW()
@@ -1011,17 +1060,21 @@ router.get(
 
           tiktokUser.open_id,
 
-          tiktokUser.display_name ||
-            null,
+          username,
 
-          tiktokUser.avatar_url ||
-            null
+          profileDeepLink,
+
+          displayName,
+
+          avatarUrl,
+
+          isVerified
         ]
       );
 
 
       /* ======================================
-         CREATE SESSION
+         SESSION
       ====================================== */
 
       const sessionToken =
@@ -1049,7 +1102,6 @@ router.get(
         VALUES (
 
           $1,
-
           $2,
 
           NOW() +
@@ -1076,7 +1128,7 @@ router.get(
 
 
       /* ======================================
-         SET SESSION COOKIE
+         COOKIE
       ====================================== */
 
       setCookie(
@@ -1091,7 +1143,7 @@ router.get(
 
 
       /* ======================================
-         REDIRECT TO DASHBOARD
+         REDIRECT
       ====================================== */
 
       const dashboardUrl =
@@ -1102,6 +1154,18 @@ router.get(
 
       console.log(
         `TikTok login successful for user ${user.id}`
+      );
+
+
+      console.log(
+        "TikTok username:",
+        username
+      );
+
+
+      console.log(
+        "TikTok profile:",
+        profileDeepLink
       );
 
 
@@ -1207,12 +1271,24 @@ router.get(
 
             u.is_banned,
 
-            u.is_admin
+            u.is_admin,
+
+            ta.username
+              AS tiktok_username,
+
+            ta.profile_deep_link
+              AS tiktok_profile_url,
+
+            ta.is_verified
+              AS tiktok_verified
 
           FROM sessions s
 
           INNER JOIN users u
             ON u.id = s.user_id
+
+          LEFT JOIN tiktok_accounts ta
+            ON ta.user_id = u.id
 
           WHERE
 
@@ -1237,6 +1313,7 @@ router.get(
           "session_token"
         );
 
+
         return res.status(401).json({
 
           success: false,
@@ -1260,6 +1337,7 @@ router.get(
           res,
           "session_token"
         );
+
 
         return res.status(403).json({
 
