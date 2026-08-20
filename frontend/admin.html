@@ -1,2264 +1,2314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="theme-color"
-    content="#050505"
-  >
-
-  <title>Admin Dashboard - FreeFollowersTik</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html,
-    body {
-      min-height: 100%;
-      background: #050505;
-      color: #fff;
-      font-family: Arial, Helvetica, sans-serif;
-    }
-
-    body {
-      padding-bottom: 30px;
-    }
-
-    button,
-    input,
-    select {
-      font-family: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-
-    /* =========================================
-       HEADER
-    ========================================= */
-
-    .header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-
-      height: 62px;
-
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-
-      padding: 0 16px;
-
-      background: #080808;
-
-      border-bottom:
-        1px solid
-        rgba(255,255,255,0.10);
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      border-radius: 11px;
-
-      background: #fe2c55;
-
-      font-size: 19px;
-    }
-
-    .brand-title {
-      font-size: 17px;
-      font-weight: 900;
-    }
-
-    .brand-subtitle {
-      color: #777;
-      font-size: 9px;
-      margin-top: 2px;
-    }
-
-    .admin-profile {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .admin-name {
-      color: #aaa;
-      font-size: 10px;
-    }
-
-    .admin-avatar {
-      width: 36px;
-      height: 36px;
-
-      border-radius: 50%;
-
-      object-fit: cover;
-
-      background: #222;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.2);
-    }
-
-
-    /* =========================================
-       MAIN
-    ========================================= */
-
-    .container {
-      width: 100%;
-      max-width: 1100px;
-
-      margin: auto;
-
-      padding: 16px;
-    }
-
-    .page-title {
-      margin-bottom: 15px;
-    }
-
-    .page-title h1 {
-      font-size: 25px;
-      margin-bottom: 5px;
-    }
-
-    .page-title p {
-      color: #777;
-      font-size: 11px;
-    }
-
-
-    /* =========================================
-       MESSAGE
-    ========================================= */
-
-    .message {
-      display: none;
-
-      margin-bottom: 12px;
-
-      padding: 11px 13px;
-
-      border-radius: 10px;
-
-      font-size: 11px;
-      font-weight: 700;
-    }
-
-    .message.success {
-      display: block;
-
-      color: #00e676;
-
-      background:
-        rgba(0,230,118,0.10);
-
-      border:
-        1px solid
-        rgba(0,230,118,0.25);
-    }
-
-    .message.error {
-      display: block;
-
-      color: #ff6684;
-
-      background:
-        rgba(254,44,85,0.10);
-
-      border:
-        1px solid
-        rgba(254,44,85,0.25);
-    }
-
-
-    /* =========================================
-       STAT CARDS
-    ========================================= */
-
-    .stats-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(2, 1fr);
-
-      gap: 9px;
-
-      margin-bottom: 18px;
-    }
-
-    .stat-card {
-      min-height: 105px;
-
-      padding: 13px;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.10);
-
-      border-radius: 15px;
-
-      background:
-        linear-gradient(
-          145deg,
-          rgba(255,255,255,0.045),
-          rgba(255,255,255,0.015)
-        );
-    }
-
-    .stat-icon {
-      font-size: 18px;
-      margin-bottom: 8px;
-    }
-
-    .stat-label {
-      color: #777;
-      font-size: 9px;
-      margin-bottom: 5px;
-    }
-
-    .stat-value {
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .stat-extra {
-      color: #555;
-      font-size: 8px;
-      margin-top: 4px;
-    }
-
-
-    /* =========================================
-       SECTION
-    ========================================= */
-
-    .section {
-      margin-bottom: 18px;
-    }
-
-    .section-header {
-      display: flex;
-
-      align-items: center;
-      justify-content: space-between;
-
-      margin-bottom: 9px;
-    }
-
-    .section-header h2 {
-      font-size: 15px;
-    }
-
-    .section-header span {
-      color: #666;
-      font-size: 9px;
-    }
-
-
-    /* =========================================
-       SALES OVERVIEW
-    ========================================= */
-
-    .sales-grid {
-      display: grid;
-
-      grid-template-columns:
-        repeat(3, 1fr);
-
-      gap: 8px;
-    }
-
-    .sales-card {
-      padding: 12px;
-
-      border-radius: 12px;
-
-      background: #0b0b0b;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.09);
-    }
-
-    .sales-card-label {
-      color: #777;
-      font-size: 8px;
-      margin-bottom: 5px;
-    }
-
-    .sales-card-value {
-      font-size: 15px;
-      font-weight: 900;
-    }
-
-
-    /* =========================================
-       TABLE
-    ========================================= */
-
-    .table-wrap {
-      width: 100%;
-
-      overflow-x: auto;
-
-      border:
-        1px solid
-        rgba(255,255,255,0.10);
-
-      border-radius: 13px;
-
-      background: #090909;
-    }
-
-    table {
-      width: 100%;
-
-      border-collapse: collapse;
-
-      min-width: 650px;
-    }
-
-    th {
-      color: #777;
-
-      font-size: 8px;
-
-      text-align: left;
-
-      padding: 11px 10px;
-
-      background: #0d0d0d;
-
-      border-bottom:
-        1px solid
-        rgba(255,255,255,0.08);
-    }
-
-    td {
-      padding: 11px 10px;
-
-      font-size: 9px;
-
-      color: #ccc;
-
-      border-bottom:
-        1px solid
-        rgba(255,255,255,0.06);
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
-    }
-
-
-    /* =========================================
-       BADGES
-    ========================================= */
-
-    .badge {
-      display: inline-flex;
-
-      align-items: center;
-      justify-content: center;
-
-      padding: 4px 7px;
-
-      border-radius: 6px;
-
-      font-size: 7px;
-
-      font-weight: 800;
-    }
-
-    .badge-paid,
-    .badge-completed {
-      color: #00e676;
-
-      background:
-        rgba(0,230,118,0.10);
-    }
-
-    .badge-pending {
-      color: #fbbf24;
-
-      background:
-        rgba(251,191,36,0.10);
-    }
-
-    .badge-failed,
-    .badge-banned {
-      color: #ff5576;
-
-      background:
-        rgba(254,44,85,0.10);
-    }
-
-    .badge-active {
-      color: #60a5fa;
-
-      background:
-        rgba(96,165,250,0.10);
-    }
-
-
-    /* =========================================
-       REFRESH BUTTON
-    ========================================= */
-
-    .refresh-button {
-      border: 0;
-
-      padding: 7px 10px;
-
-      border-radius: 8px;
-
-      background:
-        rgba(255,255,255,0.08);
-
-      color: #fff;
-
-      font-size: 9px;
-      font-weight: 700;
-    }
-
-    .refresh-button:active {
-      transform: scale(0.97);
-    }
-
-
-    /* =========================================
-       LOADING
-    ========================================= */
-
-    .loading {
-      position: fixed;
-
-      inset: 0;
-
-      z-index: 999;
-
-      display: flex;
-
-      align-items: center;
-      justify-content: center;
-
-      flex-direction: column;
-
-      gap: 10px;
-
-      background: #050505;
-    }
-
-    .spinner {
-      width: 38px;
-      height: 38px;
-
-      border:
-        3px solid
-        rgba(255,255,255,0.10);
-
-      border-top-color: #fe2c55;
-
-      border-right-color: #00f2ea;
-
-      border-radius: 50%;
-
-      animation:
-        spin 0.8s linear infinite;
-    }
-
-    .loading-text {
-      color: #777;
-      font-size: 10px;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-
-    /* =========================================
-       EMPTY
-    ========================================= */
-
-    .empty {
-      padding: 25px;
-
-      text-align: center;
-
-      color: #666;
-
-      font-size: 10px;
-    }
-
-
-    /* =========================================
-       DESKTOP
-    ========================================= */
-
-    @media (min-width: 700px) {
-
-      .stats-grid {
-        grid-template-columns:
-          repeat(4, 1fr);
-      }
-
-      .container {
-        padding: 25px;
-      }
-
-      .page-title h1 {
-        font-size: 30px;
-      }
-
-    }
-
-
-    /* =========================================
-       VERY SMALL PHONES
-    ========================================= */
-
-    @media (max-width: 360px) {
-
-      .container {
-        padding: 11px;
-      }
-
-      .stats-grid {
-        gap: 6px;
-      }
-
-      .stat-card {
-        padding: 10px;
-      }
-
-      .stat-value {
-        font-size: 17px;
-      }
-
-      .sales-grid {
-        gap: 5px;
-      }
-
-      .sales-card {
-        padding: 9px;
-      }
-
-      .sales-card-value {
-        font-size: 12px;
-      }
-
-    }
-
-  </style>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#050505">
+
+<title>Admin Dashboard - FreeFollowersTik</title>
+
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+html,body{
+  min-height:100%;
+  background:#050505;
+  color:#fff;
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+body{
+  padding-bottom:30px;
+}
+
+button,input,select{
+  font-family:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+/* HEADER */
+
+.header{
+  position:sticky;
+  top:0;
+  z-index:100;
+
+  height:62px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding:0 16px;
+
+  background:#080808;
+
+  border-bottom:1px solid rgba(255,255,255,.10);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.brand-icon{
+  width:38px;
+  height:38px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:11px;
+
+  background:#fe2c55;
+
+  font-size:19px;
+}
+
+.brand-title{
+  font-size:17px;
+  font-weight:900;
+}
+
+.brand-subtitle{
+  color:#777;
+  font-size:9px;
+  margin-top:2px;
+}
+
+.admin-profile{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.admin-name{
+  color:#aaa;
+  font-size:10px;
+}
+
+.admin-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  background:#222;
+  border:1px solid rgba(255,255,255,.2);
+}
+
+/* MAIN */
+
+.container{
+  width:100%;
+  max-width:1100px;
+  margin:auto;
+  padding:16px;
+}
+
+.page-title{
+  margin-bottom:15px;
+}
+
+.page-title h1{
+  font-size:25px;
+  margin-bottom:5px;
+}
+
+.page-title p{
+  color:#777;
+  font-size:11px;
+}
+
+/* MESSAGE */
+
+.message{
+  display:none;
+  margin-bottom:12px;
+  padding:11px 13px;
+  border-radius:10px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.message.success{
+  display:block;
+  color:#00e676;
+  background:rgba(0,230,118,.10);
+  border:1px solid rgba(0,230,118,.25);
+}
+
+.message.error{
+  display:block;
+  color:#ff6684;
+  background:rgba(254,44,85,.10);
+  border:1px solid rgba(254,44,85,.25);
+}
+
+/* STATS */
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+  margin-bottom:18px;
+}
+
+.stat-card{
+  min-height:105px;
+  padding:13px;
+
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:15px;
+
+  background:linear-gradient(
+    145deg,
+    rgba(255,255,255,.045),
+    rgba(255,255,255,.015)
+  );
+}
+
+.stat-icon{
+  font-size:18px;
+  margin-bottom:8px;
+}
+
+.stat-label{
+  color:#777;
+  font-size:9px;
+  margin-bottom:5px;
+}
+
+.stat-value{
+  font-size:20px;
+  font-weight:900;
+}
+
+.stat-extra{
+  color:#555;
+  font-size:8px;
+  margin-top:4px;
+}
+
+/* SECTION */
+
+.section{
+  margin-bottom:18px;
+}
+
+.section-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:9px;
+}
+
+.section-header h2{
+  font-size:15px;
+}
+
+.section-header span{
+  color:#666;
+  font-size:9px;
+}
+
+/* SALES */
+
+.sales-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+}
+
+.sales-card{
+  padding:12px;
+  border-radius:12px;
+  background:#0b0b0b;
+  border:1px solid rgba(255,255,255,.09);
+}
+
+.sales-card-label{
+  color:#777;
+  font-size:8px;
+  margin-bottom:5px;
+}
+
+.sales-card-value{
+  font-size:15px;
+  font-weight:900;
+}
+
+/* TABLE */
+
+.table-wrap{
+  width:100%;
+  overflow-x:auto;
+
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:13px;
+
+  background:#090909;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+
+th{
+  color:#777;
+  font-size:8px;
+  text-align:left;
+  padding:11px 10px;
+  background:#0d0d0d;
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+td{
+  padding:11px 10px;
+  font-size:9px;
+  color:#ccc;
+
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+tr:last-child td{
+  border-bottom:0;
+}
+
+/* BADGES */
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:4px 7px;
+
+  border-radius:6px;
+
+  font-size:7px;
+  font-weight:800;
+}
+
+.badge-paid,
+.badge-completed{
+  color:#00e676;
+  background:rgba(0,230,118,.10);
+}
+
+.badge-pending{
+  color:#fbbf24;
+  background:rgba(251,191,36,.10);
+}
+
+.badge-failed,
+.badge-banned{
+  color:#ff5576;
+  background:rgba(254,44,85,.10);
+}
+
+.badge-active{
+  color:#60a5fa;
+  background:rgba(96,165,250,.10);
+}
+
+/* BUTTONS */
+
+.refresh-button{
+  border:0;
+  padding:7px 10px;
+  border-radius:8px;
+
+  background:rgba(255,255,255,.08);
+  color:#fff;
+
+  font-size:9px;
+  font-weight:700;
+}
+
+.refresh-button:hover{
+  background:rgba(255,255,255,.14);
+}
+
+.refresh-button:active{
+  transform:scale(.97);
+}
+
+.add-coins-button{
+  border:0;
+
+  padding:7px 10px;
+
+  border-radius:8px;
+
+  background:#fe2c55;
+  color:#fff;
+
+  font-size:8px;
+  font-weight:800;
+
+  white-space:nowrap;
+}
+
+.add-coins-button:hover{
+  background:#ff466a;
+}
+
+.add-coins-button:active{
+  transform:scale(.97);
+}
+
+.add-coins-button:disabled{
+  opacity:.5;
+  cursor:not-allowed;
+}
+
+/* LOADING */
+
+.loading{
+  position:fixed;
+  inset:0;
+  z-index:999;
+
+  display:flex;
+
+  align-items:center;
+  justify-content:center;
+
+  flex-direction:column;
+
+  gap:10px;
+
+  background:#050505;
+}
+
+.spinner{
+  width:38px;
+  height:38px;
+
+  border:3px solid rgba(255,255,255,.10);
+
+  border-top-color:#fe2c55;
+  border-right-color:#00f2ea;
+
+  border-radius:50%;
+
+  animation:spin .8s linear infinite;
+}
+
+.loading-text{
+  color:#777;
+  font-size:10px;
+}
+
+@keyframes spin{
+  to{
+    transform:rotate(360deg);
+  }
+}
+
+/* EMPTY */
+
+.empty{
+  padding:25px;
+  text-align:center;
+  color:#666;
+  font-size:10px;
+}
+
+/* DESKTOP */
+
+@media(min-width:700px){
+
+  .stats-grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+
+  .container{
+    padding:25px;
+  }
+
+  .page-title h1{
+    font-size:30px;
+  }
+}
+
+/* SMALL PHONES */
+
+@media(max-width:360px){
+
+  .container{
+    padding:11px;
+  }
+
+  .stats-grid{
+    gap:6px;
+  }
+
+  .stat-card{
+    padding:10px;
+  }
+
+  .stat-value{
+    font-size:17px;
+  }
+
+  .sales-grid{
+    gap:5px;
+  }
+
+  .sales-card{
+    padding:9px;
+  }
+
+  .sales-card-value{
+    font-size:12px;
+  }
+}
+</style>
 </head>
 
 <body>
 
+<!-- LOADING -->
 
-  <!-- =========================================
-       LOADING
-  ========================================= -->
+<div id="loading" class="loading">
 
-  <div
-    id="loading"
-    class="loading"
-  >
+  <div class="spinner"></div>
 
-    <div class="spinner"></div>
+  <div class="loading-text">
+    Loading Admin Dashboard...
+  </div>
 
-    <div class="loading-text">
-      Loading Admin Dashboard...
+</div>
+
+
+<!-- HEADER -->
+
+<header class="header">
+
+  <div class="brand">
+
+    <div class="brand-icon">
+      🛡️
+    </div>
+
+    <div>
+
+      <div class="brand-title">
+        FreeFollowersTik
+      </div>
+
+      <div class="brand-subtitle">
+        ADMIN PANEL
+      </div>
+
     </div>
 
   </div>
 
 
-  <!-- =========================================
-       HEADER
-  ========================================= -->
+  <div class="admin-profile">
 
-  <header class="header">
+    <span
+      id="adminName"
+      class="admin-name"
+    >
+      Admin
+    </span>
 
-    <div class="brand">
+    <img
+      id="adminAvatar"
+      class="admin-avatar"
+      src=""
+      alt="Admin"
+    >
 
-      <div class="brand-icon">
-        🛡️
+  </div>
+
+</header>
+
+
+<!-- MAIN -->
+
+<main class="container">
+
+  <div class="page-title">
+
+    <h1>
+      Admin Dashboard
+    </h1>
+
+    <p>
+      Monitor users, coins, sales, promotions and earnings.
+    </p>
+
+  </div>
+
+
+  <!-- MESSAGE -->
+
+  <div
+    id="message"
+    class="message"
+  ></div>
+
+
+  <!-- MAIN STATS -->
+
+  <section class="stats-grid">
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        👥
       </div>
 
-      <div>
-
-        <div class="brand-title">
-          FreeFollowersTik
-        </div>
-
-        <div class="brand-subtitle">
-          ADMIN PANEL
-        </div>
-
+      <div class="stat-label">
+        TOTAL USERS
       </div>
 
-    </div>
-
-
-    <div class="admin-profile">
-
-      <span
-        id="adminName"
-        class="admin-name"
+      <div
+        id="totalUsers"
+        class="stat-value"
       >
-        Admin
-      </span>
+        0
+      </div>
 
-      <img
-        id="adminAvatar"
-        class="admin-avatar"
-        src=""
-        alt="Admin"
+      <div
+        id="newUsers"
+        class="stat-extra"
       >
-
-    </div>
-
-  </header>
-
-
-  <!-- =========================================
-       MAIN
-  ========================================= -->
-
-  <main class="container">
-
-
-    <div class="page-title">
-
-      <h1>
-        Admin Dashboard
-      </h1>
-
-      <p>
-        Monitor users, coins, sales, promotions and earnings.
-      </p>
+        0 new today
+      </div>
 
     </div>
 
 
-    <!-- MESSAGE -->
+    <div class="stat-card">
 
-    <div
-      id="message"
-      class="message"
-    ></div>
-
-
-    <!-- =======================================
-         MAIN STATS
-    ======================================== -->
-
-    <section class="stats-grid">
-
-
-      <div class="stat-card">
-
-        <div class="stat-icon">
-          👥
-        </div>
-
-        <div class="stat-label">
-          TOTAL USERS
-        </div>
-
-        <div
-          id="totalUsers"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div
-          id="newUsers"
-          class="stat-extra"
-        >
-          0 new today
-        </div>
-
+      <div class="stat-icon">
+        🟢
       </div>
 
-
-      <div class="stat-card">
-
-        <div class="stat-icon">
-          🟢
-        </div>
-
-        <div class="stat-label">
-          ACTIVE USERS
-        </div>
-
-        <div
-          id="activeUsers"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div
-          id="bannedUsers"
-          class="stat-extra"
-        >
-          0 banned
-        </div>
-
+      <div class="stat-label">
+        ACTIVE USERS
       </div>
 
-
-      <div class="stat-card">
-
-        <div class="stat-icon">
-          🪙
-        </div>
-
-        <div class="stat-label">
-          USER COINS
-        </div>
-
-        <div
-          id="totalCoins"
-          class="stat-value"
-        >
-          0
-        </div>
-
-        <div class="stat-extra">
-          Current balances
-        </div>
-
+      <div
+        id="activeUsers"
+        class="stat-value"
+      >
+        0
       </div>
 
+      <div
+        id="bannedUsers"
+        class="stat-extra"
+      >
+        0 banned
+      </div>
 
-      <div class="stat-card">
+    </div>
 
-        <div class="stat-icon">
-          💰
-        </div>
 
-        <div class="stat-label">
-          TOTAL REVENUE
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        🪙
+      </div>
+
+      <div class="stat-label">
+        USER COINS
+      </div>
+
+      <div
+        id="totalCoins"
+        class="stat-value"
+      >
+        0
+      </div>
+
+      <div class="stat-extra">
+        Current balances
+      </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+      <div class="stat-icon">
+        💰
+      </div>
+
+      <div class="stat-label">
+        TOTAL REVENUE
+      </div>
+
+      <div
+        id="revenue"
+        class="stat-value"
+      >
+        ₦0
+      </div>
+
+      <div
+        id="paidOrders"
+        class="stat-extra"
+      >
+        0 paid orders
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- SALES -->
+
+  <section class="section">
+
+    <div class="section-header">
+
+      <h2>
+        💳 Coin Sales
+      </h2>
+
+      <button
+        id="refreshBtn"
+        class="refresh-button"
+        type="button"
+      >
+        ↻ Refresh
+      </button>
+
+    </div>
+
+
+    <div class="sales-grid">
+
+      <div class="sales-card">
+
+        <div class="sales-card-label">
+          SALES TODAY
         </div>
 
         <div
-          id="revenue"
-          class="stat-value"
+          id="todayRevenue"
+          class="sales-card-value"
         >
           ₦0
         </div>
 
+      </div>
+
+
+      <div class="sales-card">
+
+        <div class="sales-card-label">
+          COINS SOLD
+        </div>
+
         <div
-          id="paidOrders"
-          class="stat-extra"
+          id="coinsSold"
+          class="sales-card-value"
         >
-          0 paid orders
+          0
         </div>
 
       </div>
 
 
-    </section>
+      <div class="sales-card">
 
+        <div class="sales-card-label">
+          ORDERS TODAY
+        </div>
 
-    <!-- =======================================
-         SALES
-    ======================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          💳 Coin Sales
-        </h2>
-
-        <button
-          id="refreshBtn"
-          class="refresh-button"
-          type="button"
+        <div
+          id="ordersToday"
+          class="sales-card-value"
         >
-          ↻ Refresh
-        </button>
-
-      </div>
-
-
-      <div class="sales-grid">
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            SALES TODAY
-          </div>
-
-          <div
-            id="todayRevenue"
-            class="sales-card-value"
-          >
-            ₦0
-          </div>
-
-        </div>
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            COINS SOLD
-          </div>
-
-          <div
-            id="coinsSold"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            ORDERS TODAY
-          </div>
-
-          <div
-            id="ordersToday"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================
-         PROMOTIONS
-    ======================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          🚀 Promotions
-        </h2>
-
-        <span>
-          Overall
-        </span>
-
-      </div>
-
-
-      <div class="sales-grid">
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            TOTAL
-          </div>
-
-          <div
-            id="totalPromotions"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            PENDING
-          </div>
-
-          <div
-            id="pendingPromotions"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            COMPLETED
-          </div>
-
-          <div
-            id="completedPromotions"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================
-         EARN
-    ======================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          🎁 Earn System
-        </h2>
-
-        <span>
-          Worker activity
-        </span>
-
-      </div>
-
-
-      <div class="sales-grid">
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            TOTAL TASKS
-          </div>
-
-          <div
-            id="totalTasks"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            COMPLETED TASKS
-          </div>
-
-          <div
-            id="completedTasks"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-        <div class="sales-card">
-
-          <div class="sales-card-label">
-            COINS GIVEN
-          </div>
-
-          <div
-            id="coinsGiven"
-            class="sales-card-value"
-          >
-            0
-          </div>
-
-        </div>
-
-
-      </div>
-
-    </section>
-
-
-    <!-- =======================================
-         RECENT PURCHASES
-    ======================================== -->
-
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          🛒 Recent Coin Purchases
-        </h2>
-
-        <span>
-          Last 20
-        </span>
-
-      </div>
-
-
-      <div
-        id="purchasesTable"
-        class="table-wrap"
-      >
-
-        <div class="empty">
-          Loading purchases...
+          0
         </div>
 
       </div>
 
-    </section>
+    </div>
+
+  </section>
 
 
-    <!-- =======================================
-         RECENT PROMOTIONS
-    ======================================== -->
+  <!-- PROMOTIONS -->
 
-    <section class="section">
+  <section class="section">
 
-      <div class="section-header">
+    <div class="section-header">
 
-        <h2>
-          📢 Recent Promotions
-        </h2>
+      <h2>
+        🚀 Promotions
+      </h2>
 
-        <span>
-          Last 20
-        </span>
+      <span>
+        Overall
+      </span>
 
-      </div>
+    </div>
 
 
-      <div
-        id="promotionsTable"
-        class="table-wrap"
-      >
+    <div class="sales-grid">
 
-        <div class="empty">
-          Loading promotions...
+      <div class="sales-card">
+
+        <div class="sales-card-label">
+          TOTAL
+        </div>
+
+        <div
+          id="totalPromotions"
+          class="sales-card-value"
+        >
+          0
         </div>
 
       </div>
 
-    </section>
 
+      <div class="sales-card">
 
-    <!-- =======================================
-         USERS
-    ======================================== -->
+        <div class="sales-card-label">
+          PENDING
+        </div>
 
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          👥 Users
-        </h2>
-
-        <span>
-          Latest 100
-        </span>
-
-      </div>
-
-
-      <div
-        id="usersTable"
-        class="table-wrap"
-      >
-
-        <div class="empty">
-          Loading users...
+        <div
+          id="pendingPromotions"
+          class="sales-card-value"
+        >
+          0
         </div>
 
       </div>
 
-    </section>
 
+      <div class="sales-card">
 
-    <!-- =======================================
-         TRANSACTIONS
-    ======================================== -->
+        <div class="sales-card-label">
+          COMPLETED
+        </div>
 
-    <section class="section">
-
-      <div class="section-header">
-
-        <h2>
-          🧾 Transactions
-        </h2>
-
-        <span>
-          Latest 100
-        </span>
-
-      </div>
-
-
-      <div
-        id="transactionsTable"
-        class="table-wrap"
-      >
-
-        <div class="empty">
-          Loading transactions...
+        <div
+          id="completedPromotions"
+          class="sales-card-value"
+        >
+          0
         </div>
 
       </div>
 
-    </section>
+    </div>
+
+  </section>
 
 
-  </main>
+  <!-- EARN -->
+
+  <section class="section">
+
+    <div class="section-header">
+
+      <h2>
+        🎁 Earn System
+      </h2>
+
+      <span>
+        Worker activity
+      </span>
+
+    </div>
 
 
-  <script>
+    <div class="sales-grid">
+
+      <div class="sales-card">
+
+        <div class="sales-card-label">
+          TOTAL TASKS
+        </div>
+
+        <div
+          id="totalTasks"
+          class="sales-card-value"
+        >
+          0
+        </div>
+
+      </div>
 
 
-    /* =========================================
-       ELEMENTS
-    ========================================= */
+      <div class="sales-card">
 
-    const loading =
-      document.getElementById(
-        "loading"
-      );
+        <div class="sales-card-label">
+          COMPLETED TASKS
+        </div>
 
-    const message =
-      document.getElementById(
-        "message"
-      );
+        <div
+          id="completedTasks"
+          class="sales-card-value"
+        >
+          0
+        </div>
 
-
-    /* =========================================
-       HELPERS
-    ========================================= */
-
-    function formatNumber(value) {
-
-      return Number(
-        value || 0
-      ).toLocaleString();
-
-    }
+      </div>
 
 
-    function formatMoney(value) {
+      <div class="sales-card">
 
-      return "₦" +
-        Number(
-          value || 0
-        ).toLocaleString(
-          "en-NG",
-          {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-          }
-        );
+        <div class="sales-card-label">
+          COINS GIVEN
+        </div>
 
-    }
+        <div
+          id="coinsGiven"
+          class="sales-card-value"
+        >
+          0
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
 
 
-    function formatDate(value) {
+  <!-- PURCHASES -->
 
-      if (!value) {
-        return "-";
+  <section class="section">
+
+    <div class="section-header">
+
+      <h2>
+        🛒 Recent Coin Purchases
+      </h2>
+
+      <span>
+        Last 20
+      </span>
+
+    </div>
+
+
+    <div
+      id="purchasesTable"
+      class="table-wrap"
+    >
+
+      <div class="empty">
+        Loading purchases...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- PROMOTIONS -->
+
+  <section class="section">
+
+    <div class="section-header">
+
+      <h2>
+        📢 Recent Promotions
+      </h2>
+
+      <span>
+        Last 20
+      </span>
+
+    </div>
+
+
+    <div
+      id="promotionsTable"
+      class="table-wrap"
+    >
+
+      <div class="empty">
+        Loading promotions...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- USERS -->
+
+  <section class="section">
+
+    <div class="section-header">
+
+      <h2>
+        👥 Users
+      </h2>
+
+      <span>
+        Latest 100
+      </span>
+
+    </div>
+
+
+    <div
+      id="usersTable"
+      class="table-wrap"
+    >
+
+      <div class="empty">
+        Loading users...
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- TRANSACTIONS -->
+
+  <section class="section">
+
+    <div class="section-header">
+
+      <h2>
+        🧾 Transactions
+      </h2>
+
+      <span>
+        Latest 100
+      </span>
+
+    </div>
+
+
+    <div
+      id="transactionsTable"
+      class="table-wrap"
+    >
+
+      <div class="empty">
+        Loading transactions...
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<script>
+
+/* =========================================
+   ELEMENTS
+========================================= */
+
+const loading =
+  document.getElementById("loading");
+
+const message =
+  document.getElementById("message");
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
+function formatNumber(value){
+
+  return Number(
+    value || 0
+  ).toLocaleString();
+
+}
+
+
+function formatMoney(value){
+
+  return "₦" +
+    Number(
+      value || 0
+    ).toLocaleString(
+      "en-NG",
+      {
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
       }
+    );
 
-      try {
-
-        return new Date(
-          value
-        ).toLocaleString();
-
-      } catch {
-
-        return value;
-
-      }
-
-    }
+}
 
 
-    function escapeHtml(value) {
+function formatDate(value){
 
-      return String(
-        value ?? ""
-      )
-        .replace(
-          /&/g,
-          "&amp;"
-        )
-        .replace(
-          /</g,
-          "&lt;"
-        )
-        .replace(
-          />/g,
-          "&gt;"
-        )
-        .replace(
-          /"/g,
-          "&quot;"
-        )
-        .replace(
-          /'/g,
-          "&#039;"
-        );
+  if(!value){
+    return "-";
+  }
 
-    }
+  try{
+
+    return new Date(
+      value
+    ).toLocaleString();
+
+  }catch{
+
+    return value;
+
+  }
+
+}
 
 
-    function showMessage(
-      text,
-      type
-    ) {
+function escapeHtml(value){
 
-      message.textContent =
-        text;
+  return String(
+    value ?? ""
+  )
+  .replace(/&/g,"&amp;")
+  .replace(/</g,"&lt;")
+  .replace(/>/g,"&gt;")
+  .replace(/"/g,"&quot;")
+  .replace(/'/g,"&#039;");
 
+}
+
+
+function showMessage(
+  text,
+  type
+){
+
+  message.textContent =
+    text;
+
+  message.className =
+    "message " + type;
+
+  setTimeout(
+    ()=>{
       message.className =
-        "message " + type;
-
-      setTimeout(
-        () => {
-          message.className =
-            "message";
-        },
-        5000
-      );
-
-    }
-
-
-    function createAvatar() {
-
-      return (
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(`
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="100"
-            height="100"
-          >
-            <rect
-              width="100"
-              height="100"
-              fill="#222"
-            />
-            <text
-              x="50"
-              y="63"
-              text-anchor="middle"
-              font-size="42"
-            >
-              🛡️
-            </text>
-          </svg>
-        `)
-      );
-
-    }
-
-
-    /* =========================================
-       API GET
-    ========================================= */
-
-    async function apiGet(
-      url
-    ) {
-
-      const response =
-        await fetch(
-          url,
-          {
-            method: "GET",
-
-            credentials:
-              "include",
-
-            headers: {
-              "Accept":
-                "application/json"
-            }
-          }
-        );
-
-
-      let data = null;
-
-
-      try {
-
-        data =
-          await response.json();
-
-      } catch {
-
-        data = {};
-
-      }
-
-
-      if (
-        response.status === 401 ||
-        response.status === 403
-      ) {
-
-        window.location.href =
-          "/";
-
-        throw new Error(
-          "Admin access required"
-        );
-
-      }
-
-
-      if (
-        !response.ok ||
-        !data.success
-      ) {
-
-        throw new Error(
-          data.message ||
-          "Request failed"
-        );
-
-      }
-
-
-      return data;
-
-    }
-
-
-    /* =========================================
-       LOAD ADMIN
-    ========================================= */
-
-    async function loadAdmin() {
-
-      const data =
-        await apiGet(
-          "/api/admin/me"
-        );
-
-
-      const admin =
-        data.admin;
-
-
-      document.getElementById(
-        "adminName"
-      ).textContent =
-        admin.display_name ||
-        "Admin";
-
-
-      document.getElementById(
-        "adminAvatar"
-      ).src =
-        admin.avatar_url ||
-        createAvatar();
-
-    }
-
-
-    /* =========================================
-       LOAD STATS
-    ========================================= */
-
-    async function loadStats() {
-
-      const data =
-        await apiGet(
-          "/api/admin/stats"
-        );
-
-
-      /* USERS */
-
-      document.getElementById(
-        "totalUsers"
-      ).textContent =
-        formatNumber(
-          data.users.total
-        );
-
-
-      document.getElementById(
-        "activeUsers"
-      ).textContent =
-        formatNumber(
-          data.users.active
-        );
-
-
-      document.getElementById(
-        "bannedUsers"
-      ).textContent =
-        formatNumber(
-          data.users.banned
-        ) +
-        " banned";
-
-
-      document.getElementById(
-        "newUsers"
-      ).textContent =
-        formatNumber(
-          data.users.new_today
-        ) +
-        " new today";
-
-
-      /* COINS */
-
-      document.getElementById(
-        "totalCoins"
-      ).textContent =
-        formatNumber(
-          data.coins.total_user_coins
-        );
-
-
-      document.getElementById(
-        "coinsSold"
-      ).textContent =
-        formatNumber(
-          data.coins.sold
-        );
-
-
-      document.getElementById(
-        "coinsGiven"
-      ).textContent =
-        formatNumber(
-          data.coins.given_as_rewards
-        );
-
-
-      /* SALES */
-
-      document.getElementById(
-        "revenue"
-      ).textContent =
-        formatMoney(
-          data.sales.revenue
-        );
-
-
-      document.getElementById(
-        "paidOrders"
-      ).textContent =
-        formatNumber(
-          data.sales.paid_orders
-        ) +
-        " paid orders";
-
-
-      document.getElementById(
-        "todayRevenue"
-      ).textContent =
-        formatMoney(
-          data.sales.today.revenue
-        );
-
-
-      document.getElementById(
-        "ordersToday"
-      ).textContent =
-        formatNumber(
-          data.sales.today.orders
-        );
-
-
-      /* PROMOTIONS */
-
-      document.getElementById(
-        "totalPromotions"
-      ).textContent =
-        formatNumber(
-          data.promotions.total
-        );
-
-
-      document.getElementById(
-        "pendingPromotions"
-      ).textContent =
-        formatNumber(
-          data.promotions.pending
-        );
-
-
-      document.getElementById(
-        "completedPromotions"
-      ).textContent =
-        formatNumber(
-          data.promotions.completed
-        );
-
-
-      /* TASKS */
-
-      document.getElementById(
-        "totalTasks"
-      ).textContent =
-        formatNumber(
-          data.tasks.total
-        );
-
-
-      document.getElementById(
-        "completedTasks"
-      ).textContent =
-        formatNumber(
-          data.tasks.completed
-        );
-
-    }
-
-
-    /* =========================================
-       PURCHASES
-    ========================================= */
-
-    async function loadPurchases() {
-
-      const data =
-        await apiGet(
-          "/api/admin/orders"
-        );
-
-
-      const rows =
-        data.orders || [];
-
-
-      if (
-        rows.length === 0
-      ) {
-
-        document.getElementById(
-          "purchasesTable"
-        ).innerHTML = `
-          <div class="empty">
-            No coin purchases yet.
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      let html = `
-        <table>
-
-          <thead>
-            <tr>
-              <th>USER</th>
-              <th>COINS</th>
-              <th>AMOUNT</th>
-              <th>PROVIDER</th>
-              <th>STATUS</th>
-              <th>DATE</th>
-            </tr>
-          </thead>
-
-          <tbody>
-      `;
-
-
-      rows.forEach(
-        (row) => {
-
-          let badge =
-            "badge-pending";
-
-
-          if (
-            row.status === "paid"
-          ) {
-            badge =
-              "badge-paid";
-          }
-
-          if (
-            row.status === "failed"
-          ) {
-            badge =
-              "badge-failed";
-          }
-
-
-          html += `
-            <tr>
-
-              <td>
-                ${escapeHtml(
-                  row.display_name ||
-                  "User #" +
-                  row.user_id
-                )}
-              </td>
-
-              <td>
-                ${formatNumber(
-                  row.coins
-                )} 🪙
-              </td>
-
-              <td>
-                ${formatMoney(
-                  row.amount
-                )}
-              </td>
-
-              <td>
-                ${escapeHtml(
-                  row.payment_provider ||
-                  "-"
-                )}
-              </td>
-
-              <td>
-                <span class="badge ${badge}">
-                  ${escapeHtml(
-                    row.status
-                  )}
-                </span>
-              </td>
-
-              <td>
-                ${escapeHtml(
-                  formatDate(
-                    row.created_at
-                  )
-                )}
-              </td>
-
-            </tr>
-          `;
-
+        "message";
+    },
+    5000
+  );
+
+}
+
+
+function createAvatar(){
+
+  return(
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(`
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="100"
+        height="100"
+      >
+        <rect
+          width="100"
+          height="100"
+          fill="#222"
+        />
+        <text
+          x="50"
+          y="63"
+          text-anchor="middle"
+          font-size="42"
+        >
+          🛡️
+        </text>
+      </svg>
+    `)
+  );
+
+}
+
+
+/* =========================================
+   API GET
+========================================= */
+
+async function apiGet(url){
+
+  const response =
+    await fetch(
+      url,
+      {
+        method:"GET",
+        credentials:"include",
+        headers:{
+          Accept:"application/json"
         }
-      );
+      }
+    );
 
 
-      html += `
-          </tbody>
-        </table>
-      `;
+  let data={};
+
+  try{
+
+    data =
+      await response.json();
+
+  }catch{
+
+    data={};
+
+  }
 
 
-      document.getElementById(
-        "purchasesTable"
-      ).innerHTML =
-        html;
+  if(
+    response.status===401 ||
+    response.status===403
+  ){
+
+    window.location.href="/";
+
+    throw new Error(
+      "Admin access required"
+    );
+
+  }
+
+
+  if(
+    !response.ok ||
+    !data.success
+  ){
+
+    throw new Error(
+      data.message ||
+      "Request failed"
+    );
+
+  }
+
+
+  return data;
+
+}
+
+
+/* =========================================
+   LOAD ADMIN
+========================================= */
+
+async function loadAdmin(){
+
+  const data =
+    await apiGet(
+      "/api/admin/me"
+    );
+
+
+  const admin =
+    data.admin;
+
+
+  document.getElementById(
+    "adminName"
+  ).textContent =
+    admin.display_name ||
+    "Admin";
+
+
+  document.getElementById(
+    "adminAvatar"
+  ).src =
+    admin.avatar_url ||
+    createAvatar();
+
+}
+
+
+/* =========================================
+   LOAD STATS
+========================================= */
+
+async function loadStats(){
+
+  const data =
+    await apiGet(
+      "/api/admin/stats"
+    );
+
+
+  /* USERS */
+
+  document.getElementById(
+    "totalUsers"
+  ).textContent =
+    formatNumber(
+      data.users.total
+    );
+
+
+  document.getElementById(
+    "activeUsers"
+  ).textContent =
+    formatNumber(
+      data.users.active
+    );
+
+
+  document.getElementById(
+    "bannedUsers"
+  ).textContent =
+    formatNumber(
+      data.users.banned
+    ) + " banned";
+
+
+  document.getElementById(
+    "newUsers"
+  ).textContent =
+    formatNumber(
+      data.users.new_today
+    ) + " new today";
+
+
+  /* COINS */
+
+  document.getElementById(
+    "totalCoins"
+  ).textContent =
+    formatNumber(
+      data.coins.total_user_coins
+    );
+
+
+  document.getElementById(
+    "coinsSold"
+  ).textContent =
+    formatNumber(
+      data.coins.sold
+    );
+
+
+  document.getElementById(
+    "coinsGiven"
+  ).textContent =
+    formatNumber(
+      data.coins.given_as_rewards
+    );
+
+
+  /* SALES */
+
+  document.getElementById(
+    "revenue"
+  ).textContent =
+    formatMoney(
+      data.sales.revenue
+    );
+
+
+  document.getElementById(
+    "paidOrders"
+  ).textContent =
+    formatNumber(
+      data.sales.paid_orders
+    ) + " paid orders";
+
+
+  document.getElementById(
+    "todayRevenue"
+  ).textContent =
+    formatMoney(
+      data.sales.today.revenue
+    );
+
+
+  document.getElementById(
+    "ordersToday"
+  ).textContent =
+    formatNumber(
+      data.sales.today.orders
+    );
+
+
+  /* PROMOTIONS */
+
+  document.getElementById(
+    "totalPromotions"
+  ).textContent =
+    formatNumber(
+      data.promotions.total
+    );
+
+
+  document.getElementById(
+    "pendingPromotions"
+  ).textContent =
+    formatNumber(
+      data.promotions.pending
+    );
+
+
+  document.getElementById(
+    "completedPromotions"
+  ).textContent =
+    formatNumber(
+      data.promotions.completed
+    );
+
+
+  /* TASKS */
+
+  document.getElementById(
+    "totalTasks"
+  ).textContent =
+    formatNumber(
+      data.tasks.total
+    );
+
+
+  document.getElementById(
+    "completedTasks"
+  ).textContent =
+    formatNumber(
+      data.tasks.completed
+    );
+
+}
+
+
+/* =========================================
+   PURCHASES
+========================================= */
+
+async function loadPurchases(){
+
+  const data =
+    await apiGet(
+      "/api/admin/orders"
+    );
+
+
+  const rows =
+    data.orders || [];
+
+
+  if(rows.length===0){
+
+    document.getElementById(
+      "purchasesTable"
+    ).innerHTML=`
+      <div class="empty">
+        No coin purchases yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let html=`
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>USER</th>
+          <th>COINS</th>
+          <th>AMOUNT</th>
+          <th>PROVIDER</th>
+          <th>STATUS</th>
+          <th>DATE</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+  `;
+
+
+  rows.forEach(row=>{
+
+    let badge =
+      "badge-pending";
+
+
+    if(row.status==="paid"){
+      badge="badge-paid";
+    }
+
+    if(row.status==="failed"){
+      badge="badge-failed";
+    }
+
+
+    html+=`
+
+      <tr>
+
+        <td>
+          ${escapeHtml(
+            row.display_name ||
+            "User #"+row.user_id
+          )}
+        </td>
+
+        <td>
+          ${formatNumber(
+            row.coins
+          )} 🪙
+        </td>
+
+        <td>
+          ${formatMoney(
+            row.amount
+          )}
+        </td>
+
+        <td>
+          ${escapeHtml(
+            row.payment_provider || "-"
+          )}
+        </td>
+
+        <td>
+          <span class="badge ${badge}">
+            ${escapeHtml(
+              row.status
+            )}
+          </span>
+        </td>
+
+        <td>
+          ${escapeHtml(
+            formatDate(
+              row.created_at
+            )
+          )}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html+=`
+      </tbody>
+    </table>
+  `;
+
+
+  document.getElementById(
+    "purchasesTable"
+  ).innerHTML =
+    html;
+
+}
+
+
+/* =========================================
+   PROMOTIONS
+========================================= */
+
+async function loadPromotions(){
+
+  const data =
+    await apiGet(
+      "/api/admin/promotions"
+    );
+
+
+  const rows =
+    data.promotions || [];
+
+
+  if(rows.length===0){
+
+    document.getElementById(
+      "promotionsTable"
+    ).innerHTML=`
+      <div class="empty">
+        No promotions yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let html=`
+    <table>
+
+      <thead>
+
+        <tr>
+          <th>USER</th>
+          <th>TIKTOK</th>
+          <th>COST</th>
+          <th>PROGRESS</th>
+          <th>STATUS</th>
+          <th>DATE</th>
+        </tr>
+
+      </thead>
+
+      <tbody>
+  `;
+
+
+  rows.forEach(row=>{
+
+    const badge =
+      row.status==="completed"
+      ? "badge-completed"
+      : "badge-pending";
+
+
+    html+=`
+
+      <tr>
+
+        <td>
+          ${escapeHtml(
+            row.display_name ||
+            "User #"+row.user_id
+          )}
+        </td>
+
+        <td>
+          @${escapeHtml(
+            row.tiktok_username
+          )}
+        </td>
+
+        <td>
+          ${formatNumber(
+            row.coins_cost
+          )} 🪙
+        </td>
+
+        <td>
+          ${formatNumber(
+            row.completed_count
+          )}
+          /
+          ${formatNumber(
+            row.target_count
+          )}
+        </td>
+
+        <td>
+          <span class="badge ${badge}">
+            ${escapeHtml(
+              row.status
+            )}
+          </span>
+        </td>
+
+        <td>
+          ${escapeHtml(
+            formatDate(
+              row.created_at
+            )
+          )}
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html+=`
+      </tbody>
+    </table>
+  `;
+
+
+  document.getElementById(
+    "promotionsTable"
+  ).innerHTML =
+    html;
+
+}
+
+
+/* =========================================
+   USERS
+========================================= */
+
+async function loadUsers(){
+
+  const data =
+    await apiGet(
+      "/api/admin/users"
+    );
+
+
+  const rows =
+    data.users || [];
+
+
+  if(rows.length===0){
+
+    document.getElementById(
+      "usersTable"
+    ).innerHTML=`
+      <div class="empty">
+        No users yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let html=`
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>ID</th>
+          <th>USER</th>
+          <th>TIKTOK</th>
+          <th>COINS</th>
+          <th>STATUS</th>
+          <th>DATE</th>
+          <th>ACTION</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+  `;
+
+
+  rows.forEach(row=>{
+
+    let badge =
+      "badge-active";
+
+    let status =
+      "Active";
+
+
+    if(row.is_banned){
+
+      badge =
+        "badge-banned";
+
+      status =
+        "Banned";
+
+    }else if(!row.is_active){
+
+      badge =
+        "badge-pending";
+
+      status =
+        "Inactive";
 
     }
 
 
-    /* =========================================
-       PROMOTIONS
-    ========================================= */
+    html+=`
 
-    async function loadPromotions() {
+      <tr>
 
-      const data =
-        await apiGet(
-          "/api/admin/promotions"
-        );
-
-
-      const rows =
-        data.promotions || [];
+        <td>
+          #${escapeHtml(
+            row.id
+          )}
+        </td>
 
 
-      if (
-        rows.length === 0
-      ) {
+        <td>
 
-        document.getElementById(
-          "promotionsTable"
-        ).innerHTML = `
-          <div class="empty">
-            No promotions yet.
-          </div>
-        `;
+          ${escapeHtml(
+            row.display_name ||
+            "User"
+          )}
 
-        return;
+          ${
+            row.is_admin
+              ? `
+                <span class="badge badge-paid">
+                  ADMIN
+                </span>
+              `
+              : ""
+          }
 
-      }
-
-
-      let html = `
-        <table>
-
-          <thead>
-            <tr>
-              <th>USER</th>
-              <th>TIKTOK</th>
-              <th>COST</th>
-              <th>PROGRESS</th>
-              <th>STATUS</th>
-              <th>DATE</th>
-            </tr>
-          </thead>
-
-          <tbody>
-      `;
+        </td>
 
 
-      rows.forEach(
-        (row) => {
+        <td>
 
-          const badge =
-            row.status === "completed"
-              ? "badge-completed"
-              : "badge-pending";
-
-
-          html += `
-            <tr>
-
-              <td>
-                ${escapeHtml(
-                  row.display_name ||
-                  "User #" +
-                  row.user_id
-                )}
-              </td>
-
-              <td>
-                @${escapeHtml(
+          ${
+            row.tiktok_username
+              ? "@"+
+                escapeHtml(
                   row.tiktok_username
-                )}
-              </td>
-
-              <td>
-                ${formatNumber(
-                  row.coins_cost
-                )} 🪙
-              </td>
-
-              <td>
-                ${formatNumber(
-                  row.completed_count
-                )}
-                /
-                ${formatNumber(
-                  row.target_count
-                )}
-              </td>
-
-              <td>
-                <span class="badge ${badge}">
-                  ${escapeHtml(
-                    row.status
-                  )}
-                </span>
-              </td>
-
-              <td>
-                ${escapeHtml(
-                  formatDate(
-                    row.created_at
-                  )
-                )}
-              </td>
-
-            </tr>
-          `;
-
-        }
-      );
-
-
-      html += `
-          </tbody>
-        </table>
-      `;
-
-
-      document.getElementById(
-        "promotionsTable"
-      ).innerHTML =
-        html;
-
-    }
-
-
-    /* =========================================
-       USERS
-    ========================================= */
-
-    async function loadUsers() {
-
-      const data =
-        await apiGet(
-          "/api/admin/users"
-        );
-
-
-      const rows =
-        data.users || [];
-
-
-      if (
-        rows.length === 0
-      ) {
-
-        document.getElementById(
-          "usersTable"
-        ).innerHTML = `
-          <div class="empty">
-            No users yet.
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      let html = `
-        <table>
-
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>USER</th>
-              <th>TIKTOK</th>
-              <th>COINS</th>
-              <th>STATUS</th>
-              <th>DATE</th>
-            </tr>
-          </thead>
-
-          <tbody>
-      `;
-
-
-      rows.forEach(
-        (row) => {
-
-          let badge =
-            "badge-active";
-
-          let status =
-            "Active";
-
-
-          if (
-            row.is_banned
-          ) {
-
-            badge =
-              "badge-banned";
-
-            status =
-              "Banned";
-
-          } else if (
-            !row.is_active
-          ) {
-
-            badge =
-              "badge-pending";
-
-            status =
-              "Inactive";
-
-          }
-
-
-          html += `
-            <tr>
-
-              <td>
-                #${escapeHtml(
-                  row.id
-                )}
-              </td>
-
-              <td>
-                ${escapeHtml(
-                  row.display_name ||
-                  "User"
-                )}
-
-                ${
-                  row.is_admin
-                    ? `<span class="badge badge-paid">ADMIN</span>`
-                    : ""
-                }
-              </td>
-
-              <td>
-                ${
-                  row.tiktok_username
-                    ? "@" +
-                      escapeHtml(
-                        row.tiktok_username
-                      )
-                    : "-"
-                }
-              </td>
-
-              <td>
-                ${formatNumber(
-                  row.coins
-                )} 🪙
-              </td>
-
-              <td>
-                <span class="badge ${badge}">
-                  ${status}
-                </span>
-              </td>
-
-              <td>
-                ${escapeHtml(
-                  formatDate(
-                    row.created_at
-                  )
-                )}
-              </td>
-
-            </tr>
-          `;
-
-        }
-      );
-
-
-      html += `
-          </tbody>
-        </table>
-      `;
-
-
-      document.getElementById(
-        "usersTable"
-      ).innerHTML =
-        html;
-
-    }
-
-
-    /* =========================================
-       TRANSACTIONS
-    ========================================= */
-
-    async function loadTransactions() {
-
-      const data =
-        await apiGet(
-          "/api/admin/transactions"
-        );
-
-
-      const rows =
-        data.transactions || [];
-
-
-      if (
-        rows.length === 0
-      ) {
-
-        document.getElementById(
-          "transactionsTable"
-        ).innerHTML = `
-          <div class="empty">
-            No transactions yet.
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      let html = `
-        <table>
-
-          <thead>
-            <tr>
-              <th>USER</th>
-              <th>TYPE</th>
-              <th>AMOUNT</th>
-              <th>BEFORE</th>
-              <th>AFTER</th>
-              <th>DESCRIPTION</th>
-              <th>DATE</th>
-            </tr>
-          </thead>
-
-          <tbody>
-      `;
-
-
-      rows.forEach(
-        (row) => {
-
-          const amount =
-            Number(
-              row.amount || 0
-            );
-
-
-          const amountText =
-            amount > 0
-              ? "+" +
-                formatNumber(
-                  amount
                 )
-              : formatNumber(
-                  amount
-                );
+              : "-"
+          }
+
+        </td>
 
 
-          html += `
-            <tr>
+        <td>
 
-              <td>
-                ${escapeHtml(
-                  row.display_name ||
-                  "User #" +
-                  row.user_id
-                )}
-              </td>
+          <strong>
+            ${formatNumber(
+              row.coins
+            )} 🪙
+          </strong>
 
-              <td>
-                ${escapeHtml(
-                  row.type
-                )}
-              </td>
+        </td>
 
-              <td>
-                ${amountText} 🪙
-              </td>
 
-              <td>
-                ${formatNumber(
-                  row.balance_before
-                )}
-              </td>
+        <td>
 
-              <td>
-                ${formatNumber(
-                  row.balance_after
-                )}
-              </td>
+          <span class="badge ${badge}">
+            ${status}
+          </span>
 
-              <td>
-                ${escapeHtml(
-                  row.description ||
-                  "-"
-                )}
-              </td>
+        </td>
 
-              <td>
-                ${escapeHtml(
-                  formatDate(
-                    row.created_at
-                  )
-                )}
-              </td>
 
-            </tr>
-          `;
+        <td>
 
+          ${escapeHtml(
+            formatDate(
+              row.created_at
+            )
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${
+            row.is_admin
+              ? `
+                <span class="badge badge-paid">
+                  ADMIN
+                </span>
+              `
+              : `
+                <button
+                  type="button"
+                  class="add-coins-button"
+                  onclick="addCoins(${Number(row.id)})"
+                >
+                  🪙 Add
+                </button>
+              `
+          }
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html+=`
+
+      </tbody>
+
+    </table>
+
+  `;
+
+
+  document.getElementById(
+    "usersTable"
+  ).innerHTML =
+    html;
+
+}
+
+
+/* =========================================
+   ADD COINS
+========================================= */
+
+async function addCoins(userId){
+
+  const amountText =
+    prompt(
+      "How many coins do you want to add?"
+    );
+
+
+  if(amountText===null){
+    return;
+  }
+
+
+  const amount =
+    Number(
+      amountText.trim()
+    );
+
+
+  if(
+    !Number.isInteger(amount) ||
+    amount<=0 ||
+    amount>1000000
+  ){
+
+    showMessage(
+      "Please enter a valid coin amount.",
+      "error"
+    );
+
+    return;
+
+  }
+
+
+  const confirmed =
+    confirm(
+      `Add ${amount.toLocaleString()} coins to User #${userId}?`
+    );
+
+
+  if(!confirmed){
+    return;
+  }
+
+
+  try{
+
+    const response =
+      await fetch(
+        `/api/admin/users/${userId}/add-coins`,
+        {
+          method:"POST",
+
+          credentials:"include",
+
+          headers:{
+            "Content-Type":
+              "application/json",
+
+            "Accept":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            amount:amount
+          })
         }
       );
 
 
-      html += `
-          </tbody>
-        </table>
-      `;
+    let data={};
 
 
-      document.getElementById(
-        "transactionsTable"
-      ).innerHTML =
-        html;
+    try{
+
+      data =
+        await response.json();
+
+    }catch{
+
+      data={};
 
     }
 
 
-    /* =========================================
-       LOAD EVERYTHING
-    ========================================= */
+    if(
+      response.status===401 ||
+      response.status===403
+    ){
 
-    async function loadDashboard() {
+      window.location.href="/";
 
-      try {
+      return;
 
-        await loadAdmin();
+    }
+
+
+    if(
+      !response.ok ||
+      !data.success
+    ){
+
+      throw new Error(
+        data.message ||
+        "Could not add coins"
+      );
+
+    }
+
+
+    showMessage(
+      `Successfully added ${amount.toLocaleString()} coins to User #${userId}.`,
+      "success"
+    );
+
+
+    await loadStats();
+
+    await loadUsers();
+
+    await loadTransactions();
+
+
+  }catch(error){
+
+    console.error(
+      "Add coins error:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "Could not add coins.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   TRANSACTIONS
+========================================= */
+
+async function loadTransactions(){
+
+  const data =
+    await apiGet(
+      "/api/admin/transactions"
+    );
+
+
+  const rows =
+    data.transactions || [];
+
+
+  if(rows.length===0){
+
+    document.getElementById(
+      "transactionsTable"
+    ).innerHTML=`
+      <div class="empty">
+        No transactions yet.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  let html=`
+
+    <table>
+
+      <thead>
+
+        <tr>
+
+          <th>USER</th>
+          <th>TYPE</th>
+          <th>AMOUNT</th>
+          <th>BEFORE</th>
+          <th>AFTER</th>
+          <th>DESCRIPTION</th>
+          <th>DATE</th>
+
+        </tr>
+
+      </thead>
+
+      <tbody>
+
+  `;
+
+
+  rows.forEach(row=>{
+
+    const amount =
+      Number(
+        row.amount || 0
+      );
+
+
+    const amountText =
+      amount>0
+        ? "+"+
+          formatNumber(
+            amount
+          )
+        : formatNumber(
+            amount
+          );
+
+
+    html+=`
+
+      <tr>
+
+        <td>
+
+          ${escapeHtml(
+            row.display_name ||
+            "User #"+row.user_id
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${escapeHtml(
+            row.type
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${amountText} 🪙
+
+        </td>
+
+
+        <td>
+
+          ${formatNumber(
+            row.balance_before
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${formatNumber(
+            row.balance_after
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${escapeHtml(
+            row.description || "-"
+          )}
+
+        </td>
+
+
+        <td>
+
+          ${escapeHtml(
+            formatDate(
+              row.created_at
+            )
+          )}
+
+        </td>
+
+      </tr>
+
+    `;
+
+  });
+
+
+  html+=`
+
+      </tbody>
+
+    </table>
+
+  `;
+
+
+  document.getElementById(
+    "transactionsTable"
+  ).innerHTML =
+    html;
+
+}
+
+
+/* =========================================
+   LOAD DASHBOARD
+========================================= */
+
+async function loadDashboard(){
+
+  try{
+
+    await loadAdmin();
+
+    await loadStats();
+
+    await Promise.all([
+
+      loadPurchases(),
+
+      loadPromotions(),
+
+      loadUsers(),
+
+      loadTransactions()
+
+    ]);
+
+
+    showMessage(
+      "Admin dashboard loaded successfully.",
+      "success"
+    );
+
+
+  }catch(error){
+
+    console.error(
+      "Admin dashboard error:",
+      error
+    );
+
+
+    showMessage(
+      error.message ||
+      "Could not load admin dashboard.",
+      "error"
+    );
+
+
+  }finally{
+
+    loading.style.display =
+      "none";
+
+  }
+
+}
+
+
+/* =========================================
+   REFRESH
+========================================= */
+
+document
+  .getElementById(
+    "refreshBtn"
+  )
+  .addEventListener(
+    "click",
+    async function(){
+
+      const button =
+        this;
+
+
+      button.disabled =
+        true;
+
+      button.textContent =
+        "Loading...";
+
+
+      try{
 
         await loadStats();
 
         await Promise.all([
+
           loadPurchases(),
+
           loadPromotions(),
+
           loadUsers(),
+
           loadTransactions()
+
         ]);
 
 
         showMessage(
-          "Admin dashboard loaded successfully.",
+          "Dashboard refreshed.",
           "success"
         );
 
 
-      } catch (error) {
-
-        console.error(
-          "Admin dashboard error:",
-          error
-        );
-
+      }catch(error){
 
         showMessage(
           error.message ||
-          "Could not load admin dashboard.",
+          "Refresh failed.",
           "error"
         );
 
-      } finally {
 
-        loading.style.display =
-          "none";
+      }finally{
+
+        button.disabled =
+          false;
+
+        button.textContent =
+          "↻ Refresh";
 
       }
 
     }
+  );
 
 
-    /* =========================================
-       REFRESH
-    ========================================= */
+/* =========================================
+   START
+========================================= */
 
-    document
-      .getElementById(
-        "refreshBtn"
-      )
-      .addEventListener(
-        "click",
-        async function () {
+loadDashboard();
 
-          const button =
-            this;
-
-          button.disabled =
-            true;
-
-          button.textContent =
-            "Loading...";
-
-
-          try {
-
-            await loadStats();
-
-            await Promise.all([
-              loadPurchases(),
-              loadPromotions(),
-              loadUsers(),
-              loadTransactions()
-            ]);
-
-
-            showMessage(
-              "Dashboard refreshed.",
-              "success"
-            );
-
-          } catch (error) {
-
-            showMessage(
-              error.message ||
-              "Refresh failed.",
-              "error"
-            );
-
-          } finally {
-
-            button.disabled =
-              false;
-
-            button.textContent =
-              "↻ Refresh";
-
-          }
-
-        }
-      );
-
-
-    /* =========================================
-       START
-    ========================================= */
-
-    loadDashboard();
-
-  </script>
+</script>
 
 </body>
-  </html>
+</html>
