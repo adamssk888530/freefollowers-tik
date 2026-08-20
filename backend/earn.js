@@ -4,6 +4,9 @@ const { query } = require("./db");
 
 const router = express.Router();
 
+const TASK_REWARD_COINS = 5;
+
+
 /* ==========================================
    HELPERS
 ========================================== */
@@ -19,11 +22,16 @@ function parseCookies(cookieHeader = "") {
     const key = item.slice(0, index).trim();
     const value = item.slice(index + 1).trim();
 
-    cookies[key] = decodeURIComponent(value);
+    try {
+      cookies[key] = decodeURIComponent(value);
+    } catch {
+      cookies[key] = value;
+    }
   });
 
   return cookies;
 }
+
 
 function hashToken(token) {
   return crypto
@@ -38,9 +46,11 @@ function hashToken(token) {
 ========================================== */
 
 async function getCurrentUser(req) {
-  const cookies = parseCookies(
-    req.headers.cookie || ""
-  );
+
+  const cookies =
+    parseCookies(
+      req.headers.cookie || ""
+    );
 
   const sessionToken =
     cookies.session_token;
@@ -52,36 +62,42 @@ async function getCurrentUser(req) {
   const sessionHash =
     hashToken(sessionToken);
 
-  const result = await query(
-    `
-    SELECT
-      u.id,
-      u.coins,
-      u.is_active,
-      u.is_banned,
-      u.is_admin
+  const result =
+    await query(
+      `
+      SELECT
+        u.id,
+        u.coins,
+        u.is_active,
+        u.is_banned,
+        u.is_admin
 
-    FROM sessions s
+      FROM sessions s
 
-    INNER JOIN users u
-      ON u.id = s.user_id
+      INNER JOIN users u
+        ON u.id = s.user_id
 
-    WHERE
-      s.session_token_hash = $1
-      AND s.expires_at > NOW()
+      WHERE
+        s.session_token_hash = $1
 
-    LIMIT 1
-    `,
-    [sessionHash]
-  );
+        AND s.expires_at > NOW()
+
+      LIMIT 1
+      `,
+      [sessionHash]
+    );
 
   if (result.rows.length === 0) {
     return null;
   }
 
-  const user = result.rows[0];
+  const user =
+    result.rows[0];
 
-  if (!user.is_active || user.is_banned) {
+  if (
+    !user.is_active ||
+    user.is_banned
+  ) {
     return null;
   }
 
@@ -93,129 +109,176 @@ async function getCurrentUser(req) {
    1. GET NEXT EARN TASK
 ========================================== */
 
-router.get("/earn/next", async (req, res) => {
-  try {
-    const user = await getCurrentUser(req);
+router.get(
+  "/earn/next",
+  async (req, res) => {
 
-    if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Not logged in"
-      });
-    }
+    try {
 
-    /*
-      Find the next pending task assigned
-      to this user.
+      const user =
+        await getCurrentUser(req);
 
-      The user does NOT choose the task.
-      The server chooses it.
-    */
+      if (!user) {
 
-    const result = await query(
-      `
-      SELECT
-        pt.id AS task_id,
+        return res.status(401).json({
+          success: false,
+          message: "Not logged in"
+        });
 
-        p.id AS promotion_id,
-        p.tiktok_username,
-        p.tiktok_url,
-        p.promotion_type,
-
-        p.coins_cost,
-        p.target_count,
-        p.completed_count,
-
-        pt.status,
-        pt.created_at
-
-      FROM promotion_tasks pt
-
-      INNER JOIN promotions p
-        ON p.id = pt.promotion_id
-
-      WHERE
-        pt.worker_user_id = $1
-
-        AND pt.status = 'pending'
-
-        AND p.status = 'pending'
-
-        AND p.completed_count < p.target_count
-
-        AND p.user_id <> $1
-
-        AND NOT EXISTS (
-          SELECT 1
-          FROM earn_completions ec
-          WHERE
-            ec.task_id = pt.promotion_id
-            AND ec.user_id = $1
-        )
-
-      ORDER BY pt.created_at ASC
-
-      LIMIT 1
-      `,
-      [user.id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.json({
-        success: true,
-        has_task: false,
-        message: "No more tasks available"
-      });
-    }
-
-    const task = result.rows[0];
-
-    return res.json({
-      success: true,
-
-      has_task: true,
-
-      task: {
-        id: task.task_id,
-
-        promotion_id:
-          task.promotion_id,
-
-        tiktok_username:
-          task.tiktok_username,
-
-        tiktok_url:
-          task.tiktok_url,
-
-        promotion_type:
-          task.promotion_type,
-
-        reward_coins: 5,
-
-        progress: {
-          completed:
-            task.completed_count,
-
-          target:
-            task.target_count
-        }
       }
-    });
 
-  } catch (error) {
 
-    console.error(
-      "Get next earn task error:",
-      error
-    );
+      const result =
+        await query(
+          `
+          SELECT
 
-    return res.status(500).json({
-      success: false,
-      message:
-        "Could not get next earn task"
-    });
+            pt.id AS task_id,
+
+            p.id AS promotion_id,
+
+            p.tiktok_username,
+
+            p.tiktok_url,
+
+            p.promotion_type,
+
+            p.coins_cost,
+
+            p.target_count,
+
+            p.completed_count,
+
+            pt.status,
+
+            pt.created_at
+
+          FROM promotion_tasks pt
+
+          INNER JOIN promotions p
+            ON p.id = pt.promotion_id
+
+          WHERE
+
+            pt.worker_user_id = $1
+
+            AND pt.status = 'pending'
+
+            AND p.status = 'pending'
+
+            AND p.completed_count < p.target_count
+
+            AND p.user_id <> $1
+
+            AND NOT EXISTS (
+
+              SELECT 1
+
+              FROM earn_completions ec
+
+              WHERE
+
+                ec.task_id = pt.id
+
+                AND ec.user_id = $1
+
+            )
+
+          ORDER BY
+            pt.created_at ASC
+
+          LIMIT 1
+          `,
+          [user.id]
+        );
+
+
+      if (
+        result.rows.length === 0
+      ) {
+
+        return res.json({
+
+          success: true,
+
+          has_task: false,
+
+          message:
+            "No more tasks available"
+
+        });
+
+      }
+
+
+      const task =
+        result.rows[0];
+
+
+      return res.json({
+
+        success: true,
+
+        has_task: true,
+
+        task: {
+
+          id:
+            task.task_id,
+
+          promotion_id:
+            task.promotion_id,
+
+          tiktok_username:
+            task.tiktok_username,
+
+          tiktok_url:
+            task.tiktok_url,
+
+          promotion_type:
+            task.promotion_type,
+
+          reward_coins:
+            TASK_REWARD_COINS,
+
+          progress: {
+
+            completed:
+              Number(
+                task.completed_count
+              ),
+
+            target:
+              Number(
+                task.target_count
+              )
+
+          }
+
+        }
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Get next earn task error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not get next earn task"
+
+      });
+
+    }
+
   }
-});
+);
 
 
 /* ==========================================
@@ -232,33 +295,56 @@ router.get(
         await getCurrentUser(req);
 
       if (!user) {
+
         return res.status(401).json({
           success: false,
           message: "Not logged in"
         });
+
       }
 
-      const { taskId } =
-        req.params;
+
+      const {
+        taskId
+      } = req.params;
 
 
       const result =
         await query(
           `
           SELECT
+
             pt.id AS task_id,
 
-            pt.status,
+            pt.status AS task_status,
 
             p.id AS promotion_id,
 
             p.tiktok_username,
+
             p.tiktok_url,
 
             p.promotion_type,
 
+            p.status AS promotion_status,
+
             p.completed_count,
-            p.target_count
+
+            p.target_count,
+
+            EXISTS (
+
+              SELECT 1
+
+              FROM earn_completions ec
+
+              WHERE
+
+                ec.task_id = pt.id
+
+                AND ec.user_id = $2
+
+            ) AS already_completed
 
           FROM promotion_tasks pt
 
@@ -266,7 +352,9 @@ router.get(
             ON p.id = pt.promotion_id
 
           WHERE
+
             pt.id = $1
+
             AND pt.worker_user_id = $2
 
           LIMIT 1
@@ -278,11 +366,19 @@ router.get(
         );
 
 
-      if (result.rows.length === 0) {
+      if (
+        result.rows.length === 0
+      ) {
+
         return res.status(404).json({
+
           success: false,
-          message: "Task not found"
+
+          message:
+            "Task not found"
+
         });
+
       }
 
 
@@ -291,13 +387,16 @@ router.get(
 
 
       return res.json({
+
         success: true,
 
         task: {
-          id: task.task_id,
+
+          id:
+            task.task_id,
 
           status:
-            task.status,
+            task.task_status,
 
           promotion_id:
             task.promotion_id,
@@ -311,16 +410,31 @@ router.get(
           promotion_type:
             task.promotion_type,
 
-          reward_coins: 5,
+          promotion_status:
+            task.promotion_status,
+
+          reward_coins:
+            TASK_REWARD_COINS,
+
+          already_completed:
+            task.already_completed,
 
           progress: {
+
             completed:
-              task.completed_count,
+              Number(
+                task.completed_count
+              ),
 
             target:
-              task.target_count
+              Number(
+                task.target_count
+              )
+
           }
+
         }
+
       });
 
     } catch (error) {
@@ -331,34 +445,23 @@ router.get(
       );
 
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not get earn task"
+
       });
+
     }
+
   }
 );
 
 
 /* ==========================================
-   3. COMPLETE TASK
+   3. REQUEST TASK COMPLETION
 ========================================== */
-
-/*
-   IMPORTANT:
-
-   We DO NOT award coins here yet.
-
-   TikTok does not currently give our app,
-   with user.info.basic, a direct way to
-   verify that the worker followed the target.
-
-   Therefore this endpoint is intentionally
-   protected from fake client-side verification.
-
-   Later we will replace this section with
-   server-side TikTok verification.
-*/
 
 router.post(
   "/earn/task/:taskId/complete",
@@ -370,28 +473,41 @@ router.post(
         await getCurrentUser(req);
 
       if (!user) {
+
         return res.status(401).json({
+
           success: false,
-          message: "Not logged in"
+
+          message:
+            "Not logged in"
+
         });
+
       }
 
 
-      const { taskId } =
-        req.params;
+      const {
+        taskId
+      } = req.params;
 
 
       const result =
         await query(
           `
           SELECT
-            pt.id,
-            pt.status,
+
+            pt.id AS task_id,
+
+            pt.status AS task_status,
+
+            pt.worker_user_id,
 
             p.id AS promotion_id,
+
             p.status AS promotion_status,
 
             p.tiktok_username,
+
             p.tiktok_url
 
           FROM promotion_tasks pt
@@ -400,7 +516,9 @@ router.post(
             ON p.id = pt.promotion_id
 
           WHERE
+
             pt.id = $1
+
             AND pt.worker_user_id = $2
 
           LIMIT 1
@@ -412,11 +530,19 @@ router.post(
         );
 
 
-      if (result.rows.length === 0) {
+      if (
+        result.rows.length === 0
+      ) {
+
         return res.status(404).json({
+
           success: false,
-          message: "Task not found"
+
+          message:
+            "Task not found"
+
         });
+
       }
 
 
@@ -424,41 +550,70 @@ router.post(
         result.rows[0];
 
 
-      if (task.status !== "pending") {
+      if (
+        task.task_status !==
+        "pending"
+      ) {
+
         return res.status(400).json({
+
           success: false,
+
           message:
             "Task has already been processed"
+
         });
+
       }
 
 
-      if (task.promotion_status !== "pending") {
+      if (
+        task.promotion_status !==
+        "pending"
+      ) {
+
         return res.status(400).json({
+
           success: false,
+
           message:
             "Promotion is no longer active"
+
         });
+
       }
 
 
       /*
-        DO NOT trust:
+        IMPORTANT:
+
+        We do not trust:
 
         req.body.followed
         req.body.verified
+        req.body.completed
 
-        because users can modify those
-        values from the browser.
+        because these values can be
+        changed from the browser.
+
+        TikTok follow verification must
+        happen server-side before coins
+        are awarded.
       */
 
+
       return res.status(409).json({
+
         success: false,
 
         verification_required: true,
 
+        reward_coins:
+          TASK_REWARD_COINS,
+
         message:
-          "TikTok follow verification is not configured yet. No coins were awarded."
+          "Task received, but TikTok follow verification is not available yet. No coins were awarded."
+
       });
 
     } catch (error) {
@@ -469,11 +624,116 @@ router.post(
       );
 
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not complete earn task"
+
       });
+
     }
+
+  }
+);
+
+
+/* ==========================================
+   4. EARN SUMMARY
+========================================== */
+
+router.get(
+  "/earn/summary",
+  async (req, res) => {
+
+    try {
+
+      const user =
+        await getCurrentUser(req);
+
+      if (!user) {
+
+        return res.status(401).json({
+
+          success: false,
+
+          message:
+            "Not logged in"
+
+        });
+
+      }
+
+
+      const result =
+        await query(
+          `
+          SELECT
+
+            COUNT(*)::INTEGER
+              AS completed_tasks,
+
+            COALESCE(
+              SUM(reward_coins),
+              0
+            )::INTEGER
+              AS earned_coins
+
+          FROM earn_completions
+
+          WHERE user_id = $1
+          `,
+          [user.id]
+        );
+
+
+      const summary =
+        result.rows[0];
+
+
+      return res.json({
+
+        success: true,
+
+        summary: {
+
+          completed_tasks:
+            Number(
+              summary.completed_tasks
+            ),
+
+          earned_coins:
+            Number(
+              summary.earned_coins
+            ),
+
+          current_balance:
+            Number(
+              user.coins
+            )
+
+        }
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Get earn summary error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not get earn summary"
+
+      });
+
+    }
+
   }
 );
 
