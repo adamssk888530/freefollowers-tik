@@ -2001,3 +2001,339 @@
 
     const coins =
       document.getElementById("coins");
+
+    const heroName =
+      document.getElementById("heroName");
+
+    const avatar =
+      document.getElementById("avatar");
+
+    const accountStatus =
+      document.getElementById("accountStatus");
+
+    const activeBadge =
+      document.getElementById("activeBadge");
+
+
+    /* =========================================
+       MENU
+    ========================================= */
+
+    const menu =
+      document.getElementById("menu");
+
+    const overlay =
+      document.getElementById("overlay");
+
+    const openMenu =
+      document.getElementById("openMenu");
+
+    const bottomMenu =
+      document.getElementById("bottomMenu");
+
+    const closeMenu =
+      document.getElementById("closeMenu");
+
+
+    function showMenu() {
+
+      menu.classList.add("show");
+
+      overlay.classList.add("show");
+
+      document.body.style.overflow =
+        "hidden";
+    }
+
+
+    function hideMenu() {
+
+      menu.classList.remove("show");
+
+      overlay.classList.remove("show");
+
+      document.body.style.overflow =
+        "";
+    }
+
+
+    openMenu.addEventListener(
+      "click",
+      showMenu
+    );
+
+
+    bottomMenu.addEventListener(
+      "click",
+      showMenu
+    );
+
+
+    closeMenu.addEventListener(
+      "click",
+      hideMenu
+    );
+
+
+    overlay.addEventListener(
+      "click",
+      hideMenu
+    );
+
+
+    /* =========================================
+       LOAD USER
+    ========================================= */
+
+    async function loadUser() {
+
+      try {
+
+        const response =
+          await fetch(
+            "/api/me",
+            {
+              method: "GET",
+
+              credentials: "include",
+
+              cache: "no-store",
+
+              headers: {
+                "Accept":
+                  "application/json"
+              }
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        if (
+          response.status === 401
+        ) {
+
+          window.location.href =
+            "/";
+
+          return;
+        }
+
+
+        if (
+          !response.ok ||
+          !data.success ||
+          !data.user
+        ) {
+
+          throw new Error(
+            data.message ||
+            "Could not load user"
+          );
+        }
+
+
+        const user =
+          data.user;
+
+
+        /* NAME */
+
+        const name =
+          user.display_name ||
+          "TikTok User";
+
+
+        heroName.textContent =
+          name;
+
+
+        /* COINS */
+
+        coins.textContent =
+          Number(
+            user.coins || 0
+          ).toLocaleString();
+
+
+        /* AVATAR */
+
+        if (
+          user.avatar_url
+        ) {
+
+          avatar.src =
+            user.avatar_url;
+
+        } else {
+
+          avatar.src =
+            "data:image/svg+xml," +
+            encodeURIComponent(`
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="100"
+                   height="100">
+                <rect
+                  width="100"
+                  height="100"
+                  fill="#222"/>
+                <text
+                  x="50"
+                  y="60"
+                  text-anchor="middle"
+                  font-size="42">
+                  👤
+                </text>
+              </svg>
+            `);
+        }
+
+
+        /* ACCOUNT STATUS */
+
+        if (
+          user.is_banned
+        ) {
+
+          accountStatus.textContent =
+            "Account suspended";
+
+          accountStatus.style.color =
+            "#ff3158";
+
+          activeBadge.textContent =
+            "✕ Banned";
+
+          activeBadge.style.color =
+            "#ff3158";
+
+          activeBadge.style.background =
+            "rgba(255,49,88,0.10)";
+
+        } else if (
+          !user.is_active
+        ) {
+
+          accountStatus.textContent =
+            "Account inactive";
+
+          accountStatus.style.color =
+            "#ffb020";
+
+          activeBadge.textContent =
+            "⚠ Inactive";
+
+          activeBadge.style.color =
+            "#ffb020";
+
+          activeBadge.style.background =
+            "rgba(255,176,32,0.10)";
+
+        } else {
+
+          accountStatus.textContent =
+            "Connected and active";
+
+          activeBadge.textContent =
+            "✓ Active";
+
+        }
+
+
+        loading.style.display =
+          "none";
+
+
+      } catch (err) {
+
+        console.error(
+          "Dashboard error:",
+          err
+        );
+
+
+        loading.style.display =
+          "none";
+
+
+        error.style.display =
+          "block";
+
+
+        error.textContent =
+          "Could not connect to the server. Please try again.";
+      }
+    }
+
+
+    /* =========================================
+       LOGOUT
+    ========================================= */
+
+    async function logoutUser() {
+
+      const button =
+        document.getElementById(
+          "logout"
+        );
+
+
+      button.disabled =
+        true;
+
+      button.textContent =
+        "⏳ Logging out...";
+
+
+      try {
+
+        await fetch(
+          "/api/logout",
+          {
+            method: "POST",
+
+            credentials: "include",
+
+            cache: "no-store",
+
+            headers: {
+              "Accept":
+                "application/json"
+            }
+          }
+        );
+
+      } catch (err) {
+
+        console.error(
+          "Logout error:",
+          err
+        );
+      }
+
+
+      window.location.href =
+        "/";
+    }
+
+
+    document
+      .getElementById("logout")
+      .addEventListener(
+        "click",
+        logoutUser
+      );
+
+
+    /* =========================================
+       START
+    ========================================= */
+
+    loadUser();
+
+  </script>
+
+</body>
+</html>
