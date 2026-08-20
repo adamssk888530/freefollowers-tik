@@ -24,10 +24,20 @@
       padding: 0;
     }
 
-    html,
+    html {
+      width: 100%;
+      min-height: 100%;
+
+      background: #050505;
+
+      overscroll-behavior-y: auto;
+    }
+
     body {
       width: 100%;
-      height: 100%;
+      min-height: 100vh;
+
+      margin: 0;
 
       background: #050505;
       color: #ffffff;
@@ -37,12 +47,12 @@
         Helvetica,
         sans-serif;
 
-      overflow: hidden;
-    }
+      overflow-x: hidden;
+      overflow-y: auto;
 
-    body {
-      position: fixed;
-      inset: 0;
+      position: relative;
+
+      overscroll-behavior-y: auto;
     }
 
     a,
@@ -61,19 +71,14 @@
     ========================================= */
 
     .header {
-
       height: 58px;
-
       width: 100%;
 
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
 
-      padding:
-        0 14px;
+      padding: 0 14px;
 
       background: #050505;
 
@@ -83,15 +88,14 @@
 
       flex-shrink: 0;
 
-      position: relative;
+      position: sticky;
+      top: 0;
 
-      z-index: 50;
+      z-index: 100;
     }
 
     .header-left {
-
       display: flex;
-
       align-items: center;
 
       gap: 11px;
@@ -100,7 +104,6 @@
     }
 
     .menu-button {
-
       width: 38px;
       height: 38px;
 
@@ -119,12 +122,10 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
     }
 
     .logo {
-
       font-size: 20px;
 
       font-weight: 900;
@@ -135,12 +136,10 @@
     }
 
     .logo-pink {
-
       color: #fe2c55;
     }
 
     .header-right {
-
       display: flex;
 
       align-items: center;
@@ -149,7 +148,6 @@
     }
 
     .notification {
-
       position: relative;
 
       font-size: 25px;
@@ -158,7 +156,6 @@
     }
 
     .notification-count {
-
       position: absolute;
 
       top: -8px;
@@ -170,7 +167,6 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       background: #fe2c55;
@@ -189,7 +185,6 @@
     }
 
     .avatar {
-
       width: 40px;
       height: 40px;
 
@@ -210,16 +205,15 @@
     ========================================= */
 
     .screen {
-
-      height:
+      min-height:
         calc(100vh - 58px);
 
       width: 100%;
 
-      overflow: hidden;
+      overflow: visible;
 
       padding:
-        8px 12px 68px;
+        8px 12px 76px;
 
       display: flex;
 
@@ -234,7 +228,6 @@
     ========================================= */
 
     .hero {
-
       height: 175px;
 
       min-height: 175px;
@@ -266,7 +259,6 @@
     }
 
     .hero-text {
-
       position: relative;
 
       z-index: 5;
@@ -278,7 +270,6 @@
     }
 
     .welcome {
-
       color: #d9d9d9;
 
       font-size: 13px;
@@ -287,7 +278,6 @@
     }
 
     .hero-name {
-
       font-size: 25px;
 
       line-height: 1.05;
@@ -302,14 +292,12 @@
     }
 
     .wave {
-
       font-size: 22px;
 
       margin-bottom: 2px;
     }
 
     .hero-description {
-
       color: #a8a8a8;
 
       font-size: 11px;
@@ -320,7 +308,6 @@
     }
 
     .hero-art {
-
       position: absolute;
 
       right: 0;
@@ -332,7 +319,6 @@
     }
 
     .pink-glow {
-
       position: absolute;
 
       width: 170px;
@@ -354,7 +340,6 @@
     }
 
     .person {
-
       position: absolute;
 
       right: 47px;
@@ -380,7 +365,6 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       font-size: 47px;
@@ -391,7 +375,6 @@
     }
 
     .tiktok-box {
-
       position: absolute;
 
       right: 5px;
@@ -409,7 +392,6 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       font-size: 39px;
@@ -430,7 +412,6 @@
     ========================================= */
 
     .stats {
-
       height: 92px;
 
       min-height: 92px;
@@ -455,7 +436,6 @@
     }
 
     .stat {
-
       min-width: 0;
 
       padding:
@@ -471,7 +451,6 @@
     }
 
     .stat-title {
-
       color: #d5d5d5;
 
       font-size: 9px;
@@ -482,7 +461,6 @@
     }
 
     .stat-number {
-
       font-size: 22px;
 
       line-height: 1;
@@ -493,12 +471,10 @@
     }
 
     .coin {
-
       font-size: 18px;
     }
 
     .buy {
-
       display: inline-block;
 
       padding:
@@ -521,7 +497,6 @@
     }
 
     .change {
-
       font-size: 9px;
 
       font-weight: 700;
@@ -541,11 +516,10 @@
 
 
     /* =========================================
-       MAIN ACTION TITLE
+       ACTION TITLE
     ========================================= */
 
     .actions-title {
-
       height: 18px;
 
       min-height: 18px;
@@ -563,7 +537,6 @@
     ========================================= */
 
     .actions {
-
       height: 91px;
 
       min-height: 91px;
@@ -586,7 +559,6 @@
     }
 
     .action {
-
       min-width: 0;
 
       display: flex;
@@ -608,7 +580,6 @@
     }
 
     .action-icon {
-
       width: 43px;
       height: 43px;
 
@@ -619,7 +590,6 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       font-size: 23px;
@@ -638,7 +608,6 @@
 
     .action:nth-child(3)
     .action-icon {
-
       border-color:
         #00f2ea;
 
@@ -648,7 +617,6 @@
     }
 
     .action h3 {
-
       font-size: 13px;
 
       line-height: 1.1;
@@ -657,7 +625,6 @@
     }
 
     .action p {
-
       color: #999;
 
       font-size: 9px;
@@ -671,7 +638,6 @@
     ========================================= */
 
     .account {
-
       height: 68px;
 
       min-height: 68px;
@@ -696,7 +662,6 @@
     }
 
     .tiktok-icon {
-
       width: 42px;
       height: 42px;
 
@@ -713,35 +678,30 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       font-size: 25px;
     }
 
     .account-info {
-
       flex: 1;
 
       min-width: 0;
     }
 
     .account-info h3 {
-
       font-size: 13px;
 
       margin-bottom: 3px;
     }
 
     .account-info p {
-
       color: #00e676;
 
       font-size: 10px;
     }
 
     .active {
-
       padding:
         6px 10px;
 
@@ -762,7 +722,6 @@
     }
 
     .account-arrow {
-
       color: #aaa;
 
       font-size: 24px;
@@ -770,11 +729,10 @@
 
 
     /* =========================================
-       ADSENSE AREA
+       ADSENSE
     ========================================= */
 
     .ad {
-
       height: 44px;
 
       min-height: 44px;
@@ -793,14 +751,12 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       overflow: hidden;
     }
 
     .ad-label {
-
       color: #4d4d4d;
 
       font-size: 8px;
@@ -816,7 +772,6 @@
     ========================================= */
 
     .promotion {
-
       height: 105px;
 
       min-height: 105px;
@@ -843,7 +798,6 @@
     }
 
     .promotion-content {
-
       width: 65%;
 
       padding:
@@ -855,7 +809,6 @@
     }
 
     .promotion-small {
-
       color: #aaa;
 
       font-size: 9px;
@@ -864,7 +817,6 @@
     }
 
     .promotion h2 {
-
       font-size: 14px;
 
       line-height: 1.15;
@@ -873,7 +825,6 @@
     }
 
     .promotion-button {
-
       display: inline-block;
 
       padding:
@@ -892,7 +843,6 @@
     }
 
     .megaphone {
-
       position: absolute;
 
       right: 7px;
@@ -913,7 +863,6 @@
     ========================================= */
 
     .bottom-nav {
-
       position: fixed;
 
       left: 8px;
@@ -944,7 +893,6 @@
     }
 
     .bottom-item {
-
       border: 0;
 
       background: transparent;
@@ -956,7 +904,6 @@
       flex-direction: column;
 
       align-items: center;
-
       justify-content: center;
 
       gap: 2px;
@@ -967,14 +914,12 @@
     }
 
     .bottom-icon {
-
       font-size: 19px;
 
       line-height: 1;
     }
 
     .bottom-item.active {
-
       color: #fe2c55;
     }
 
@@ -984,7 +929,6 @@
     ========================================= */
 
     .overlay {
-
       position: fixed;
 
       inset: 0;
@@ -1002,14 +946,12 @@
     }
 
     .overlay.show {
-
       opacity: 1;
 
       pointer-events: auto;
     }
 
     .menu {
-
       position: fixed;
 
       left: 0;
@@ -1040,13 +982,11 @@
     }
 
     .menu.show {
-
       transform:
         translateX(0);
     }
 
     .menu-header {
-
       display: flex;
 
       align-items: center;
@@ -1057,14 +997,12 @@
     }
 
     .menu-title {
-
       font-size: 21px;
 
       font-weight: 800;
     }
 
     .close {
-
       width: 38px;
       height: 38px;
 
@@ -1081,7 +1019,6 @@
     }
 
     .menu-link {
-
       width: 100%;
 
       height: 47px;
@@ -1111,7 +1048,6 @@
     }
 
     .menu-link:hover {
-
       background:
         rgba(254,44,85,0.10);
 
@@ -1119,7 +1055,6 @@
     }
 
     .logout {
-
       color: #ff3158;
 
       margin-top: 15px;
@@ -1131,7 +1066,6 @@
     ========================================= */
 
     .loading {
-
       position: fixed;
 
       inset: 0;
@@ -1152,7 +1086,6 @@
     }
 
     .spinner {
-
       width: 42px;
       height: 42px;
 
@@ -1173,18 +1106,15 @@
     }
 
     .loading-text {
-
       color: #888;
 
       font-size: 12px;
     }
 
     @keyframes spin {
-
       to {
         transform: rotate(360deg);
       }
-
     }
 
 
@@ -1193,7 +1123,6 @@
     ========================================= */
 
     .error {
-
       display: none;
 
       position: fixed;
@@ -1230,87 +1159,68 @@
 
     @media (min-width: 701px) {
 
-      html,
-      body {
-
-        overflow: hidden;
-      }
-
       .screen {
-
         max-width: 900px;
 
         margin: auto;
 
         padding:
-          12px 20px 20px;
+          12px 20px 30px;
       }
 
       .bottom-nav {
-
         display: none;
       }
 
       .hero {
-
         height: 220px;
 
         min-height: 220px;
       }
 
       .hero-name {
-
         font-size: 38px;
       }
 
       .hero-description {
-
         font-size: 15px;
       }
 
       .hero-text {
-
         padding: 28px;
       }
 
       .stats {
-
         height: 120px;
 
         min-height: 120px;
       }
 
       .stat {
-
         padding:
           15px 14px;
       }
 
       .stat-title {
-
         font-size: 12px;
       }
 
       .stat-number {
-
         font-size: 31px;
       }
 
       .actions {
-
         height: 110px;
 
         min-height: 110px;
       }
 
       .action {
-
         padding:
           12px 18px;
       }
 
       .action-icon {
-
         width: 58px;
         height: 58px;
 
@@ -1318,26 +1228,22 @@
       }
 
       .account {
-
         height: 78px;
 
         min-height: 78px;
       }
 
       .ad {
-
         height: 55px;
 
         min-height: 55px;
       }
 
       .promotion {
-
         height: 125px;
 
         min-height: 125px;
       }
-
     }
 
 
@@ -1348,49 +1254,41 @@
     @media (max-width: 380px) {
 
       .logo {
-
         font-size: 17px;
       }
 
       .header {
-
         padding:
           0 10px;
       }
 
       .screen {
-
         padding:
-          7px 9px 67px;
+          7px 9px 76px;
 
         gap: 6px;
       }
 
       .hero {
-
         height: 166px;
 
         min-height: 166px;
       }
 
       .hero-text {
-
         padding:
           15px 12px;
       }
 
       .hero-name {
-
         font-size: 23px;
       }
 
       .hero-description {
-
         font-size: 10px;
       }
 
       .person {
-
         right: 39px;
 
         width: 78px;
@@ -1400,7 +1298,6 @@
       }
 
       .tiktok-box {
-
         width: 63px;
         height: 63px;
 
@@ -1410,30 +1307,25 @@
       }
 
       .stats {
-
         height: 88px;
 
         min-height: 88px;
       }
 
       .stat {
-
         padding:
           8px 5px;
       }
 
       .stat-title {
-
         font-size: 8px;
       }
 
       .stat-number {
-
         font-size: 20px;
       }
 
       .buy {
-
         font-size: 7px;
 
         padding:
@@ -1441,14 +1333,12 @@
       }
 
       .actions {
-
         height: 87px;
 
         min-height: 87px;
       }
 
       .action {
-
         padding:
           5px 4px;
 
@@ -1456,7 +1346,6 @@
       }
 
       .action-icon {
-
         width: 39px;
         height: 39px;
 
@@ -1466,24 +1355,20 @@
       }
 
       .action h3 {
-
         font-size: 12px;
       }
 
       .action p {
-
         font-size: 8px;
       }
 
       .account {
-
         height: 64px;
 
         min-height: 64px;
       }
 
       .tiktok-icon {
-
         width: 38px;
         height: 38px;
 
@@ -1493,17 +1378,14 @@
       }
 
       .account-info h3 {
-
         font-size: 12px;
       }
 
       .account-info p {
-
         font-size: 9px;
       }
 
       .active {
-
         font-size: 8px;
 
         padding:
@@ -1511,22 +1393,18 @@
       }
 
       .promotion {
-
         height: 99px;
 
         min-height: 99px;
       }
 
       .promotion h2 {
-
         font-size: 13px;
       }
 
       .megaphone {
-
         font-size: 55px;
       }
-
     }
 
   </style>
@@ -1621,9 +1499,7 @@
   <main class="screen">
 
 
-    <!-- =======================================
-         HERO
-    ======================================== -->
+    <!-- HERO -->
 
     <section class="hero">
 
@@ -1637,7 +1513,7 @@
           id="heroName"
           class="hero-name"
         >
-          ADAMS AI SOLUTIONS 🤖
+          TikTok User
         </div>
 
         <div class="wave">
@@ -1668,12 +1544,9 @@
     </section>
 
 
-    <!-- =======================================
-         STATS
-    ======================================== -->
+    <!-- STATS -->
 
     <section class="stats">
-
 
       <div class="stat">
 
@@ -1753,21 +1626,19 @@
 
       </div>
 
-
     </section>
 
 
-    <!-- =======================================
-         MAIN ACTIONS
-    ======================================== -->
+    <!-- ACTION TITLE -->
 
     <div class="actions-title">
       Main Actions
     </div>
 
 
-    <section class="actions">
+    <!-- ACTIONS -->
 
+    <section class="actions">
 
       <a
         href="/earn.html"
@@ -1840,13 +1711,10 @@
 
       </a>
 
-
     </section>
 
 
-    <!-- =======================================
-         TIKTOK ACCOUNT
-    ======================================== -->
+    <!-- TIKTOK ACCOUNT -->
 
     <section class="account">
 
@@ -1883,9 +1751,7 @@
     </section>
 
 
-    <!-- =======================================
-         ADSENSE
-    ======================================== -->
+    <!-- ADSENSE -->
 
     <section class="ad">
 
@@ -1893,20 +1759,12 @@
         Advertisement
       </div>
 
-      <!--
-        ADSENSE CODE ZAI SHIGA ANAN
-        BAYAN GOOGLE ADSENSE YA APPROVE WEBSITE.
-
-        Kada ka saka AdSense code har sai
-        Google ya baka AdSense ad code.
-      -->
+      <!-- Google AdSense code goes here -->
 
     </section>
 
 
-    <!-- =======================================
-         PROMOTION
-    ======================================== -->
+    <!-- PROMOTION -->
 
     <section class="promotion">
 
@@ -1946,7 +1804,6 @@
   ========================================= -->
 
   <nav class="bottom-nav">
-
 
     <a
       href="/dashboard.html"
@@ -2027,7 +1884,6 @@
       </span>
 
     </button>
-
 
   </nav>
 
@@ -2133,7 +1989,6 @@
 
   <script>
 
-
     /* =========================================
        ELEMENTS
     ========================================= */
@@ -2146,363 +2001,3 @@
 
     const coins =
       document.getElementById("coins");
-
-    const heroName =
-      document.getElementById("heroName");
-
-    const avatar =
-      document.getElementById("avatar");
-
-    const accountStatus =
-      document.getElementById("accountStatus");
-
-    const activeBadge =
-      document.getElementById("activeBadge");
-
-
-    /* =========================================
-       MENU ELEMENTS
-    ========================================= */
-
-    const menu =
-      document.getElementById("menu");
-
-    const overlay =
-      document.getElementById("overlay");
-
-    const openMenu =
-      document.getElementById("openMenu");
-
-    const bottomMenu =
-      document.getElementById("bottomMenu");
-
-    const closeMenu =
-      document.getElementById("closeMenu");
-
-
-    /* =========================================
-       OPEN MENU
-    ========================================= */
-
-    function showMenu() {
-
-      menu.classList.add("show");
-
-      overlay.classList.add("show");
-
-    }
-
-
-    /* =========================================
-       CLOSE MENU
-    ========================================= */
-
-    function hideMenu() {
-
-      menu.classList.remove("show");
-
-      overlay.classList.remove("show");
-
-    }
-
-
-    openMenu.addEventListener(
-      "click",
-      showMenu
-    );
-
-
-    bottomMenu.addEventListener(
-      "click",
-      showMenu
-    );
-
-
-    closeMenu.addEventListener(
-      "click",
-      hideMenu
-    );
-
-
-    overlay.addEventListener(
-      "click",
-      hideMenu
-    );
-
-
-    /* =========================================
-       LOAD USER
-    ========================================= */
-
-    async function loadUser() {
-
-      try {
-
-        const response =
-          await fetch(
-            "/api/me",
-            {
-              method: "GET",
-
-              credentials: "include",
-
-              headers: {
-                "Accept":
-                  "application/json"
-              }
-            }
-          );
-
-
-        const data =
-          await response.json();
-
-
-        /* -------------------------------------
-           NOT LOGGED IN
-        ------------------------------------- */
-
-        if (
-          response.status === 401
-        ) {
-
-          window.location.href = "/";
-
-          return;
-        }
-
-
-        /* -------------------------------------
-           ERROR
-        ------------------------------------- */
-
-        if (
-          !response.ok ||
-          !data.success ||
-          !data.user
-        ) {
-
-          throw new Error(
-            data.message ||
-            "Could not load user"
-          );
-
-        }
-
-
-        const user =
-          data.user;
-
-
-        /* =====================================
-           NAME
-        ===================================== */
-
-        const name =
-          user.display_name ||
-          "TikTok User";
-
-
-        heroName.textContent =
-          name;
-
-
-        /* =====================================
-           COINS
-        ===================================== */
-
-        coins.textContent =
-          Number(
-            user.coins || 0
-          ).toLocaleString();
-
-
-        /* =====================================
-           AVATAR
-        ===================================== */
-
-        if (
-          user.avatar_url
-        ) {
-
-          avatar.src =
-            user.avatar_url;
-
-        } else {
-
-          avatar.src =
-            "data:image/svg+xml," +
-            encodeURIComponent(`
-              <svg xmlns="http://www.w3.org/2000/svg"
-                   width="100"
-                   height="100">
-                <rect
-                  width="100"
-                  height="100"
-                  fill="#222"/>
-                <text
-                  x="50"
-                  y="60"
-                  text-anchor="middle"
-                  font-size="42">
-                  👤
-                </text>
-              </svg>
-            `);
-
-        }
-
-
-        /* =====================================
-           ACCOUNT STATUS
-        ===================================== */
-
-        if (
-          user.is_banned
-        ) {
-
-          accountStatus.textContent =
-            "Account suspended";
-
-          accountStatus.style.color =
-            "#ff3158";
-
-          activeBadge.textContent =
-            "✕ Banned";
-
-          activeBadge.style.color =
-            "#ff3158";
-
-          activeBadge.style.background =
-            "rgba(255,49,88,0.10)";
-
-        } else if (
-          !user.is_active
-        ) {
-
-          accountStatus.textContent =
-            "Account inactive";
-
-          accountStatus.style.color =
-            "#ffb020";
-
-          activeBadge.textContent =
-            "⚠ Inactive";
-
-          activeBadge.style.color =
-            "#ffb020";
-
-          activeBadge.style.background =
-            "rgba(255,176,32,0.10)";
-
-        } else {
-
-          accountStatus.textContent =
-            "Connected and active";
-
-          activeBadge.textContent =
-            "✓ Active";
-
-        }
-
-
-        /* =====================================
-           HIDE LOADING
-        ===================================== */
-
-        loading.style.display =
-          "none";
-
-
-      } catch (err) {
-
-        console.error(
-          "Dashboard error:",
-          err
-        );
-
-
-        loading.style.display =
-          "none";
-
-
-        error.style.display =
-          "block";
-
-
-        error.textContent =
-          "Could not connect to the server. Please try again.";
-
-      }
-
-    }
-
-
-    /* =========================================
-       LOGOUT
-    ========================================= */
-
-    async function logoutUser() {
-
-      const button =
-        document.getElementById(
-          "logout"
-        );
-
-
-      button.disabled = true;
-
-      button.textContent =
-        "⏳ Logging out...";
-
-
-      try {
-
-        await fetch(
-          "/api/logout",
-          {
-            method: "POST",
-
-            credentials: "include",
-
-            headers: {
-              "Accept":
-                "application/json"
-            }
-          }
-        );
-
-      } catch (err) {
-
-        console.error(
-          "Logout error:",
-          err
-        );
-
-      }
-
-
-      window.location.href =
-        "/";
-
-    }
-
-
-    document
-      .getElementById("logout")
-      .addEventListener(
-        "click",
-        logoutUser
-      );
-
-
-    /* =========================================
-       START
-    ========================================= */
-
-    loadUser();
-
-  </script>
-
-</body>
-</html>
