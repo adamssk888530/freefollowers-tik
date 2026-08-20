@@ -201,6 +201,34 @@ async function initDatabase() {
 
 
     /* ==========================================
+       EARN COMPLETIONS
+    ========================================== */
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS earn_completions (
+        id SERIAL PRIMARY KEY,
+
+        task_id INTEGER NOT NULL
+          REFERENCES promotion_tasks(id)
+          ON DELETE CASCADE,
+
+        user_id INTEGER NOT NULL
+          REFERENCES users(id)
+          ON DELETE CASCADE,
+
+        reward_coins INTEGER NOT NULL,
+
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+        UNIQUE(
+          task_id,
+          user_id
+        )
+      )
+    `);
+
+
+    /* ==========================================
        INDEXES
     ========================================== */
 
@@ -244,6 +272,16 @@ async function initDatabase() {
       ON promotion_tasks(promotion_id)
     `);
 
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_earn_completions_user
+      ON earn_completions(user_id)
+    `);
+
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_earn_completions_task
+      ON earn_completions(task_id)
+    `);
+
 
     /* ==========================================
        MIGRATION FOR EXISTING DATABASES
@@ -259,6 +297,10 @@ async function initDatabase() {
       ADD COLUMN IF NOT EXISTS profile_deep_link TEXT
     `);
 
+
+    /* ==========================================
+       COMMIT
+    ========================================== */
 
     await client.query("COMMIT");
 
