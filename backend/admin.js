@@ -1,6 +1,6 @@
 const express = require("express");
 const crypto = require("crypto");
-const { query } = require("./db");
+const { query, pool } = require("./db");
 
 const router = express.Router();
 
@@ -1087,7 +1087,265 @@ router.get(
   }
 );
 
+/* ==========================================
+   7. ADD COINS TO USER
+========================================== */
 
+router.post(
+  "/admin/users/:userId/add-coins",
+  requireAdmin,
+  async (req, res) => {
+
+    const client = await pool.connect();
+
+    try {
+
+      const userId =
+        Number(req.params.userId);
+
+      const amount =
+        Number(req.body.amount);
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+        return res.status(400).json({
+          success: false,
+          message: "Invalid user ID"
+        });
+      }
+
+
+      if (
+        !Number.isInteger(amount) ||
+        amount <= 0 ||
+        amount > 1000000
+      ) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "Coin amount must be between 1 and 1,000,000"
+        });
+      }
+
+
+      await client.query("BEGIN");
+
+
+      /* ======================================
+         LOCK USER
+      ====================================== */
+
+      const userResult =
+        await client.query(
+          `
+          SELECT
+            id,
+            display_name,
+            coins,
+            is_active,
+            is_banned
+
+          FROM users
+
+          WHERE id = $1
+
+          FOR UPDATE
+          `,
+          [userId]
+        );
+
+
+      if (
+        userResult.rows.length === 0
+      ) {
+
+        await client.query("ROLLBACK");
+
+        return res.status(404).json({
+          success: false,
+          message: "User not found"
+        });
+      }
+
+
+      const user =
+        userResult.rows[0];
+
+
+      const balanceBefore =
+        Number(user.coins || 0);
+
+
+      const balanceAfter =
+        balanceBefore + amount;
+
+
+      /* ======================================
+         ADD COINS
+      ====================================== */
+
+      const updateResult =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+            coins = coins + $1,
+            updated_at = NOW()
+
+          WHERE id = $2
+
+          RETURNING
+            id,
+            display_name,
+            coins
+          `,
+          [
+            amount,
+            userId
+          ]
+        );
+
+
+      const updatedUser =
+        updateResult.rows[0];
+
+
+      /* ======================================
+         TRANSACTION RECORD
+      ====================================== */
+
+      await client.query(
+        `
+        INSERT INTO coin_transactions (
+          user_id,
+          type,
+          amount,
+          balance_before,
+          balance_after,
+          reference_type,
+          reference_id,
+          description
+        )
+
+        VALUES (
+          $1,
+          'admin_credit',
+          $2,
+          $3,
+          $4,
+          'admin',
+          $5,
+          $6
+        )
+        `,
+        [
+          userId,
+          amount,
+          balanceBefore,
+          balanceAfter,
+          String(req.admin.id),
+          `Admin added ${amount} coins`
+        ]
+      );
+
+
+      /* ======================================
+         ADMIN AUDIT LOG
+      ====================================== */
+
+      await client.query(
+        `
+        INSERT INTO admin_audit_logs (
+          admin_user_id,
+          action,
+          target_user_id,
+          reference_type,
+          reference_id,
+          details
+        )
+
+        VALUES (
+          $1,
+          'add_coins',
+          $2,
+          'user',
+          $3,
+          $4
+        )
+        `,
+        [
+          req.admin.id,
+          userId,
+          String(userId),
+          JSON.stringify({
+            amount,
+            balance_before: balanceBefore,
+            balance_after: balanceAfter
+          })
+        ]
+      );
+
+
+      await client.query("COMMIT");
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          `Successfully added ${amount} coins`,
+
+        user: {
+          id:
+            updatedUser.id,
+
+          display_name:
+            updatedUser.display_name,
+
+          coins:
+            Number(updatedUser.coins)
+        },
+
+        transaction: {
+          amount,
+          balance_before:
+            balanceBefore,
+
+          balance_after:
+            balanceAfter
+        }
+
+      });
+
+    } catch (error) {
+
+      try {
+        await client.query("ROLLBACK");
+      } catch {}
+
+      console.error(
+        "Admin add coins error:",
+        error
+      );
+
+      return res.status(500).json({
+        success: false,
+        message:
+          "Could not add coins"
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+  }
+);
 /* ==========================================
    EXPORT
 ========================================== */
