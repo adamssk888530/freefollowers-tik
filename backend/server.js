@@ -8,6 +8,7 @@ const walletRoutes = require("./wallet");
 const earnRoutes = require("./earn");
 const promotionRoutes = require("./promotion");
 const taskQueueRoutes = require("./taskQueue");
+const adminRoutes = require("./admin");
 
 const { testDatabase } = require("./db");
 const { initDatabase } = require("./init-db");
@@ -43,6 +44,8 @@ app.use("/api", promotionRoutes);
 
 app.use("/api", taskQueueRoutes);
 
+app.use("/api", adminRoutes);
+
 
 // ==========================================
 // FRONTEND
@@ -72,6 +75,7 @@ app.get("/", (req, res) => {
   );
 });
 
+
 app.get("/terms", (req, res) => {
   res.sendFile(
     path.join(
@@ -80,6 +84,7 @@ app.get("/terms", (req, res) => {
     )
   );
 });
+
 
 app.get("/privacy", (req, res) => {
   res.sendFile(
@@ -92,10 +97,25 @@ app.get("/privacy", (req, res) => {
 
 
 // ==========================================
+// ADMIN PAGE
+// ==========================================
+
+app.get("/admin", (req, res) => {
+  res.sendFile(
+    path.join(
+      frontendPath,
+      "admin.html"
+    )
+  );
+});
+
+
+// ==========================================
 // HEALTH CHECK
 // ==========================================
 
 app.get("/health", async (req, res) => {
+
   try {
 
     const database =
@@ -120,7 +140,9 @@ app.get("/health", async (req, res) => {
       server: "online",
       database: "disconnected"
     });
+
   }
+
 });
 
 
@@ -132,7 +154,8 @@ app.use((req, res) => {
 
   res.status(404).json({
     success: false,
-    message: "Page or API route not found"
+    message:
+      "Page or API route not found"
   });
 
 });
@@ -150,17 +173,27 @@ async function startServer() {
 
   try {
 
-    console.log("Connecting to database...");
+    console.log(
+      "Connecting to database..."
+    );
 
     await testDatabase();
 
-    console.log("Database connected.");
+    console.log(
+      "Database connected."
+    );
 
-    console.log("Initializing database tables...");
+
+    console.log(
+      "Initializing database tables..."
+    );
 
     await initDatabase();
 
-    console.log("Database tables are ready.");
+    console.log(
+      "Database tables are ready."
+    );
+
 
     app.listen(PORT, () => {
 
