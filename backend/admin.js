@@ -133,14 +133,18 @@ async function requireAdmin(
     if (!admin) {
 
       return res.status(403).json({
+
         success: false,
+
         message:
           "Admin access required"
+
       });
 
     }
 
-    req.admin = admin;
+    req.admin =
+      admin;
 
     next();
 
@@ -152,12 +156,62 @@ async function requireAdmin(
     );
 
     return res.status(500).json({
+
       success: false,
+
       message:
         "Could not authenticate admin"
+
     });
 
   }
+
+}
+
+
+/* ==========================================
+   ADMIN AUDIT HELPER
+========================================== */
+
+async function writeAuditLog(
+  client,
+  adminId,
+  action,
+  targetUserId = null,
+  referenceType = null,
+  referenceId = null,
+  details = {}
+) {
+
+  await client.query(
+    `
+    INSERT INTO admin_audit_logs (
+      admin_user_id,
+      action,
+      target_user_id,
+      reference_type,
+      reference_id,
+      details
+    )
+
+    VALUES (
+      $1,
+      $2,
+      $3,
+      $4,
+      $5,
+      $6
+    )
+    `,
+    [
+      adminId,
+      action,
+      targetUserId,
+      referenceType,
+      referenceId,
+      JSON.stringify(details)
+    ]
+  );
 
 }
 
@@ -187,7 +241,9 @@ router.get(
           req.admin.avatar_url,
 
         coins:
-          Number(req.admin.coins || 0),
+          Number(
+            req.admin.coins || 0
+          ),
 
         is_admin:
           req.admin.is_admin
@@ -201,7 +257,7 @@ router.get(
 
 
 /* ==========================================
-   2. ADMIN STATS
+   2. ADMIN DASHBOARD STATS
 ========================================== */
 
 router.get(
@@ -211,7 +267,9 @@ router.get(
 
     try {
 
-      /* USERS */
+      /* ======================================
+         USERS
+      ====================================== */
 
       const usersResult =
         await query(`
@@ -241,7 +299,9 @@ router.get(
         `);
 
 
-      /* COINS */
+      /* ======================================
+         COINS
+      ====================================== */
 
       const coinsResult =
         await query(`
@@ -257,7 +317,9 @@ router.get(
         `);
 
 
-      /* SALES */
+      /* ======================================
+         COIN ORDERS
+      ====================================== */
 
       const ordersResult =
         await query(`
@@ -300,7 +362,9 @@ router.get(
         `);
 
 
-      /* TODAY */
+      /* ======================================
+         TODAY SALES
+      ====================================== */
 
       const todaySalesResult =
         await query(`
@@ -330,7 +394,9 @@ router.get(
         `);
 
 
-      /* PROMOTIONS */
+      /* ======================================
+         PROMOTIONS
+      ====================================== */
 
       const promotionsResult =
         await query(`
@@ -359,7 +425,9 @@ router.get(
         `);
 
 
-      /* TASKS */
+      /* ======================================
+         TASKS
+      ====================================== */
 
       const tasksResult =
         await query(`
@@ -382,7 +450,9 @@ router.get(
         `);
 
 
-      /* EARN */
+      /* ======================================
+         EARN REWARDS
+      ====================================== */
 
       const rewardsResult =
         await query(`
@@ -401,7 +471,9 @@ router.get(
         `);
 
 
-      /* TRANSACTIONS */
+      /* ======================================
+         TRANSACTIONS
+      ====================================== */
 
       const transactionsResult =
         await query(`
@@ -470,16 +542,24 @@ router.get(
         users: {
 
           total:
-            Number(users.total_users),
+            Number(
+              users.total_users
+            ),
 
           active:
-            Number(users.active_users),
+            Number(
+              users.active_users
+            ),
 
           banned:
-            Number(users.banned_users),
+            Number(
+              users.banned_users
+            ),
 
           new_today:
-            Number(users.new_users_today)
+            Number(
+              users.new_users_today
+            )
 
         },
 
@@ -651,7 +731,7 @@ router.get(
 
 
 /* ==========================================
-   3. USERS
+   3. USERS LIST
 ========================================== */
 
 router.get(
@@ -661,39 +741,109 @@ router.get(
 
     try {
 
-      const result =
-        await query(`
-          SELECT
+      const search =
+        String(
+          req.query.search || ""
+        ).trim();
 
-            u.id,
 
-            u.display_name,
+      let result;
 
-            u.avatar_url,
 
-            u.coins,
+      if (search) {
 
-            u.is_active,
+        result =
+          await query(
+            `
+            SELECT
 
-            u.is_banned,
+              u.id,
 
-            u.is_admin,
+              u.display_name,
 
-            u.created_at,
+              u.avatar_url,
 
-            ta.username
-              AS tiktok_username
+              u.coins,
 
-          FROM users u
+              u.is_active,
 
-          LEFT JOIN tiktok_accounts ta
-            ON ta.user_id = u.id
+              u.is_banned,
 
-          ORDER BY
-            u.created_at DESC
+              u.is_admin,
 
-          LIMIT 100
-        `);
+              u.created_at,
+
+              ta.username
+                AS tiktok_username
+
+            FROM users u
+
+            LEFT JOIN tiktok_accounts ta
+              ON ta.user_id = u.id
+
+            WHERE
+
+              CAST(u.id AS TEXT)
+                ILIKE $1
+
+              OR COALESCE(
+                u.display_name,
+                ''
+              )
+                ILIKE $1
+
+              OR COALESCE(
+                ta.username,
+                ''
+              )
+                ILIKE $1
+
+            ORDER BY
+              u.created_at DESC
+
+            LIMIT 100
+            `,
+            [`%${search}%`]
+          );
+
+      } else {
+
+        result =
+          await query(`
+            SELECT
+
+              u.id,
+
+              u.display_name,
+
+              u.avatar_url,
+
+              u.coins,
+
+              u.is_active,
+
+              u.is_banned,
+
+              u.is_admin,
+
+              u.created_at,
+
+              ta.username
+                AS tiktok_username
+
+            FROM users u
+
+            LEFT JOIN tiktok_accounts ta
+              ON ta.user_id = u.id
+
+            ORDER BY
+              u.created_at DESC
+
+            LIMIT 100
+          `);
+
+      }
+
 
       return res.json({
 
@@ -727,588 +877,7 @@ router.get(
 
 
 /* ==========================================
-   4. TRANSACTIONS
-========================================== */
-
-router.get(
-  "/admin/transactions",
-  requireAdmin,
-  async (req, res) => {
-
-    try {
-
-      const result =
-        await query(`
-          SELECT
-
-            ct.id,
-
-            ct.user_id,
-
-            u.display_name,
-
-            ct.type,
-
-            ct.amount,
-
-            ct.balance_before,
-
-            ct.balance_after,
-
-            ct.reference_type,
-
-            ct.reference_id,
-
-            ct.description,
-
-            ct.created_at
-
-          FROM coin_transactions ct
-
-          INNER JOIN users u
-            ON u.id = ct.user_id
-
-          ORDER BY
-            ct.created_at DESC
-
-          LIMIT 100
-        `);
-
-      return res.json({
-
-        success: true,
-
-        transactions:
-          result.rows
-
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Admin transactions error:",
-        error
-      );
-
-      return res.status(500).json({
-
-        success: false,
-
-        message:
-          "Could not load transactions"
-
-      });
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   5. COIN ORDERS
-========================================== */
-
-router.get(
-  "/admin/orders",
-  requireAdmin,
-  async (req, res) => {
-
-    try {
-
-      const result =
-        await query(`
-          SELECT
-
-            co.id,
-
-            co.order_reference,
-
-            co.user_id,
-
-            u.display_name,
-
-            co.coins,
-
-            co.amount,
-
-            co.currency,
-
-            co.payment_provider,
-
-            co.payment_reference,
-
-            co.status,
-
-            co.paid_at,
-
-            co.created_at
-
-          FROM coin_orders co
-
-          INNER JOIN users u
-            ON u.id = co.user_id
-
-          ORDER BY
-            co.created_at DESC
-
-          LIMIT 200
-        `);
-
-      return res.json({
-
-        success: true,
-
-        orders:
-          result.rows
-
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Admin orders error:",
-        error
-      );
-
-      return res.status(500).json({
-
-        success: false,
-
-        message:
-          "Could not load coin orders"
-
-      });
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   6. PROMOTIONS
-========================================== */
-
-router.get(
-  "/admin/promotions",
-  requireAdmin,
-  async (req, res) => {
-
-    try {
-
-      const result =
-        await query(`
-          SELECT
-
-            p.id,
-
-            p.user_id,
-
-            u.display_name,
-
-            p.tiktok_username,
-
-            p.tiktok_url,
-
-            p.promotion_type,
-
-            p.coins_cost,
-
-            p.target_count,
-
-            p.completed_count,
-
-            p.status,
-
-            p.created_at,
-
-            p.updated_at
-
-          FROM promotions p
-
-          INNER JOIN users u
-            ON u.id = p.user_id
-
-          ORDER BY
-            p.created_at DESC
-
-          LIMIT 200
-        `);
-
-      return res.json({
-
-        success: true,
-
-        promotions:
-          result.rows
-
-      });
-
-    } catch (error) {
-
-      console.error(
-        "Admin promotions error:",
-        error
-      );
-
-      return res.status(500).json({
-
-        success: false,
-
-        message:
-          "Could not load promotions"
-
-      });
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   7. ADD COINS
-========================================== */
-
-router.post(
-  "/admin/users/:userId/add-coins",
-  requireAdmin,
-  async (req, res) => {
-
-    const client =
-      await pool.connect();
-
-    try {
-
-      const userId =
-        Number(
-          req.params.userId
-        );
-
-      const amount =
-        Number(
-          req.body.amount
-        );
-
-
-      /* VALIDATE USER ID */
-
-      if (
-        !Number.isInteger(userId) ||
-        userId <= 0
-      ) {
-
-        return res.status(400).json({
-
-          success: false,
-
-          message:
-            "Invalid user ID"
-
-        });
-
-      }
-
-
-      /* VALIDATE COINS */
-
-      if (
-        !Number.isInteger(amount) ||
-        amount <= 0 ||
-        amount > 1000000
-      ) {
-
-        return res.status(400).json({
-
-          success: false,
-
-          message:
-            "Coin amount must be between 1 and 1,000,000"
-
-        });
-
-      }
-
-
-      await client.query(
-        "BEGIN"
-      );
-
-
-      /* LOCK USER */
-
-      const userResult =
-        await client.query(
-          `
-          SELECT
-            id,
-            display_name,
-            coins,
-            is_active,
-            is_banned
-
-          FROM users
-
-          WHERE id = $1
-
-          FOR UPDATE
-          `,
-          [userId]
-        );
-
-
-      if (
-        userResult.rows.length === 0
-      ) {
-
-        await client.query(
-          "ROLLBACK"
-        );
-
-        return res.status(404).json({
-
-          success: false,
-
-          message:
-            "User not found"
-
-        });
-
-      }
-
-
-      const user =
-        userResult.rows[0];
-
-
-      const balanceBefore =
-        Number(
-          user.coins || 0
-        );
-
-
-      const balanceAfter =
-        balanceBefore + amount;
-
-
-      /* UPDATE BALANCE */
-
-      const updateResult =
-        await client.query(
-          `
-          UPDATE users
-
-          SET
-
-            coins =
-              coins + $1,
-
-            updated_at =
-              NOW()
-
-          WHERE
-            id = $2
-
-          RETURNING
-            id,
-            display_name,
-            coins
-          `,
-          [
-            amount,
-            userId
-          ]
-        );
-
-
-      if (
-        updateResult.rows.length === 0
-      ) {
-
-        throw new Error(
-          "Could not update user coins"
-        );
-
-      }
-
-
-      const updatedUser =
-        updateResult.rows[0];
-
-
-      /* TRANSACTION */
-
-      await client.query(
-        `
-        INSERT INTO coin_transactions (
-          user_id,
-          type,
-          amount,
-          balance_before,
-          balance_after,
-          reference_type,
-          reference_id,
-          description
-        )
-
-        VALUES (
-          $1,
-          'admin_credit',
-          $2,
-          $3,
-          $4,
-          'admin',
-          $5,
-          $6
-        )
-        `,
-        [
-          userId,
-
-          amount,
-
-          balanceBefore,
-
-          Number(
-            updatedUser.coins
-          ),
-
-          String(
-            req.admin.id
-          ),
-
-          `Admin added ${amount} coins`
-        ]
-      );
-
-
-      /* AUDIT LOG */
-
-      await client.query(
-        `
-        INSERT INTO admin_audit_logs (
-          admin_user_id,
-          action,
-          target_user_id,
-          reference_type,
-          reference_id,
-          details
-        )
-
-        VALUES (
-          $1,
-          'add_coins',
-          $2,
-          'user',
-          $3,
-          $4
-        )
-        `,
-        [
-          req.admin.id,
-
-          userId,
-
-          String(userId),
-
-          JSON.stringify({
-
-            amount,
-
-            balance_before:
-              balanceBefore,
-
-            balance_after:
-              Number(
-                updatedUser.coins
-              )
-
-          })
-
-        ]
-      );
-
-
-      await client.query(
-        "COMMIT"
-      );
-
-
-      return res.json({
-
-        success: true,
-
-        message:
-          `Successfully added ${amount} coins`,
-
-        user: {
-
-          id:
-            updatedUser.id,
-
-          display_name:
-            updatedUser.display_name,
-
-          coins:
-            Number(
-              updatedUser.coins
-            )
-
-        },
-
-        transaction: {
-
-          amount,
-
-          balance_before:
-            balanceBefore,
-
-          balance_after:
-            Number(
-              updatedUser.coins
-            )
-
-        }
-
-      });
-
-    } catch (error) {
-
-      try {
-
-        await client.query(
-          "ROLLBACK"
-        );
-
-      } catch {}
-
-      console.error(
-        "Admin add coins error:",
-        error
-      );
-
-      return res.status(500).json({
-
-        success: false,
-
-        message:
-          "Could not add coins"
-
-      });
-
-    } finally {
-
-      client.release();
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   8. USER DETAILS
+   4. USER DETAILS
 ========================================== */
 
 router.get(
@@ -1322,6 +891,7 @@ router.get(
         Number(
           req.params.userId
         );
+
 
       if (
         !Number.isInteger(userId) ||
@@ -1476,6 +1046,45 @@ router.get(
         );
 
 
+      const ordersResult =
+        await query(
+          `
+          SELECT
+
+            id,
+
+            order_reference,
+
+            coins,
+
+            amount,
+
+            currency,
+
+            payment_provider,
+
+            payment_reference,
+
+            status,
+
+            paid_at,
+
+            created_at
+
+          FROM coin_orders
+
+          WHERE
+            user_id = $1
+
+          ORDER BY
+            created_at DESC
+
+          LIMIT 100
+          `,
+          [userId]
+        );
+
+
       return res.json({
 
         success: true,
@@ -1487,7 +1096,10 @@ router.get(
           transactionsResult.rows,
 
         promotions:
-          promotionsResult.rows
+          promotionsResult.rows,
+
+        orders:
+          ordersResult.rows
 
       });
 
@@ -1504,6 +1116,1579 @@ router.get(
 
         message:
           "Could not load user details"
+
+      });
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   5. ADD COINS
+========================================== */
+
+router.post(
+  "/admin/users/:userId/add-coins",
+  requireAdmin,
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const userId =
+        Number(
+          req.params.userId
+        );
+
+      const amount =
+        Number(
+          req.body.amount
+        );
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid user ID"
+
+        });
+
+      }
+
+
+      if (
+        !Number.isInteger(amount) ||
+        amount <= 0 ||
+        amount > 1000000
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Coin amount must be between 1 and 1,000,000"
+
+        });
+
+      }
+
+
+      await client.query(
+        "BEGIN"
+      );
+
+
+      const userResult =
+        await client.query(
+          `
+          SELECT
+
+            id,
+
+            display_name,
+
+            coins,
+
+            is_active,
+
+            is_banned
+
+          FROM users
+
+          WHERE id = $1
+
+          FOR UPDATE
+          `,
+          [userId]
+        );
+
+
+      if (
+        userResult.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "User not found"
+
+        });
+
+      }
+
+
+      const user =
+        userResult.rows[0];
+
+
+      const balanceBefore =
+        Number(
+          user.coins || 0
+        );
+
+
+      const updateResult =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+
+            coins =
+              coins + $1,
+
+            updated_at =
+              NOW()
+
+          WHERE
+            id = $2
+
+          RETURNING
+
+            id,
+
+            display_name,
+
+            coins
+          `,
+          [
+            amount,
+            userId
+          ]
+        );
+
+
+      const updatedUser =
+        updateResult.rows[0];
+
+
+      const balanceAfter =
+        Number(
+          updatedUser.coins
+        );
+
+
+      await client.query(
+        `
+        INSERT INTO coin_transactions (
+          user_id,
+          type,
+          amount,
+          balance_before,
+          balance_after,
+          reference_type,
+          reference_id,
+          description
+        )
+
+        VALUES (
+          $1,
+          'admin_credit',
+          $2,
+          $3,
+          $4,
+          'admin',
+          $5,
+          $6
+        )
+        `,
+        [
+          userId,
+          amount,
+          balanceBefore,
+          balanceAfter,
+          String(req.admin.id),
+          `Admin added ${amount} coins`
+        ]
+      );
+
+
+      await writeAuditLog(
+        client,
+        req.admin.id,
+        "add_coins",
+        userId,
+        "user",
+        String(userId),
+        {
+          amount,
+          balance_before:
+            balanceBefore,
+          balance_after:
+            balanceAfter
+        }
+      );
+
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          `Successfully added ${amount} coins`,
+
+        user: {
+
+          id:
+            updatedUser.id,
+
+          display_name:
+            updatedUser.display_name,
+
+          coins:
+            balanceAfter
+
+        },
+
+        transaction: {
+
+          amount,
+
+          balance_before:
+            balanceBefore,
+
+          balance_after:
+            balanceAfter
+
+        }
+
+      });
+
+    } catch (error) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch {}
+
+      console.error(
+        "Admin add coins error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not add coins"
+
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   6. REMOVE COINS
+========================================== */
+
+router.post(
+  "/admin/users/:userId/remove-coins",
+  requireAdmin,
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const userId =
+        Number(
+          req.params.userId
+        );
+
+      const amount =
+        Number(
+          req.body.amount
+        );
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid user ID"
+
+        });
+
+      }
+
+
+      if (
+        !Number.isInteger(amount) ||
+        amount <= 0 ||
+        amount > 1000000
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Coin amount must be between 1 and 1,000,000"
+
+        });
+
+      }
+
+
+      await client.query(
+        "BEGIN"
+      );
+
+
+      const userResult =
+        await client.query(
+          `
+          SELECT
+
+            id,
+
+            display_name,
+
+            coins
+
+          FROM users
+
+          WHERE id = $1
+
+          FOR UPDATE
+          `,
+          [userId]
+        );
+
+
+      if (
+        userResult.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "User not found"
+
+        });
+
+      }
+
+
+      const user =
+        userResult.rows[0];
+
+
+      const balanceBefore =
+        Number(
+          user.coins || 0
+        );
+
+
+      if (
+        amount > balanceBefore
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "User does not have enough coins"
+
+        });
+
+      }
+
+
+      const updateResult =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+
+            coins =
+              coins - $1,
+
+            updated_at =
+              NOW()
+
+          WHERE
+            id = $2
+
+          RETURNING
+
+            id,
+
+            display_name,
+
+            coins
+          `,
+          [
+            amount,
+            userId
+          ]
+        );
+
+
+      const updatedUser =
+        updateResult.rows[0];
+
+
+      const balanceAfter =
+        Number(
+          updatedUser.coins
+        );
+
+
+      await client.query(
+        `
+        INSERT INTO coin_transactions (
+          user_id,
+          type,
+          amount,
+          balance_before,
+          balance_after,
+          reference_type,
+          reference_id,
+          description
+        )
+
+        VALUES (
+          $1,
+          'admin_debit',
+          $2,
+          $3,
+          $4,
+          'admin',
+          $5,
+          $6
+        )
+        `,
+        [
+          userId,
+
+          -amount,
+
+          balanceBefore,
+
+          balanceAfter,
+
+          String(
+            req.admin.id
+          ),
+
+          `Admin removed ${amount} coins`
+        ]
+      );
+
+
+      await writeAuditLog(
+        client,
+        req.admin.id,
+        "remove_coins",
+        userId,
+        "user",
+        String(userId),
+        {
+          amount,
+          balance_before:
+            balanceBefore,
+          balance_after:
+            balanceAfter
+        }
+      );
+
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          `Successfully removed ${amount} coins`,
+
+        user: {
+
+          id:
+            updatedUser.id,
+
+          display_name:
+            updatedUser.display_name,
+
+          coins:
+            balanceAfter
+
+        },
+
+        transaction: {
+
+          amount:
+            -amount,
+
+          balance_before:
+            balanceBefore,
+
+          balance_after:
+            balanceAfter
+
+        }
+
+      });
+
+    } catch (error) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch {}
+
+      console.error(
+        "Admin remove coins error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not remove coins"
+
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   7. BAN / UNBAN USER
+========================================== */
+
+router.post(
+  "/admin/users/:userId/ban",
+  requireAdmin,
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const userId =
+        Number(
+          req.params.userId
+        );
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid user ID"
+
+        });
+
+      }
+
+
+      if (
+        userId ===
+        Number(req.admin.id)
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Admin cannot ban their own account"
+
+        });
+
+      }
+
+
+      await client.query(
+        "BEGIN"
+      );
+
+
+      const result =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+
+            is_banned =
+              TRUE,
+
+            updated_at =
+              NOW()
+
+          WHERE
+            id = $1
+
+          RETURNING
+
+            id,
+
+            display_name,
+
+            is_banned
+          `,
+          [userId]
+        );
+
+
+      if (
+        result.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "User not found"
+
+        });
+
+      }
+
+
+      await writeAuditLog(
+        client,
+        req.admin.id,
+        "ban_user",
+        userId,
+        "user",
+        String(userId),
+        {
+          banned: true
+        }
+      );
+
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "User has been banned",
+
+        user:
+          result.rows[0]
+
+      });
+
+    } catch (error) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch {}
+
+      console.error(
+        "Admin ban user error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not ban user"
+
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   8. UNBAN USER
+========================================== */
+
+router.post(
+  "/admin/users/:userId/unban",
+  requireAdmin,
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const userId =
+        Number(
+          req.params.userId
+        );
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid user ID"
+
+        });
+
+      }
+
+
+      await client.query(
+        "BEGIN"
+      );
+
+
+      const result =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+
+            is_banned =
+              FALSE,
+
+            updated_at =
+              NOW()
+
+          WHERE
+            id = $1
+
+          RETURNING
+
+            id,
+
+            display_name,
+
+            is_banned
+          `,
+          [userId]
+        );
+
+
+      if (
+        result.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "User not found"
+
+        });
+
+      }
+
+
+      await writeAuditLog(
+        client,
+        req.admin.id,
+        "unban_user",
+        userId,
+        "user",
+        String(userId),
+        {
+          banned: false
+        }
+      );
+
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "User has been unbanned",
+
+        user:
+          result.rows[0]
+
+      });
+
+    } catch (error) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch {}
+
+      console.error(
+        "Admin unban user error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not unban user"
+
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   9. ACTIVATE USER
+========================================== */
+
+router.post(
+  "/admin/users/:userId/activate",
+  requireAdmin,
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const userId =
+        Number(
+          req.params.userId
+        );
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid user ID"
+
+        });
+
+      }
+
+
+      await client.query(
+        "BEGIN"
+      );
+
+
+      const result =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+
+            is_active =
+              TRUE,
+
+            updated_at =
+              NOW()
+
+          WHERE
+            id = $1
+
+          RETURNING
+
+            id,
+
+            display_name,
+
+            is_active
+          `,
+          [userId]
+        );
+
+
+      if (
+        result.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "User not found"
+
+        });
+
+      }
+
+
+      await writeAuditLog(
+        client,
+        req.admin.id,
+        "activate_user",
+        userId,
+        "user",
+        String(userId),
+        {
+          active: true
+        }
+      );
+
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "User account activated",
+
+        user:
+          result.rows[0]
+
+      });
+
+    } catch (error) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch {}
+
+      console.error(
+        "Admin activate user error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not activate user"
+
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   10. DEACTIVATE USER
+========================================== */
+
+router.post(
+  "/admin/users/:userId/deactivate",
+  requireAdmin,
+  async (req, res) => {
+
+    const client =
+      await pool.connect();
+
+    try {
+
+      const userId =
+        Number(
+          req.params.userId
+        );
+
+
+      if (
+        !Number.isInteger(userId) ||
+        userId <= 0
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Invalid user ID"
+
+        });
+
+      }
+
+
+      if (
+        userId ===
+        Number(req.admin.id)
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Admin cannot deactivate their own account"
+
+        });
+
+      }
+
+
+      await client.query(
+        "BEGIN"
+      );
+
+
+      const result =
+        await client.query(
+          `
+          UPDATE users
+
+          SET
+
+            is_active =
+              FALSE,
+
+            updated_at =
+              NOW()
+
+          WHERE
+            id = $1
+
+          RETURNING
+
+            id,
+
+            display_name,
+
+            is_active
+          `,
+          [userId]
+        );
+
+
+      if (
+        result.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+        return res.status(404).json({
+
+          success: false,
+
+          message:
+            "User not found"
+
+        });
+
+      }
+
+
+      await writeAuditLog(
+        client,
+        req.admin.id,
+        "deactivate_user",
+        userId,
+        "user",
+        String(userId),
+        {
+          active: false
+        }
+      );
+
+
+      await client.query(
+        "COMMIT"
+      );
+
+
+      return res.json({
+
+        success: true,
+
+        message:
+          "User account deactivated",
+
+        user:
+          result.rows[0]
+
+      });
+
+    } catch (error) {
+
+      try {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+      } catch {}
+
+      console.error(
+        "Admin deactivate user error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not deactivate user"
+
+      });
+
+    } finally {
+
+      client.release();
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   11. TRANSACTIONS
+========================================== */
+
+router.get(
+  "/admin/transactions",
+  requireAdmin,
+  async (req, res) => {
+
+    try {
+
+      const result =
+        await query(`
+          SELECT
+
+            ct.id,
+
+            ct.user_id,
+
+            u.display_name,
+
+            ct.type,
+
+            ct.amount,
+
+            ct.balance_before,
+
+            ct.balance_after,
+
+            ct.reference_type,
+
+            ct.reference_id,
+
+            ct.description,
+
+            ct.created_at
+
+          FROM coin_transactions ct
+
+          INNER JOIN users u
+            ON u.id = ct.user_id
+
+          ORDER BY
+            ct.created_at DESC
+
+          LIMIT 100
+        `);
+
+
+      return res.json({
+
+        success: true,
+
+        transactions:
+          result.rows
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Admin transactions error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not load transactions"
+
+      });
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   12. COIN ORDERS
+========================================== */
+
+router.get(
+  "/admin/orders",
+  requireAdmin,
+  async (req, res) => {
+
+    try {
+
+      const result =
+        await query(`
+          SELECT
+
+            co.id,
+
+            co.order_reference,
+
+            co.user_id,
+
+            u.display_name,
+
+            co.coins,
+
+            co.amount,
+
+            co.currency,
+
+            co.payment_provider,
+
+            co.payment_reference,
+
+            co.status,
+
+            co.paid_at,
+
+            co.created_at
+
+          FROM coin_orders co
+
+          INNER JOIN users u
+            ON u.id = co.user_id
+
+          ORDER BY
+            co.created_at DESC
+
+          LIMIT 200
+        `);
+
+
+      return res.json({
+
+        success: true,
+
+        orders:
+          result.rows
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Admin orders error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not load coin orders"
+
+      });
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   13. PROMOTIONS
+========================================== */
+
+router.get(
+  "/admin/promotions",
+  requireAdmin,
+  async (req, res) => {
+
+    try {
+
+      const result =
+        await query(`
+          SELECT
+
+            p.id,
+
+            p.user_id,
+
+            u.display_name,
+
+            p.tiktok_username,
+
+            p.tiktok_url,
+
+            p.promotion_type,
+
+            p.coins_cost,
+
+            p.target_count,
+
+            p.completed_count,
+
+            p.status,
+
+            p.created_at,
+
+            p.updated_at
+
+          FROM promotions p
+
+          INNER JOIN users u
+            ON u.id = p.user_id
+
+          ORDER BY
+            p.created_at DESC
+
+          LIMIT 200
+        `);
+
+
+      return res.json({
+
+        success: true,
+
+        promotions:
+          result.rows
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Admin promotions error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not load promotions"
+
+      });
+
+    }
+
+  }
+);
+
+
+/* ==========================================
+   14. ADMIN AUDIT LOGS
+========================================== */
+
+router.get(
+  "/admin/audit-logs",
+  requireAdmin,
+  async (req, res) => {
+
+    try {
+
+      const result =
+        await query(`
+          SELECT
+
+            aal.id,
+
+            aal.action,
+
+            aal.target_user_id,
+
+            target.display_name
+              AS target_user_name,
+
+            aal.reference_type,
+
+            aal.reference_id,
+
+            aal.details,
+
+            aal.created_at
+
+          FROM admin_audit_logs aal
+
+          LEFT JOIN users target
+            ON target.id =
+              aal.target_user_id
+
+          WHERE
+            aal.admin_user_id =
+              $1
+
+          ORDER BY
+            aal.created_at DESC
+
+          LIMIT 200
+        `,
+        [
+          req.admin.id
+        ]);
+
+
+      return res.json({
+
+        success: true,
+
+        logs:
+          result.rows
+
+      });
+
+    } catch (error) {
+
+      console.error(
+        "Admin audit logs error:",
+        error
+      );
+
+      return res.status(500).json({
+
+        success: false,
+
+        message:
+          "Could not load audit logs"
 
       });
 
