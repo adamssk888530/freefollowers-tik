@@ -14,21 +14,32 @@ const MAX_PROMOTION_COINS = 100000;
 ========================================== */
 
 function parseCookies(cookieHeader = "") {
+
   const cookies = {};
 
   cookieHeader.split(";").forEach((item) => {
+
     const index = item.indexOf("=");
 
     if (index === -1) return;
 
-    const key = item.slice(0, index).trim();
-    const value = item.slice(index + 1).trim();
+    const key =
+      item.slice(0, index).trim();
+
+    const value =
+      item.slice(index + 1).trim();
 
     try {
-      cookies[key] = decodeURIComponent(value);
+
+      cookies[key] =
+        decodeURIComponent(value);
+
     } catch {
+
       cookies[key] = value;
+
     }
+
   });
 
   return cookies;
@@ -36,14 +47,21 @@ function parseCookies(cookieHeader = "") {
 
 
 function hashToken(token) {
+
   return crypto
     .createHash("sha256")
     .update(token)
     .digest("hex");
+
 }
 
 
+/* ==========================================
+   CURRENT USER
+========================================== */
+
 async function getCurrentUser(req) {
+
   const cookies =
     parseCookies(
       req.headers.cookie || ""
@@ -64,6 +82,8 @@ async function getCurrentUser(req) {
       `
       SELECT
         u.id,
+        u.display_name,
+        u.avatar_url,
         u.coins,
         u.is_active,
         u.is_banned,
@@ -104,6 +124,46 @@ async function getCurrentUser(req) {
 
 
 /* ==========================================
+   GET CONNECTED TIKTOK ACCOUNT
+========================================== */
+
+async function getTikTokAccount(userId) {
+
+  const result =
+    await query(
+      `
+      SELECT
+        id,
+        user_id,
+        open_id,
+        username,
+        profile_deep_link,
+        display_name,
+        avatar_url,
+        is_verified
+
+      FROM tiktok_accounts
+
+      WHERE user_id = $1
+
+      ORDER BY created_at DESC
+
+      LIMIT 1
+      `,
+      [userId]
+    );
+
+  if (
+    result.rows.length === 0
+  ) {
+    return null;
+  }
+
+  return result.rows[0];
+}
+
+
+/* ==========================================
    VALIDATE TIKTOK URL
 ========================================== */
 
@@ -130,7 +190,9 @@ function isValidTikTokUrl(value) {
     );
 
   } catch {
+
     return false;
+
   }
 }
 
@@ -153,6 +215,7 @@ function normalizeUsername(value) {
   }
 
   return username;
+
 }
 
 
@@ -160,9 +223,7 @@ function normalizeUsername(value) {
    VALIDATE PROMOTION COINS
 ========================================== */
 
-function validatePromotionCoins(
-  value
-) {
+function validatePromotionCoins(value) {
 
   const coins =
     Number(value);
@@ -170,47 +231,56 @@ function validatePromotionCoins(
   if (
     !Number.isInteger(coins)
   ) {
+
     return {
       valid: false,
       message:
         "Coin amount must be a whole number"
     };
+
   }
 
   if (
     coins < MIN_PROMOTION_COINS
   ) {
+
     return {
       valid: false,
       message:
         "Minimum promotion is 60 coins"
     };
+
   }
 
   if (
     coins > MAX_PROMOTION_COINS
   ) {
+
     return {
       valid: false,
       message:
         "Promotion amount is too high"
     };
+
   }
 
   if (
     coins % COINS_PER_FOLLOWER !== 0
   ) {
+
     return {
       valid: false,
       message:
         "Coins must be a multiple of 10"
     };
+
   }
 
   return {
     valid: true,
     coins
   };
+
 }
 
 
@@ -234,6 +304,7 @@ router.post(
           message:
             "Not logged in"
         });
+
       }
 
 
@@ -246,7 +317,9 @@ router.post(
       if (!validation.valid) {
 
         return res.status(400).json({
+
           success: false,
+
           message:
             validation.message,
 
@@ -255,7 +328,9 @@ router.post(
 
           coins_per_follower:
             COINS_PER_FOLLOWER
+
         });
+
       }
 
 
@@ -268,7 +343,9 @@ router.post(
       ) {
 
         return res.status(400).json({
+
           success: false,
+
           message:
             "Insufficient coins",
 
@@ -281,7 +358,9 @@ router.post(
           missing:
             coins -
             Number(user.coins)
+
         });
+
       }
 
 
@@ -291,10 +370,13 @@ router.post(
 
 
       return res.json({
+
         success: true,
 
         promotion: {
+
           coins,
+
           followers,
 
           minimum_coins:
@@ -302,16 +384,20 @@ router.post(
 
           coins_per_follower:
             COINS_PER_FOLLOWER
+
         },
 
         wallet: {
+
           current_balance:
             Number(user.coins),
 
           balance_after:
             Number(user.coins) -
             coins
+
         }
+
       });
 
     } catch (error) {
@@ -322,11 +408,16 @@ router.post(
       );
 
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not calculate promotion"
+
       });
+
     }
+
   }
 );
 
@@ -344,30 +435,31 @@ router.post(
 
     try {
 
+      /* ======================================
+         AUTHENTICATED USER
+      ====================================== */
+
       const user =
         await getCurrentUser(req);
+
 
       if (!user) {
 
         return res.status(401).json({
+
           success: false,
+
           message:
             "Not logged in"
+
         });
+
       }
 
 
-      const username =
-        normalizeUsername(
-          req.body.tiktok_username
-        );
-
-
-      const tiktokUrl =
-        String(
-          req.body.tiktok_url || ""
-        ).trim();
-
+      /* ======================================
+         COIN VALIDATION
+      ====================================== */
 
       const validation =
         validatePromotionCoins(
@@ -375,63 +467,12 @@ router.post(
         );
 
 
-      /* ======================================
-         USERNAME
-      ====================================== */
-
-      if (
-        username.length < 1 ||
-        username.length > 100
-      ) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Valid TikTok username is required"
-        });
-      }
-
-
-      if (
-        !/^[A-Za-z0-9._]+$/.test(
-          username
-        )
-      ) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Invalid TikTok username"
-        });
-      }
-
-
-      /* ======================================
-         URL
-      ====================================== */
-
-      if (
-        !isValidTikTokUrl(
-          tiktokUrl
-        )
-      ) {
-
-        return res.status(400).json({
-          success: false,
-          message:
-            "Valid TikTok URL is required"
-        });
-      }
-
-
-      /* ======================================
-         COINS
-      ====================================== */
-
       if (!validation.valid) {
 
         return res.status(400).json({
+
           success: false,
+
           message:
             validation.message,
 
@@ -440,7 +481,9 @@ router.post(
 
           coins_per_follower:
             COINS_PER_FOLLOWER
+
         });
+
       }
 
 
@@ -451,6 +494,104 @@ router.post(
       const targetFollowers =
         promotionCoins /
         COINS_PER_FOLLOWER;
+
+
+      /* ======================================
+         GET CONNECTED TIKTOK ACCOUNT
+
+         IMPORTANT:
+         Frontend ba ya aika username/url.
+
+         Backend yana dauko account daga
+         tiktok_accounts ta user_id.
+      ====================================== */
+
+      const tiktokAccount =
+        await getTikTokAccount(
+          user.id
+        );
+
+
+      if (!tiktokAccount) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "No TikTok account is connected to your account. Please connect your TikTok account first."
+
+        });
+
+      }
+
+
+      const username =
+        normalizeUsername(
+          tiktokAccount.username
+        );
+
+
+      if (
+        !username ||
+        username.length < 1 ||
+        username.length > 100
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Your connected TikTok account does not have a valid username."
+
+        });
+
+      }
+
+
+      if (
+        !/^[A-Za-z0-9._]+$/.test(
+          username
+        )
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Your connected TikTok username is invalid."
+
+        });
+
+      }
+
+
+      /* ======================================
+         CREATE TIKTOK URL
+      ====================================== */
+
+      const tiktokUrl =
+        `https://www.tiktok.com/@${username}`;
+
+
+      if (
+        !isValidTikTokUrl(
+          tiktokUrl
+        )
+      ) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Could not create a valid TikTok URL."
+
+        });
+
+      }
 
 
       /* ======================================
@@ -471,6 +612,7 @@ router.post(
           `
           SELECT
             id,
+            display_name,
             coins,
             is_active,
             is_banned
@@ -492,6 +634,7 @@ router.post(
         throw new Error(
           "User not found"
         );
+
       }
 
 
@@ -509,10 +652,14 @@ router.post(
         );
 
         return res.status(403).json({
+
           success: false,
+
           message:
             "Account is not active"
+
         });
+
       }
 
 
@@ -522,7 +669,7 @@ router.post(
 
       const currentBalance =
         Number(
-          currentUser.coins
+          currentUser.coins || 0
         );
 
 
@@ -536,6 +683,7 @@ router.post(
         );
 
         return res.status(400).json({
+
           success: false,
 
           message:
@@ -550,7 +698,9 @@ router.post(
           missing:
             promotionCoins -
             currentBalance
+
         });
+
       }
 
 
@@ -576,10 +726,11 @@ router.post(
             coins = $1,
             updated_at = NOW()
 
-          WHERE
-            id = $2
+          WHERE id = $2
 
-          RETURNING coins
+          RETURNING
+            id,
+            coins
           `,
           [
             balanceAfter,
@@ -595,6 +746,7 @@ router.post(
         throw new Error(
           "Could not update wallet"
         );
+
       }
 
 
@@ -631,13 +783,9 @@ router.post(
           `,
           [
             user.id,
-
             username,
-
             tiktokUrl,
-
             promotionCoins,
-
             targetFollowers
           ]
         );
@@ -650,6 +798,7 @@ router.post(
         throw new Error(
           "Could not create promotion"
         );
+
       }
 
 
@@ -694,7 +843,9 @@ router.post(
 
           balanceAfter,
 
-          promotion.id,
+          String(
+            promotion.id
+          ),
 
           `${promotionCoins} coins used for ${targetFollowers} follower promotion`
         ]
@@ -704,17 +855,6 @@ router.post(
       /* ======================================
          INITIAL TASK ASSIGNMENT
       ====================================== */
-
-      /*
-        Assign workers immediately.
-
-        IMPORTANT:
-        The promotion owner is excluded.
-
-        The UNIQUE constraint on
-        (promotion_id, worker_user_id)
-        also prevents duplicate assignments.
-      */
 
       const workersResult =
         await client.query(
@@ -801,8 +941,11 @@ router.post(
         if (
           taskResult.rows.length > 0
         ) {
+
           assignedTasks++;
+
         }
+
       }
 
 
@@ -815,13 +958,19 @@ router.post(
       );
 
 
+      /* ======================================
+         SUCCESS
+      ====================================== */
+
       return res.status(201).json({
+
         success: true,
 
         message:
           "Promotion created successfully",
 
         promotion: {
+
           id:
             promotion.id,
 
@@ -848,9 +997,11 @@ router.post(
 
           status:
             "pending"
+
         },
 
         wallet: {
+
           previous_balance:
             balanceBefore,
 
@@ -859,35 +1010,46 @@ router.post(
 
           new_balance:
             balanceAfter
+
         },
 
         coins:
           balanceAfter
+
       });
 
     } catch (error) {
 
       try {
+
         await client.query(
           "ROLLBACK"
         );
+
       } catch {}
+
 
       console.error(
         "Create promotion error:",
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not create promotion"
+
       });
 
     } finally {
 
       client.release();
+
     }
+
   }
 );
 
@@ -905,13 +1067,18 @@ router.get(
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
 
         return res.status(401).json({
+
           success: false,
+
           message:
             "Not logged in"
+
         });
+
       }
 
 
@@ -943,10 +1110,12 @@ router.get(
 
 
       return res.json({
+
         success: true,
 
         promotions:
           result.rows
+
       });
 
     } catch (error) {
@@ -956,12 +1125,18 @@ router.get(
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not get promotions"
+
       });
+
     }
+
   }
 );
 
@@ -979,13 +1154,18 @@ router.get(
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
 
         return res.status(401).json({
+
           success: false,
+
           message:
             "Not logged in"
+
         });
+
       }
 
 
@@ -1013,7 +1193,6 @@ router.get(
 
           WHERE
             id = $1
-
             AND user_id = $2
 
           LIMIT 1
@@ -1030,10 +1209,14 @@ router.get(
       ) {
 
         return res.status(404).json({
+
           success: false,
+
           message:
             "Promotion not found"
+
         });
+
       }
 
 
@@ -1042,9 +1225,11 @@ router.get(
 
 
       return res.json({
+
         success: true,
 
         promotion: {
+
           ...promotion,
 
           remaining:
@@ -1057,7 +1242,9 @@ router.get(
                 promotion.completed_count
               )
             )
+
         }
+
       });
 
     } catch (error) {
@@ -1067,12 +1254,18 @@ router.get(
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not get promotion"
+
       });
+
     }
+
   }
 );
 
