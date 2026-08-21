@@ -7,6 +7,8 @@ const router = express.Router();
 const MAX_TASKS_PER_REQUEST = 20;
 const TASK_REWARD_COINS = 5;
 
+const TIKTOK_RESEARCH_FOLLOWING_URL =
+  "https://open.tiktokapis.com/v2/research/user/following/";
 
 /* ==========================================
    HELPERS
@@ -94,6 +96,246 @@ async function getCurrentUser(req) {
 
 
 /* ==========================================
+   TIKTOK RESEARCH API
+========================================== */
+
+/*
+  Wannan yana duba ko TikTok username
+  na worker yana cikin following list
+  na worker.
+
+  IMPORTANT:
+  TIKTOK_RESEARCH_ACCESS_TOKEN
+  sai idan kana da approved Research API
+  access.
+*/
+
+async function verifyFollowing(
+  workerUsername,
+  targetUsername
+) {
+
+  const researchToken =
+    process.env.TIKTOK_RESEARCH_ACCESS_TOKEN;
+
+  if (!researchToken) {
+
+    return {
+      verified: false,
+
+      available: false,
+
+      reason:
+        "TikTok Research API access token is not configured"
+    };
+  }
+
+
+  if (
+    !workerUsername ||
+    !targetUsername
+  ) {
+
+    return {
+      verified: false,
+
+      available: true,
+
+      reason:
+        "Worker or target TikTok username is missing"
+    };
+  }
+
+
+  const cleanWorker =
+    String(workerUsername)
+      .replace(/^@/, "")
+      .trim()
+      .toLowerCase();
+
+
+  const cleanTarget =
+    String(targetUsername)
+      .replace(/^@/, "")
+      .trim()
+      .toLowerCase();
+
+
+  if (
+    !cleanWorker ||
+    !cleanTarget
+  ) {
+
+    return {
+      verified: false,
+
+      available: true,
+
+      reason:
+        "Invalid TikTok username"
+    };
+  }
+
+
+  let cursor = null;
+
+  const maxPages = 50;
+
+
+  for (
+    let page = 0;
+    page < maxPages;
+    page++
+  ) {
+
+    const url =
+      new URL(
+        TIKTOK_RESEARCH_FOLLOWING_URL
+      );
+
+
+    const body = {
+      username: cleanWorker,
+
+      max_count: 100
+    };
+
+
+    /*
+      TikTok uses cursor for pagination.
+    */
+
+    if (
+      cursor !== null
+    ) {
+
+      body.cursor =
+        cursor;
+    }
+
+
+    const response =
+      await fetch(
+        url.toString(),
+        {
+          method: "POST",
+
+          headers: {
+            Authorization:
+              `Bearer ${researchToken}`,
+
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(body)
+        }
+      );
+
+
+    let data;
+
+    try {
+      data =
+        await response.json();
+    } catch {
+      data = null;
+    }
+
+
+    if (!response.ok) {
+
+      console.error(
+        "TikTok Research API error:",
+        data
+      );
+
+      return {
+        verified: false,
+
+        available: true,
+
+        reason:
+          data?.error?.message ||
+          "TikTok Research API request failed"
+      };
+    }
+
+
+    const following =
+      data?.data?.user_following || [];
+
+
+    const found =
+      following.some(
+        (account) => {
+
+          const username =
+            String(
+              account.username || ""
+            )
+              .replace(/^@/, "")
+              .trim()
+              .toLowerCase();
+
+          return (
+            username ===
+            cleanTarget
+          );
+        }
+      );
+
+
+    if (found) {
+
+      return {
+        verified: true,
+
+        available: true,
+
+        reason:
+          "Target account found in worker following list"
+      };
+    }
+
+
+    const hasMore =
+      Boolean(
+        data?.data?.has_more
+      );
+
+
+    if (!hasMore) {
+      break;
+    }
+
+
+    cursor =
+      data?.data?.cursor;
+
+
+    if (
+      cursor === null ||
+      cursor === undefined
+    ) {
+      break;
+    }
+  }
+
+
+  return {
+    verified: false,
+
+    available: true,
+
+    reason:
+      "Target account was not found in the worker following list"
+  };
+}
+
+
+/* ==========================================
    1. GET NEXT TASK
 ========================================== */
 
@@ -109,20 +351,18 @@ router.get(
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
+
         return res.status(401).json({
           success: false,
           message: "Not logged in"
         });
       }
 
+
       await client.query("BEGIN");
 
-
-      /*
-        Get the oldest pending task
-        belonging to this worker.
-      */
 
       const result =
         await client.query(
@@ -171,16 +411,24 @@ router.get(
         );
 
 
-      if (result.rows.length === 0) {
+      if (
+        result.rows.length === 0
+      ) {
 
         await client.query(
           "ROLLBACK"
         );
 
+
         return res.json({
+
           success: true,
+
           has_task: false,
-          message: "No task available"
+
+          message:
+            "No task available"
+
         });
       }
 
@@ -195,12 +443,15 @@ router.get(
 
 
       return res.json({
+
         success: true,
 
         has_task: true,
 
         task: {
-          id: task.task_id,
+
+          id:
+            task.task_id,
 
           promotion_id:
             task.promotion_id,
@@ -218,14 +469,20 @@ router.get(
             TASK_REWARD_COINS,
 
           progress: {
+
             completed:
-              task.completed_count,
+              Number(
+                task.completed_count
+              ),
 
             target:
-              task.target_count
+              Number(
+                task.target_count
+              )
           }
         }
       });
+
 
     } catch (error) {
 
@@ -235,20 +492,27 @@ router.get(
         );
       } catch {}
 
+
       console.error(
         "Get next task error:",
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not get next task"
+
       });
+
 
     } finally {
 
       client.release();
+
     }
   }
 );
@@ -265,48 +529,59 @@ router.post(
     const client =
       await pool.connect();
 
+
     try {
 
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
+
         return res.status(401).json({
+
           success: false,
-          message: "Not logged in"
+
+          message:
+            "Not logged in"
+
         });
       }
 
 
       const taskId =
         String(
-          req.body.task_id || ""
+          req.body?.task_id || ""
         ).trim();
 
 
       if (!taskId) {
+
         return res.status(400).json({
+
           success: false,
+
           message:
             "Task ID is required"
+
         });
       }
 
 
-      await client.query("BEGIN");
+      await client.query(
+        "BEGIN"
+      );
 
 
-      /*
-        Lock the task.
-
-        This prevents two requests
-        from rewarding the same task.
-      */
+      /* ======================================
+         LOCK TASK
+      ====================================== */
 
       const taskResult =
         await client.query(
           `
           SELECT
+
             pt.id AS task_id,
 
             pt.worker_user_id,
@@ -319,19 +594,34 @@ router.post(
 
             p.status AS promotion_status,
 
+            p.tiktok_username,
+
+            p.tiktok_url,
+
             p.completed_count,
 
-            p.target_count
+            p.target_count,
+
+            ta.username AS worker_tiktok_username
 
           FROM promotion_tasks pt
 
           INNER JOIN promotions p
             ON p.id = pt.promotion_id
 
+          LEFT JOIN tiktok_accounts ta
+            ON ta.user_id = pt.worker_user_id
+
           WHERE
+
             pt.id = $1
 
             AND pt.worker_user_id = $2
+
+          ORDER BY
+            ta.updated_at DESC NULLS LAST
+
+          LIMIT 1
 
           FOR UPDATE OF pt
           `,
@@ -350,9 +640,14 @@ router.post(
           "ROLLBACK"
         );
 
+
         return res.status(404).json({
+
           success: false,
-          message: "Task not found"
+
+          message:
+            "Task not found"
+
         });
       }
 
@@ -361,9 +656,9 @@ router.post(
         taskResult.rows[0];
 
 
-      /*
-        Never reward a completed task twice.
-      */
+      /* ======================================
+         TASK ALREADY COMPLETED
+      ====================================== */
 
       if (
         task.status !== "pending"
@@ -373,18 +668,21 @@ router.post(
           "ROLLBACK"
         );
 
+
         return res.status(409).json({
+
           success: false,
+
           message:
             "This task has already been completed"
+
         });
       }
 
 
-      /*
-        Make sure the promotion
-        is still active.
-      */
+      /* ======================================
+         PROMOTION CHECK
+      ====================================== */
 
       if (
         task.promotion_status !==
@@ -395,55 +693,158 @@ router.post(
           "ROLLBACK"
         );
 
+
         return res.status(409).json({
+
           success: false,
+
           message:
             "This promotion is no longer active"
+
         });
       }
 
 
-      /*
-        Make sure target has not
-        already been reached.
-      */
-
       if (
-        Number(task.completed_count) >=
-        Number(task.target_count)
+        Number(
+          task.completed_count
+        ) >=
+        Number(
+          task.target_count
+        )
       ) {
 
         await client.query(
           "ROLLBACK"
         );
 
+
         return res.status(409).json({
+
           success: false,
+
           message:
             "This promotion is already complete"
+
         });
       }
 
 
-      /*
-        IMPORTANT
+      /* ======================================
+         GET WORKER TIKTOK USERNAME
+      ====================================== */
 
-        At this stage the server is
-        completing the assigned task.
+      const workerAccountResult =
+        await client.query(
+          `
+          SELECT
+            username
 
-        Actual TikTok follow verification
-        must be added separately when the
-        required TikTok API capability/
-        permission is available.
+          FROM tiktok_accounts
 
-        We do NOT trust a client-sent
-        "verified = true" value.
-      */
+          WHERE
+            user_id = $1
+
+            AND username IS NOT NULL
+
+          ORDER BY
+            updated_at DESC
+
+          LIMIT 1
+          `,
+          [
+            user.id
+          ]
+        );
 
 
-      /* ==========================================
+      const workerUsername =
+        workerAccountResult.rows[0]
+          ?.username || null;
+
+
+      if (!workerUsername) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Your TikTok username is not available. Please login with TikTok again."
+
+        });
+      }
+
+
+      /* ======================================
+         VERIFY FOLLOW
+      ====================================== */
+
+      const verification =
+        await verifyFollowing(
+          workerUsername,
+          task.tiktok_username
+        );
+
+
+      if (
+        !verification.available
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+
+        return res.status(503).json({
+
+          success: false,
+
+          verified: false,
+
+          message:
+            "TikTok follow verification is not configured yet.",
+
+          details:
+            verification.reason
+
+        });
+      }
+
+
+      if (
+        !verification.verified
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+
+        return res.status(409).json({
+
+          success: false,
+
+          verified: false,
+
+          message:
+            "Follow verification failed. Please follow the TikTok account first.",
+
+          details:
+            verification.reason
+
+        });
+      }
+
+
+      /* ======================================
          LOCK USER
-      ========================================== */
+      ====================================== */
 
       const userResult =
         await client.query(
@@ -456,11 +857,14 @@ router.post(
 
           FROM users
 
-          WHERE id = $1
+          WHERE
+            id = $1
 
           FOR UPDATE
           `,
-          [user.id]
+          [
+            user.id
+          ]
         );
 
 
@@ -487,10 +891,14 @@ router.post(
           "ROLLBACK"
         );
 
+
         return res.status(403).json({
+
           success: false,
+
           message:
             "Account is not active"
+
         });
       }
 
@@ -501,14 +909,75 @@ router.post(
         );
 
 
-      const balanceAfter =
-        balanceBefore +
-        TASK_REWARD_COINS;
+      /* ======================================
+         PROTECT AGAINST DUPLICATE REWARD
+      ====================================== */
+
+      const completionResult =
+        await client.query(
+          `
+          INSERT INTO earn_completions (
+
+            task_id,
+
+            user_id,
+
+            reward_coins
+
+          )
+
+          VALUES (
+
+            $1,
+
+            $2,
+
+            $3
+
+          )
+
+          ON CONFLICT (
+            task_id,
+            user_id
+          )
+
+          DO NOTHING
+
+          RETURNING id
+          `,
+          [
+            task.task_id,
+
+            user.id,
+
+            TASK_REWARD_COINS
+          ]
+        );
 
 
-      /* ==========================================
-         MARK TASK COMPLETE
-      ========================================== */
+      if (
+        completionResult.rows.length === 0
+      ) {
+
+        await client.query(
+          "ROLLBACK"
+        );
+
+
+        return res.status(409).json({
+
+          success: false,
+
+          message:
+            "This task has already received a reward"
+
+        });
+      }
+
+
+      /* ======================================
+         COMPLETE TASK
+      ====================================== */
 
       const completedTaskResult =
         await client.query(
@@ -516,10 +985,13 @@ router.post(
           UPDATE promotion_tasks
 
           SET
+
             status = 'completed',
+
             completed_at = NOW()
 
           WHERE
+
             id = $1
 
             AND worker_user_id = $2
@@ -530,35 +1002,25 @@ router.post(
           `,
           [
             taskId,
+
             user.id
           ]
         );
 
 
-      /*
-        If another request completed it
-        first, do not reward again.
-      */
-
       if (
         completedTaskResult.rows.length === 0
       ) {
 
-        await client.query(
-          "ROLLBACK"
+        throw new Error(
+          "Task could not be completed"
         );
-
-        return res.status(409).json({
-          success: false,
-          message:
-            "This task has already been completed"
-        });
       }
 
 
-      /* ==========================================
-         UPDATE PROMOTION COUNT
-      ========================================== */
+      /* ======================================
+         UPDATE PROMOTION
+      ====================================== */
 
       const promotionUpdate =
         await client.query(
@@ -566,29 +1028,38 @@ router.post(
           UPDATE promotions
 
           SET
+
             completed_count =
               completed_count + 1,
 
             status =
               CASE
+
                 WHEN completed_count + 1
                      >= target_count
+
                 THEN 'completed'
 
                 ELSE status
+
               END,
 
-            updated_at = NOW()
+            updated_at =
+              NOW()
 
           WHERE
+
             id = $1
 
             AND completed_count <
                 target_count
 
           RETURNING
+
             completed_count,
+
             target_count,
+
             status
           `,
           [
@@ -611,9 +1082,9 @@ router.post(
         promotionUpdate.rows[0];
 
 
-      /* ==========================================
+      /* ======================================
          ADD COINS
-      ========================================== */
+      ====================================== */
 
       const walletResult =
         await client.query(
@@ -621,16 +1092,22 @@ router.post(
           UPDATE users
 
           SET
-            coins = coins + $2,
-            updated_at = NOW()
+
+            coins =
+              coins + $2,
+
+            updated_at =
+              NOW()
 
           WHERE
+
             id = $1
 
           RETURNING coins
           `,
           [
             user.id,
+
             TASK_REWARD_COINS
           ]
         );
@@ -652,35 +1129,54 @@ router.post(
         );
 
 
-      /* ==========================================
+      /* ======================================
          COIN TRANSACTION
-      ========================================== */
+      ====================================== */
 
       await client.query(
         `
         INSERT INTO coin_transactions (
+
           user_id,
+
           type,
+
           amount,
+
           balance_before,
+
           balance_after,
+
           reference_type,
+
           reference_id,
+
           description
+
         )
 
         VALUES (
+
           $1,
+
           'task_reward',
+
           $2,
+
           $3,
+
           $4,
+
           'promotion_task',
+
           $5,
+
           $6
+
         )
         `,
         [
+
           user.id,
 
           TASK_REWARD_COINS,
@@ -691,14 +1187,15 @@ router.post(
 
           task.task_id,
 
-          "Reward for completing TikTok promotion task"
+          "Reward for verified TikTok promotion task"
+
         ]
       );
 
 
-      /* ==========================================
+      /* ======================================
          COMMIT
-      ========================================== */
+      ====================================== */
 
       await client.query(
         "COMMIT"
@@ -706,10 +1203,13 @@ router.post(
 
 
       return res.json({
+
         success: true,
 
+        verified: true,
+
         message:
-          "Task completed successfully. +5 coins added.",
+          "Task verified successfully. +5 coins added.",
 
         reward_coins:
           TASK_REWARD_COINS,
@@ -718,14 +1218,17 @@ router.post(
           newBalance,
 
         task: {
+
           id:
             task.task_id,
 
           status:
             "completed"
+
         },
 
         promotion: {
+
           completed:
             Number(
               promotion.completed_count
@@ -738,8 +1241,11 @@ router.post(
 
           status:
             promotion.status
+
         }
+
       });
+
 
     } catch (error) {
 
@@ -749,20 +1255,27 @@ router.post(
         );
       } catch {}
 
+
       console.error(
         "Verify task error:",
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not verify task"
+
       });
+
 
     } finally {
 
       client.release();
+
     }
   }
 );
@@ -780,46 +1293,63 @@ router.post(
     const client =
       await pool.connect();
 
+
     try {
 
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
+
         return res.status(401).json({
+
           success: false,
-          message: "Not logged in"
+
+          message:
+            "Not logged in"
+
         });
       }
 
 
       if (!user.is_admin) {
+
         return res.status(403).json({
+
           success: false,
+
           message:
             "Admin access required"
+
         });
       }
 
 
       const requestedLimit =
         Number(
-          req.body.limit ||
+          req.body?.limit ||
           MAX_TASKS_PER_REQUEST
         );
 
 
       const limit =
         Math.min(
+
           Math.max(
+
             Number.isInteger(
               requestedLimit
             )
               ? requestedLimit
               : MAX_TASKS_PER_REQUEST,
+
             1
+
           ),
+
           MAX_TASKS_PER_REQUEST
+
         );
 
 
@@ -832,14 +1362,19 @@ router.post(
         await client.query(
           `
           SELECT
+
             id,
+
             user_id,
+
             target_count,
+
             completed_count
 
           FROM promotions
 
           WHERE
+
             status = 'pending'
 
             AND completed_count <
@@ -879,7 +1414,9 @@ router.post(
           );
 
 
-        if (remaining <= 0) {
+        if (
+          remaining <= 0
+        ) {
           continue;
         }
 
@@ -888,26 +1425,44 @@ router.post(
           await client.query(
             `
             SELECT
+
               u.id
 
             FROM users u
 
             WHERE
+
               u.is_active = TRUE
 
               AND u.is_banned = FALSE
 
               AND u.id <> $1
 
+              AND EXISTS (
+                SELECT 1
+
+                FROM tiktok_accounts ta
+
+                WHERE
+                  ta.user_id = u.id
+
+                  AND ta.username IS NOT NULL
+              )
+
               AND NOT EXISTS (
+
                 SELECT 1
 
                 FROM promotion_tasks existing_pt
 
                 WHERE
-                  existing_pt.promotion_id = $2
 
-                  AND existing_pt.worker_user_id = u.id
+                  existing_pt.promotion_id =
+                    $2
+
+                  AND existing_pt.worker_user_id =
+                    u.id
+
               )
 
             ORDER BY
@@ -918,12 +1473,16 @@ router.post(
             FOR UPDATE OF u
             `,
             [
+
               promotion.user_id,
+
               promotion.id,
+
               Math.min(
                 remaining,
                 limit - assigned
               )
+
             ]
           );
 
@@ -944,20 +1503,31 @@ router.post(
             await client.query(
               `
               INSERT INTO promotion_tasks (
+
                 promotion_id,
+
                 worker_user_id,
+
                 status
+
               )
 
               VALUES (
+
                 $1,
+
                 $2,
+
                 'pending'
+
               )
 
               ON CONFLICT (
+
                 promotion_id,
+
                 worker_user_id
+
               )
 
               DO NOTHING
@@ -965,8 +1535,11 @@ router.post(
               RETURNING id
               `,
               [
+
                 promotion.id,
+
                 worker.id
+
               ]
             );
 
@@ -974,9 +1547,13 @@ router.post(
           if (
             insertResult.rows.length > 0
           ) {
+
             assigned++;
+
           }
+
         }
+
       }
 
 
@@ -986,6 +1563,7 @@ router.post(
 
 
       return res.json({
+
         success: true,
 
         message:
@@ -993,7 +1571,9 @@ router.post(
 
         assigned_tasks:
           assigned
+
       });
+
 
     } catch (error) {
 
@@ -1003,20 +1583,27 @@ router.post(
         );
       } catch {}
 
+
       console.error(
         "Assign tasks error:",
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not assign tasks"
+
       });
+
 
     } finally {
 
       client.release();
+
     }
   }
 );
@@ -1035,10 +1622,16 @@ router.get(
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
+
         return res.status(401).json({
+
           success: false,
-          message: "Not logged in"
+
+          message:
+            "Not logged in"
+
         });
       }
 
@@ -1047,20 +1640,25 @@ router.get(
         await query(
           `
           SELECT
+
             pt.id AS task_id,
 
             pt.status,
+
             pt.created_at,
+
             pt.completed_at,
 
             p.id AS promotion_id,
 
             p.tiktok_username,
+
             p.tiktok_url,
 
             p.promotion_type,
 
             p.completed_count,
+
             p.target_count
 
           FROM promotion_tasks pt
@@ -1069,23 +1667,30 @@ router.get(
             ON p.id = pt.promotion_id
 
           WHERE
+
             pt.worker_user_id = $1
 
           ORDER BY
+
             pt.created_at DESC
 
           LIMIT 100
           `,
-          [user.id]
+          [
+            user.id
+          ]
         );
 
 
       return res.json({
+
         success: true,
 
         tasks:
           result.rows
+
       });
+
 
     } catch (error) {
 
@@ -1094,12 +1699,18 @@ router.get(
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not get tasks"
+
       });
+
     }
+
   }
 );
 
@@ -1117,37 +1728,62 @@ router.get(
       const user =
         await getCurrentUser(req);
 
+
       if (!user) {
+
         return res.status(401).json({
+
           success: false,
-          message: "Not logged in"
+
+          message:
+            "Not logged in"
+
         });
       }
 
 
-      const {
-        taskId
-      } = req.params;
+      const taskId =
+        String(
+          req.params.taskId || ""
+        ).trim();
+
+
+      if (!taskId) {
+
+        return res.status(400).json({
+
+          success: false,
+
+          message:
+            "Task ID is required"
+
+        });
+      }
 
 
       const result =
         await query(
           `
           SELECT
+
             pt.id AS task_id,
 
             pt.status,
+
             pt.created_at,
+
             pt.completed_at,
 
             p.id AS promotion_id,
 
             p.tiktok_username,
+
             p.tiktok_url,
 
             p.promotion_type,
 
             p.completed_count,
+
             p.target_count
 
           FROM promotion_tasks pt
@@ -1156,6 +1792,7 @@ router.get(
             ON p.id = pt.promotion_id
 
           WHERE
+
             pt.id = $1
 
             AND pt.worker_user_id = $2
@@ -1163,8 +1800,11 @@ router.get(
           LIMIT 1
           `,
           [
+
             taskId,
+
             user.id
+
           ]
         );
 
@@ -1174,19 +1814,25 @@ router.get(
       ) {
 
         return res.status(404).json({
+
           success: false,
+
           message:
             "Task not found"
+
         });
       }
 
 
       return res.json({
+
         success: true,
 
         task:
           result.rows[0]
+
       });
+
 
     } catch (error) {
 
@@ -1195,12 +1841,18 @@ router.get(
         error
       );
 
+
       return res.status(500).json({
+
         success: false,
+
         message:
           "Could not get task status"
+
       });
+
     }
+
   }
 );
 
