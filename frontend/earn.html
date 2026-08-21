@@ -18,10 +18,6 @@
 
   <style>
 
-    /* =========================================
-       RESET
-    ========================================= */
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -32,17 +28,9 @@
     body {
       width: 100%;
       height: 100%;
-
-      margin: 0;
-
       background: #050505;
       color: #ffffff;
-
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
+      font-family: Arial, Helvetica, sans-serif;
       overflow: hidden;
     }
 
@@ -66,17 +54,12 @@
     ========================================= */
 
     .header {
-
       height: 58px;
-
       width: 100%;
-
       flex-shrink: 0;
 
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
 
       padding: 0 14px;
@@ -88,100 +71,73 @@
         rgba(255,255,255,0.08);
 
       position: relative;
-
       z-index: 50;
     }
 
     .header-left {
-
       display: flex;
-
       align-items: center;
-
       gap: 10px;
-
       min-width: 0;
     }
 
     .menu-button {
-
       width: 38px;
       height: 38px;
 
       border: 0;
-
       background: transparent;
-
       color: #ffffff;
 
       font-size: 28px;
-
       line-height: 1;
 
       display: flex;
-
       align-items: center;
-
       justify-content: center;
 
       cursor: pointer;
     }
 
     .logo {
-
       font-size: 20px;
-
       font-weight: 900;
-
       letter-spacing: -0.8px;
-
       white-space: nowrap;
     }
 
     .logo span {
-
       color: #fe2c55;
     }
 
     .header-right {
-
       display: flex;
-
       align-items: center;
-
       gap: 10px;
     }
 
     .notification {
-
       position: relative;
-
       font-size: 23px;
-
       line-height: 1;
     }
 
     .notification-count {
-
       position: absolute;
 
       top: -8px;
-
       right: -7px;
 
       width: 20px;
       height: 20px;
 
       display: flex;
-
       align-items: center;
-
       justify-content: center;
 
       border-radius: 50%;
 
       background: #fe2c55;
-
       color: #ffffff;
 
       border:
@@ -189,17 +145,14 @@
         #050505;
 
       font-size: 9px;
-
       font-weight: 800;
     }
 
     .header-avatar {
-
       width: 39px;
       height: 39px;
 
       border-radius: 50%;
-
       object-fit: cover;
 
       background: #222222;
@@ -215,10 +168,7 @@
     ========================================= */
 
     .screen {
-
-      height:
-        calc(100vh - 58px);
-
+      height: calc(100vh - 58px);
       width: 100%;
 
       overflow: hidden;
@@ -227,31 +177,24 @@
         8px 12px 68px;
 
       display: flex;
-
       flex-direction: column;
-
       gap: 7px;
     }
 
 
     /* =========================================
-       PAGE INTRO
+       INTRO
     ========================================= */
 
     .intro {
-
       height: 82px;
-
       min-height: 82px;
 
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
 
-      padding:
-        12px 14px;
+      padding: 12px 14px;
 
       border:
         1px solid
@@ -269,39 +212,28 @@
     }
 
     .intro-text {
-
       min-width: 0;
     }
 
     .intro h1 {
-
       font-size: 22px;
-
       line-height: 1.1;
-
       margin-bottom: 5px;
     }
 
     .intro p {
-
       color: #999999;
-
       font-size: 10px;
-
       line-height: 1.35;
     }
 
     .intro-icon {
-
       width: 55px;
       height: 55px;
-
       min-width: 55px;
 
       display: flex;
-
       align-items: center;
-
       justify-content: center;
 
       border-radius: 16px;
@@ -326,19 +258,14 @@
     ========================================= */
 
     .balance {
-
       height: 82px;
-
       min-height: 82px;
 
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
 
-      padding:
-        11px 14px;
+      padding: 11px 14px;
 
       border:
         1px solid
@@ -355,52 +282,35 @@
     }
 
     .balance-label {
-
       color: #999999;
-
       font-size: 10px;
-
       margin-bottom: 5px;
     }
 
     .balance-number {
-
       font-size: 25px;
-
       line-height: 1;
-
       font-weight: 900;
-
-      color: #ffffff;
     }
 
     .balance-number span {
-
       color: #fbbf24;
-
       font-size: 19px;
     }
 
     .buy-coins {
-
       display: inline-flex;
-
       align-items: center;
-
       justify-content: center;
 
-      padding:
-        8px 11px;
+      padding: 8px 11px;
 
       border-radius: 9px;
 
-      background:
-        #fe2c55;
-
+      background: #fe2c55;
       color: #ffffff;
 
       font-size: 10px;
-
       font-weight: 800;
 
       box-shadow:
@@ -410,21 +320,17 @@
 
 
     /* =========================================
-       ADVERTISEMENT
+       AD
     ========================================= */
 
     .ad {
-
       height: 45px;
-
       min-height: 45px;
 
       width: 100%;
 
       display: flex;
-
       align-items: center;
-
       justify-content: center;
 
       border:
@@ -439,47 +345,35 @@
     }
 
     .ad-label {
-
       color: #444444;
-
       font-size: 8px;
-
       letter-spacing: 1px;
-
       text-transform: uppercase;
     }
 
 
     /* =========================================
-       TASK TITLE
+       SECTION TITLE
     ========================================= */
 
     .section-title {
-
       height: 18px;
-
       min-height: 18px;
 
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
 
       padding: 0 2px;
     }
 
     .section-title h2 {
-
       font-size: 15px;
-
       font-weight: 800;
     }
 
     .task-count {
-
       color: #777777;
-
       font-size: 9px;
     }
 
@@ -489,9 +383,7 @@
     ========================================= */
 
     .task-card {
-
       height: 210px;
-
       min-height: 210px;
 
       width: 100%;
@@ -515,34 +407,25 @@
     }
 
     .task-top {
-
       display: flex;
-
       align-items: center;
-
       justify-content: space-between;
 
       margin-bottom: 9px;
     }
 
     .task-name {
-
       font-size: 13px;
-
       font-weight: 800;
     }
 
     .task-type {
-
       color: #777777;
-
       font-size: 8px;
     }
 
     .reward {
-
-      padding:
-        6px 9px;
+      padding: 6px 9px;
 
       border-radius: 8px;
 
@@ -556,7 +439,6 @@
       color: #ff5576;
 
       font-size: 10px;
-
       font-weight: 800;
 
       white-space: nowrap;
@@ -568,17 +450,14 @@
     ========================================= */
 
     .task-profile {
-
       height: 57px;
 
       display: flex;
-
       align-items: center;
 
       gap: 9px;
 
-      padding:
-        7px 9px;
+      padding: 7px 9px;
 
       border-radius: 11px;
 
@@ -589,10 +468,8 @@
     }
 
     .task-avatar {
-
       width: 42px;
       height: 42px;
-
       min-width: 42px;
 
       border-radius: 50%;
@@ -607,24 +484,18 @@
     }
 
     .task-profile-name {
-
       font-size: 12px;
-
       font-weight: 800;
 
       margin-bottom: 3px;
 
       overflow: hidden;
-
       text-overflow: ellipsis;
-
       white-space: nowrap;
     }
 
     .task-profile-type {
-
       color: #777777;
-
       font-size: 9px;
     }
 
@@ -634,11 +505,9 @@
     ========================================= */
 
     .instructions {
-
       height: 54px;
 
-      padding:
-        7px 9px;
+      padding: 7px 9px;
 
       border-radius: 10px;
 
@@ -651,18 +520,14 @@
     }
 
     .instructions-title {
-
       color: #cccccc;
-
       font-size: 9px;
-
       font-weight: 800;
 
       margin-bottom: 3px;
     }
 
     .instructions-text {
-
       color: #777777;
 
       font-size: 8px;
@@ -676,37 +541,32 @@
     ========================================= */
 
     .buttons {
-
       height: 39px;
 
       display: grid;
 
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns:
+        1fr 1fr;
 
       gap: 7px;
     }
 
     .action-button {
-
       border: 0;
 
       border-radius: 9px;
 
       font-size: 10px;
-
       font-weight: 800;
 
       cursor: pointer;
 
       display: flex;
-
       align-items: center;
-
       justify-content: center;
     }
 
     .open-button {
-
       background:
         rgba(255,255,255,0.08);
 
@@ -718,9 +578,7 @@
     }
 
     .verify-button {
-
-      background:
-        #fe2c55;
+      background: #fe2c55;
 
       color: #ffffff;
 
@@ -730,9 +588,7 @@
     }
 
     .verify-button:disabled {
-
       opacity: 0.45;
-
       cursor: not-allowed;
     }
 
@@ -742,9 +598,7 @@
     ========================================= */
 
     .next-button {
-
       height: 38px;
-
       min-height: 38px;
 
       width: 100%;
@@ -755,22 +609,18 @@
 
       border-radius: 9px;
 
-      background:
-        #16a34a;
+      background: #16a34a;
 
       color: #ffffff;
 
       font-size: 10px;
-
       font-weight: 800;
 
       cursor: pointer;
     }
 
     .next-button:disabled {
-
       opacity: 0.35;
-
       cursor: not-allowed;
     }
 
@@ -780,14 +630,12 @@
     ========================================= */
 
     .message {
-
       display: none;
 
       position: fixed;
 
       left: 12px;
       right: 12px;
-
       top: 66px;
 
       z-index: 300;
@@ -799,12 +647,10 @@
       text-align: center;
 
       font-size: 10px;
-
       font-weight: 700;
     }
 
     .message.success {
-
       display: block;
 
       background:
@@ -818,7 +664,6 @@
     }
 
     .message.error {
-
       display: block;
 
       background:
@@ -837,15 +682,12 @@
     ========================================= */
 
     .empty {
-
       height: 210px;
-
       min-height: 210px;
 
       display: none;
 
       align-items: center;
-
       justify-content: center;
 
       flex-direction: column;
@@ -865,21 +707,16 @@
     }
 
     .empty-icon {
-
       font-size: 38px;
-
       margin-bottom: 8px;
     }
 
     .empty h2 {
-
       font-size: 17px;
-
       margin-bottom: 6px;
     }
 
     .empty p {
-
       color: #777777;
 
       font-size: 10px;
@@ -895,9 +732,7 @@
     ========================================= */
 
     .loading {
-
       position: fixed;
-
       inset: 0;
 
       z-index: 999;
@@ -905,7 +740,6 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       flex-direction: column;
@@ -916,7 +750,6 @@
     }
 
     .spinner {
-
       width: 40px;
       height: 40px;
 
@@ -924,11 +757,8 @@
         3px solid
         rgba(255,255,255,0.10);
 
-      border-top-color:
-        #fe2c55;
-
-      border-right-color:
-        #00f2ea;
+      border-top-color: #fe2c55;
+      border-right-color: #00f2ea;
 
       border-radius: 50%;
 
@@ -937,27 +767,22 @@
     }
 
     .loading-text {
-
       color: #777777;
-
       font-size: 11px;
     }
 
     @keyframes spin {
-
       to {
         transform: rotate(360deg);
       }
-
     }
 
 
     /* =========================================
-       BOTTOM NAVIGATION
+       BOTTOM NAV
     ========================================= */
 
     .bottom-nav {
-
       position: fixed;
 
       left: 8px;
@@ -988,7 +813,6 @@
     }
 
     .bottom-item {
-
       border: 0;
 
       background: transparent;
@@ -998,7 +822,6 @@
       display: flex;
 
       align-items: center;
-
       justify-content: center;
 
       flex-direction: column;
@@ -1011,14 +834,11 @@
     }
 
     .bottom-icon {
-
       font-size: 19px;
-
       line-height: 1;
     }
 
     .bottom-item.active {
-
       color: #fe2c55;
     }
 
@@ -1028,9 +848,7 @@
     ========================================= */
 
     .overlay {
-
       position: fixed;
-
       inset: 0;
 
       z-index: 200;
@@ -1046,14 +864,11 @@
     }
 
     .overlay.show {
-
       opacity: 1;
-
       pointer-events: auto;
     }
 
     .side-menu {
-
       position: fixed;
 
       left: 0;
@@ -1061,7 +876,6 @@
       bottom: 0;
 
       width: 280px;
-
       max-width: 82%;
 
       z-index: 201;
@@ -1082,31 +896,25 @@
     }
 
     .side-menu.show {
-
       transform:
         translateX(0);
     }
 
     .menu-header {
-
       display: flex;
 
       align-items: center;
-
       justify-content: space-between;
 
       margin-bottom: 24px;
     }
 
     .menu-title {
-
       font-size: 21px;
-
       font-weight: 900;
     }
 
     .close-menu {
-
       width: 38px;
       height: 38px;
 
@@ -1125,13 +933,10 @@
     }
 
     .menu-link {
-
       width: 100%;
-
       height: 47px;
 
       display: flex;
-
       align-items: center;
 
       gap: 12px;
@@ -1148,8 +953,7 @@
 
       text-align: left;
 
-      padding:
-        0 13px;
+      padding: 0 13px;
 
       margin-bottom: 7px;
 
@@ -1157,7 +961,6 @@
     }
 
     .menu-link:hover {
-
       background:
         rgba(254,44,85,0.10);
 
@@ -1165,9 +968,7 @@
     }
 
     .logout {
-
       color: #ff3158;
-
       margin-top: 14px;
     }
 
@@ -1184,7 +985,6 @@
       }
 
       .screen {
-
         max-width: 900px;
 
         margin: auto;
@@ -1198,40 +998,30 @@
       }
 
       .intro {
-
         height: 100px;
-
         min-height: 100px;
       }
 
       .intro h1 {
-
         font-size: 28px;
       }
 
       .balance {
-
         height: 100px;
-
         min-height: 100px;
       }
 
       .balance-number {
-
         font-size: 31px;
       }
 
       .task-card {
-
         height: 250px;
-
         min-height: 250px;
       }
 
       .ad {
-
         height: 55px;
-
         min-height: 55px;
       }
     }
@@ -1244,7 +1034,6 @@
     @media (max-width: 380px) {
 
       .screen {
-
         padding:
           7px 9px 67px;
 
@@ -1252,78 +1041,60 @@
       }
 
       .logo {
-
         font-size: 17px;
       }
 
       .intro {
-
         height: 77px;
-
         min-height: 77px;
       }
 
       .intro h1 {
-
         font-size: 20px;
       }
 
       .intro-icon {
-
         width: 50px;
         height: 50px;
-
         min-width: 50px;
 
         font-size: 27px;
       }
 
       .balance {
-
         height: 77px;
-
         min-height: 77px;
       }
 
       .balance-number {
-
         font-size: 22px;
       }
 
       .buy-coins {
-
         font-size: 9px;
-
-        padding:
-          7px 9px;
+        padding: 7px 9px;
       }
 
       .task-card {
-
         height: 205px;
-
         min-height: 205px;
 
         padding: 9px;
       }
 
       .task-profile {
-
         height: 54px;
       }
 
       .instructions {
-
         height: 51px;
       }
 
       .task-name {
-
         font-size: 12px;
       }
 
       .reward {
-
         font-size: 9px;
       }
     }
@@ -1331,7 +1102,6 @@
   </style>
 
 </head>
-
 
 <body>
 
@@ -1376,7 +1146,6 @@
 
     </div>
 
-
     <div class="header-right">
 
       <div class="notification">
@@ -1402,15 +1171,13 @@
 
 
   <!-- =========================================
-       MAIN SCREEN
+       MAIN
   ========================================= -->
 
   <main class="screen">
 
 
-    <!-- =======================================
-         INTRO
-    ======================================== -->
+    <!-- INTRO -->
 
     <section class="intro">
 
@@ -1421,8 +1188,8 @@
         </h1>
 
         <p>
-          Complete eligible tasks and earn coins
-          for your TikTok promotion.
+          Complete eligible TikTok tasks
+          and earn coins.
         </p>
 
       </div>
@@ -1434,9 +1201,7 @@
     </section>
 
 
-    <!-- =======================================
-         BALANCE
-    ======================================== -->
+    <!-- BALANCE -->
 
     <section class="balance">
 
@@ -1460,7 +1225,6 @@
 
       </div>
 
-
       <a
         href="/buy-coins.html"
         class="buy-coins"
@@ -1471,9 +1235,7 @@
     </section>
 
 
-    <!-- =======================================
-         ADVERTISEMENT
-    ======================================== -->
+    <!-- ADVERTISEMENT -->
 
     <section class="ad">
 
@@ -1481,17 +1243,10 @@
         Advertisement
       </div>
 
-      <!--
-        AdSense code zai shiga nan
-        bayan an approve website.
-      -->
-
     </section>
 
 
-    <!-- =======================================
-         TASK TITLE
-    ======================================== -->
+    <!-- TASK TITLE -->
 
     <div class="section-title">
 
@@ -1509,16 +1264,13 @@
     </div>
 
 
-    <!-- =======================================
-         TASK CARD
-    ======================================== -->
+    <!-- TASK CARD -->
 
     <section
       id="taskCard"
       class="task-card"
       style="display:none;"
     >
-
 
       <div class="task-top">
 
@@ -1531,12 +1283,14 @@
             TikTok Task
           </div>
 
-          <div class="task-type">
+          <div
+            id="taskType"
+            class="task-type"
+          >
             TikTok promotion task
           </div>
 
         </div>
-
 
         <div
           id="taskReward"
@@ -1548,9 +1302,7 @@
       </div>
 
 
-      <!-- =====================================
-           PROFILE
-      ====================================== -->
+      <!-- PROFILE -->
 
       <div class="task-profile">
 
@@ -1570,8 +1322,11 @@
             TikTok User
           </div>
 
-          <div class="task-profile-type">
-            Complete the required TikTok action
+          <div
+            id="taskProfileType"
+            class="task-profile-type"
+          >
+            Follow this TikTok account
           </div>
 
         </div>
@@ -1579,9 +1334,7 @@
       </div>
 
 
-      <!-- =====================================
-           INSTRUCTIONS
-      ====================================== -->
+      <!-- INSTRUCTIONS -->
 
       <div class="instructions">
 
@@ -1589,21 +1342,20 @@
           How it works
         </div>
 
-        <div class="instructions-text">
-
+        <div
+          id="instructionsText"
+          class="instructions-text"
+        >
           1. Open the TikTok account.
-          2. Complete the required action.
-          3. Return here and press Verify.
-          4. Successful verification gives you the reward.
-
+          2. Follow the account.
+          3. Return here.
+          4. Press Verify.
         </div>
 
       </div>
 
 
-      <!-- =====================================
-           BUTTONS
-      ====================================== -->
+      <!-- BUTTONS -->
 
       <div class="buttons">
 
@@ -1614,7 +1366,6 @@
         >
           🎵 Open TikTok
         </button>
-
 
         <button
           id="verifyBtn"
@@ -1627,6 +1378,8 @@
       </div>
 
 
+      <!-- NEXT -->
+
       <button
         id="nextBtn"
         class="next-button"
@@ -1636,13 +1389,10 @@
         Next Task →
       </button>
 
-
     </section>
 
 
-    <!-- =======================================
-         EMPTY
-    ======================================== -->
+    <!-- EMPTY -->
 
     <section
       id="empty"
@@ -1664,13 +1414,10 @@
 
     </section>
 
-
   </main>
 
 
-  <!-- =========================================
-       MESSAGE
-  ========================================= -->
+  <!-- MESSAGE -->
 
   <div
     id="message"
@@ -1679,11 +1426,10 @@
 
 
   <!-- =========================================
-       BOTTOM NAV
+       BOTTOM NAVIGATION
   ========================================= -->
 
   <nav class="bottom-nav">
-
 
     <a
       href="/dashboard.html"
@@ -1764,7 +1510,6 @@
       </span>
 
     </button>
-
 
   </nav>
 
@@ -1870,13 +1615,11 @@
 
   <script>
 
-
     /* =========================================
        VARIABLES
     ========================================= */
 
     let currentTask = null;
-
     let verified = false;
 
 
@@ -1885,49 +1628,52 @@
     ========================================= */
 
     const loading =
-      document.getElementById(
-        "loading"
-      );
+      document.getElementById("loading");
 
     const taskCard =
-      document.getElementById(
-        "taskCard"
-      );
+      document.getElementById("taskCard");
 
     const empty =
-      document.getElementById(
-        "empty"
-      );
+      document.getElementById("empty");
 
     const message =
-      document.getElementById(
-        "message"
-      );
+      document.getElementById("message");
 
     const coinBalance =
-      document.getElementById(
-        "coinBalance"
-      );
+      document.getElementById("coinBalance");
 
     const verifyBtn =
-      document.getElementById(
-        "verifyBtn"
-      );
+      document.getElementById("verifyBtn");
 
     const nextBtn =
-      document.getElementById(
-        "nextBtn"
-      );
+      document.getElementById("nextBtn");
 
     const openBtn =
-      document.getElementById(
-        "openBtn"
-      );
+      document.getElementById("openBtn");
 
     const taskCount =
-      document.getElementById(
-        "taskCount"
-      );
+      document.getElementById("taskCount");
+
+    const taskName =
+      document.getElementById("taskName");
+
+    const taskType =
+      document.getElementById("taskType");
+
+    const taskProfileName =
+      document.getElementById("taskProfileName");
+
+    const taskProfileType =
+      document.getElementById("taskProfileType");
+
+    const taskReward =
+      document.getElementById("taskReward");
+
+    const taskAvatar =
+      document.getElementById("taskAvatar");
+
+    const instructionsText =
+      document.getElementById("instructionsText");
 
 
     /* =========================================
@@ -1935,53 +1681,35 @@
     ========================================= */
 
     const sideMenu =
-      document.getElementById(
-        "sideMenu"
-      );
+      document.getElementById("sideMenu");
 
     const overlay =
-      document.getElementById(
-        "overlay"
-      );
+      document.getElementById("overlay");
 
     const openMenu =
-      document.getElementById(
-        "openMenu"
-      );
+      document.getElementById("openMenu");
 
     const bottomMenu =
-      document.getElementById(
-        "bottomMenu"
-      );
+      document.getElementById("bottomMenu");
 
     const closeMenu =
-      document.getElementById(
-        "closeMenu"
-      );
+      document.getElementById("closeMenu");
 
 
     function showMenu() {
 
-      sideMenu.classList.add(
-        "show"
-      );
+      sideMenu.classList.add("show");
 
-      overlay.classList.add(
-        "show"
-      );
+      overlay.classList.add("show");
 
     }
 
 
     function hideMenu() {
 
-      sideMenu.classList.remove(
-        "show"
-      );
+      sideMenu.classList.remove("show");
 
-      overlay.classList.remove(
-        "show"
-      );
+      overlay.classList.remove("show");
 
     }
 
@@ -2026,14 +1754,48 @@
         "message " + type;
 
 
-      setTimeout(
-        () => {
+      setTimeout(() => {
 
-          message.className =
-            "message";
+        message.className =
+          "message";
 
-        },
-        4000
+      }, 4000);
+
+    }
+
+
+    /* =========================================
+       DEFAULT AVATAR
+    ========================================= */
+
+    function createDefaultAvatar() {
+
+      return (
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(`
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="100"
+            height="100"
+          >
+
+            <rect
+              width="100"
+              height="100"
+              fill="#222222"
+            />
+
+            <text
+              x="50"
+              y="62"
+              text-anchor="middle"
+              font-size="43"
+            >
+              👤
+            </text>
+
+          </svg>
+        `)
       );
 
     }
@@ -2051,8 +1813,7 @@
           {
             method: "GET",
 
-            credentials:
-              "include",
+            credentials: "include",
 
             headers: {
               "Accept":
@@ -2062,8 +1823,20 @@
         );
 
 
-      const data =
-        await response.json();
+      let data;
+
+      try {
+
+        data =
+          await response.json();
+
+      } catch {
+
+        throw new Error(
+          "Invalid server response"
+        );
+
+      }
 
 
       if (
@@ -2074,6 +1847,7 @@
           "/";
 
         return null;
+
       }
 
 
@@ -2128,64 +1902,23 @@
 
 
     /* =========================================
-       DEFAULT AVATAR
-    ========================================= */
-
-    function createDefaultAvatar() {
-
-      return (
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(`
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="100"
-            height="100"
-          >
-
-            <rect
-              width="100"
-              height="100"
-              fill="#222222"
-            />
-
-            <text
-              x="50"
-              y="62"
-              text-anchor="middle"
-              font-size="43"
-            >
-              👤
-            </text>
-
-          </svg>
-        `)
-      );
-
-    }
-
-
-    /* =========================================
        LOAD NEXT TASK
     ========================================= */
 
     async function loadNextTask() {
 
-      verified =
-        false;
+      verified = false;
 
-      currentTask =
-        null;
+      currentTask = null;
 
 
-      verifyBtn.disabled =
-        false;
+      verifyBtn.disabled = false;
 
       verifyBtn.textContent =
         "✓ Verify";
 
 
-      nextBtn.disabled =
-        true;
+      nextBtn.disabled = true;
 
 
       taskCard.style.display =
@@ -2210,8 +1943,7 @@
             {
               method: "GET",
 
-              credentials:
-                "include",
+              credentials: "include",
 
               headers: {
                 "Accept":
@@ -2221,8 +1953,20 @@
           );
 
 
-        const data =
-          await response.json();
+        let data;
+
+        try {
+
+          data =
+            await response.json();
+
+        } catch {
+
+          throw new Error(
+            "Invalid server response"
+          );
+
+        }
 
 
         if (
@@ -2233,17 +1977,7 @@
             "/";
 
           return;
-        }
 
-
-        if (
-          response.status === 404 ||
-          response.status === 204
-        ) {
-
-          showEmpty();
-
-          return;
         }
 
 
@@ -2260,18 +1994,39 @@
         }
 
 
-        currentTask =
-          data.task;
+        /*
+          IMPORTANT:
 
+          API tana iya dawo da:
+
+          {
+            success: true,
+            has_task: false
+          }
+
+          ko:
+
+          {
+            success: true,
+            has_task: true,
+            task: {...}
+          }
+        */
 
         if (
-          !currentTask
+          data.has_task === false ||
+          !data.task
         ) {
 
           showEmpty();
 
           return;
+
         }
+
+
+        currentTask =
+          data.task;
 
 
         renderTask(
@@ -2312,9 +2067,7 @@
        RENDER TASK
     ========================================= */
 
-    function renderTask(
-      task
-    ) {
+    function renderTask(task) {
 
       taskCard.style.display =
         "block";
@@ -2327,89 +2080,118 @@
         "1 available";
 
 
-      /* ---------------------------------------
-         TASK NAME
-      --------------------------------------- */
+      /* =======================================
+         USERNAME
+      ======================================= */
 
-      const taskName =
-        task.title ||
-        task.task_type ||
-        "TikTok Task";
-
-
-      document.getElementById(
-        "taskName"
-      ).textContent =
-        taskName;
-
-
-      /* ---------------------------------------
-         PROFILE NAME
-      --------------------------------------- */
-
-      document.getElementById(
-        "taskProfileName"
-      ).textContent =
+      const username =
         task.tiktok_username ||
-        task.display_name ||
         "TikTok User";
 
 
-      /* ---------------------------------------
-         REWARD
-      --------------------------------------- */
+      /* =======================================
+         TASK NAME
+      ======================================= */
 
-      const reward =
-        Number(
-          task.reward ||
-          task.coins ||
-          task.reward_coins ||
-          5
-        );
+      taskName.textContent =
+        task.promotion_type === "followers"
+          ? "Follow TikTok Account"
+          : "TikTok Promotion Task";
 
 
-      document.getElementById(
-        "taskReward"
-      ).textContent =
-        `+${reward} 🪙`;
+      /* =======================================
+         TASK TYPE
+      ======================================= */
+
+      taskType.textContent =
+        task.promotion_type === "followers"
+          ? "TikTok Followers Task"
+          : "TikTok Promotion Task";
 
 
-      /* ---------------------------------------
-         AVATAR
-      --------------------------------------- */
+      /* =======================================
+         PROFILE NAME
+      ======================================= */
 
-      const taskAvatar =
-        document.getElementById(
-          "taskAvatar"
-        );
+      taskProfileName.textContent =
+        username;
 
+
+      /* =======================================
+         PROFILE DESCRIPTION
+      ======================================= */
 
       if (
-        task.avatar_url
+        task.promotion_type === "followers"
       ) {
 
-        taskAvatar.src =
-          task.avatar_url;
+        taskProfileType.textContent =
+          "Follow this TikTok account";
 
       } else {
 
-        taskAvatar.src =
-          createDefaultAvatar();
+        taskProfileType.textContent =
+          "Complete the required TikTok action";
 
       }
 
 
-      /* ---------------------------------------
-         OPEN BUTTON
-      --------------------------------------- */
+      /* =======================================
+         REWARD
+      ======================================= */
+
+      const reward =
+        Number(
+          task.reward_coins || 5
+        );
+
+
+      taskReward.textContent =
+        `+${reward} 🪙`;
+
+
+      /* =======================================
+         AVATAR
+      ======================================= */
+
+      taskAvatar.src =
+        createDefaultAvatar();
+
+
+      /* =======================================
+         INSTRUCTIONS
+      ======================================= */
+
+      if (
+        task.promotion_type === "followers"
+      ) {
+
+        instructionsText.textContent =
+          "1. Open the TikTok account. " +
+          "2. Follow the account. " +
+          "3. Return here. " +
+          "4. Press Verify.";
+
+      } else {
+
+        instructionsText.textContent =
+          "1. Open the TikTok account. " +
+          "2. Complete the required action. " +
+          "3. Return here. " +
+          "4. Press Verify.";
+
+      }
+
+
+      /* =======================================
+         OPEN TIKTOK
+      ======================================= */
 
       openBtn.onclick =
         function () {
 
           const url =
-            task.target_url ||
-            task.tiktok_url ||
-            task.url;
+            task.tiktok_url;
 
 
           if (!url) {
@@ -2420,6 +2202,7 @@
             );
 
             return;
+
           }
 
 
@@ -2447,6 +2230,7 @@
         ) {
 
           return;
+
         }
 
 
@@ -2465,8 +2249,7 @@
               {
                 method: "POST",
 
-                credentials:
-                  "include",
+                credentials: "include",
 
                 headers: {
                   "Content-Type":
@@ -2478,15 +2261,41 @@
 
                 body:
                   JSON.stringify({
+
                     task_id:
                       currentTask.id
+
                   })
               }
             );
 
 
-          const data =
-            await response.json();
+          let data;
+
+          try {
+
+            data =
+              await response.json();
+
+          } catch {
+
+            throw new Error(
+              "Invalid server response"
+            );
+
+          }
+
+
+          if (
+            response.status === 401
+          ) {
+
+            window.location.href =
+              "/";
+
+            return;
+
+          }
 
 
           if (
@@ -2502,8 +2311,11 @@
           }
 
 
-          verified =
-            true;
+          /* =================================
+             VERIFIED
+          ================================= */
+
+          verified = true;
 
 
           verifyBtn.textContent =
@@ -2521,9 +2333,9 @@
           );
 
 
-          /* -------------------------------------
+          /* =================================
              UPDATE BALANCE
-          ------------------------------------- */
+          ================================= */
 
           if (
             data.coins !== undefined
@@ -2575,7 +2387,9 @@
       async function () {
 
         if (!verified) {
+
           return;
+
         }
 
 
@@ -2675,7 +2489,9 @@
 
 
         if (!user) {
+
           return;
+
         }
 
 
