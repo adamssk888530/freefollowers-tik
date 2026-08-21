@@ -246,6 +246,92 @@ function checkTikTokEnvironment() {
 
 
 /* ==========================================
+   TIKTOK USER INFO
+========================================== */
+
+async function getTikTokUserInfo(
+  accessToken
+) {
+
+  const profileUrl =
+    new URL(TIKTOK_USER_URL);
+
+
+  /*
+   * user.info.basic
+   * user.info.profile
+   * user.info.stats
+   *
+   * stats:
+   * - follower_count
+   * - following_count
+   * - likes_count
+   * - video_count
+   */
+
+  profileUrl.searchParams.set(
+    "fields",
+    [
+      "open_id",
+      "union_id",
+      "display_name",
+      "avatar_url",
+      "username",
+      "profile_deep_link",
+      "is_verified",
+      "bio_description",
+      "follower_count",
+      "following_count",
+      "likes_count",
+      "video_count"
+    ].join(",")
+  );
+
+
+  const response =
+    await fetch(
+      profileUrl.toString(),
+      {
+        method: "GET",
+
+        headers: {
+          Authorization:
+            `Bearer ${accessToken}`,
+
+          Accept:
+            "application/json"
+        }
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if (
+    !response.ok ||
+    !data.data?.user
+  ) {
+
+    console.error(
+      "TikTok user info error:",
+      data
+    );
+
+    throw new Error(
+      data.error?.message ||
+      data.error_description ||
+      "Could not get TikTok user information"
+    );
+  }
+
+
+  return data.data.user;
+}
+
+
+/* ==========================================
    1. TIKTOK LOGIN
 ========================================== */
 
@@ -257,6 +343,7 @@ router.get(
 
       const environment =
         checkTikTokEnvironment();
+
 
       if (!environment.valid) {
 
@@ -321,16 +408,15 @@ router.get(
 
 
       /*
-       * IMPORTANT:
+       * IMPORTANT
        *
-       * user.info.profile is required
-       * for username, profile_deep_link
-       * and is_verified.
+       * These scopes must also be enabled
+       * in TikTok Developer Portal.
        */
 
       params.set(
         "scope",
-        "user.info.basic,user.info.profile"
+        "user.info.basic,user.info.profile,user.info.stats"
       );
 
 
@@ -354,10 +440,12 @@ router.get(
         "TikTok authorization started"
       );
 
+
       console.log(
         "Requested scopes:",
-        "user.info.basic,user.info.profile"
+        "user.info.basic,user.info.profile,user.info.stats"
       );
+
 
       console.log(
         "Redirect URI:",
@@ -376,6 +464,7 @@ router.get(
         "TikTok login error:",
         error
       );
+
 
       return res.status(500).json({
 
@@ -401,6 +490,7 @@ router.get(
     const client =
       await pool.connect();
 
+
     try {
 
       const {
@@ -424,6 +514,7 @@ router.get(
             error_description
           }
         );
+
 
         return res.status(400).json({
 
@@ -572,6 +663,7 @@ router.get(
           tokenData
         );
 
+
         return res.status(400).json({
 
           success: false,
@@ -596,6 +688,7 @@ router.get(
         "TikTok token received"
       );
 
+
       console.log(
         "Granted scopes:",
         tokenData.scope || "unknown"
@@ -606,88 +699,10 @@ router.get(
          GET TIKTOK USER
       ====================================== */
 
-      const profileUrl =
-        new URL(TIKTOK_USER_URL);
-
-
-      /*
-       * IMPORTANT:
-       *
-       * These fields are protected by
-       * user.info.profile.
-       */
-
-      profileUrl.searchParams.set(
-        "fields",
-        [
-          "open_id",
-          "union_id",
-          "display_name",
-          "avatar_url",
-          "username",
-          "profile_deep_link",
-          "is_verified",
-          "bio_description"
-        ].join(",")
-      );
-
-
-      const profileResponse =
-        await fetch(
-          profileUrl.toString(),
-          {
-            method: "GET",
-
-            headers: {
-
-              Authorization:
-                `Bearer ${tokenData.access_token}`,
-
-              Accept:
-                "application/json"
-
-            }
-          }
-        );
-
-
-      const profileData =
-        await profileResponse.json();
-
-
-      if (
-        !profileResponse.ok ||
-        !profileData.data?.user
-      ) {
-
-        console.error(
-          "TikTok profile error:",
-          profileData
-        );
-
-        return res.status(400).json({
-
-          success: false,
-
-          message:
-            profileData.error?.message ||
-            profileData.error_description ||
-            "Could not get TikTok profile",
-
-          error:
-            profileData.error?.code ||
-            null,
-
-          log_id:
-            profileData.error?.log_id ||
-            null
-
-        });
-      }
-
-
       const tiktokUser =
-        profileData.data.user;
+        await getTikTokUserInfo(
+          tokenData.access_token
+        );
 
 
       /* ======================================
@@ -727,12 +742,75 @@ router.get(
         );
 
 
+      /* ======================================
+         STATS DATA
+      ====================================== */
+
+      const followerCount =
+        Number.isFinite(
+          Number(
+            tiktokUser.follower_count
+          )
+        )
+          ? Number(
+              tiktokUser.follower_count
+            )
+          : null;
+
+
+      const followingCount =
+        Number.isFinite(
+          Number(
+            tiktokUser.following_count
+          )
+        )
+          ? Number(
+              tiktokUser.following_count
+            )
+          : null;
+
+
+      const likesCount =
+        Number.isFinite(
+          Number(
+            tiktokUser.likes_count
+          )
+        )
+          ? Number(
+              tiktokUser.likes_count
+            )
+          : null;
+
+
+      const videoCount =
+        Number.isFinite(
+          Number(
+            tiktokUser.video_count
+          )
+        )
+          ? Number(
+              tiktokUser.video_count
+            )
+          : null;
+
+
       console.log(
         "TikTok profile:",
         {
           username,
           profileDeepLink,
           isVerified
+        }
+      );
+
+
+      console.log(
+        "TikTok stats:",
+        {
+          followerCount,
+          followingCount,
+          likesCount,
+          videoCount
         }
       );
 
@@ -1327,6 +1405,14 @@ router.get(
         );
 
 
+      /*
+       * We also select access_token here.
+       *
+       * It is NEVER returned to the browser.
+       * It is only used server-side to request
+       * the latest TikTok stats.
+       */
+
       const result =
         await query(
           `
@@ -1347,6 +1433,8 @@ router.get(
             u.is_banned,
 
             u.is_admin,
+
+            u.access_token,
 
             ta.username
               AS tiktok_username,
@@ -1391,6 +1479,7 @@ router.get(
           "session_token"
         );
 
+
         return res.status(401).json({
 
           success: false,
@@ -1416,6 +1505,7 @@ router.get(
           "session_token"
         );
 
+
         return res.status(403).json({
 
           success: false,
@@ -1427,11 +1517,105 @@ router.get(
       }
 
 
+      /* ======================================
+         GET FRESH TIKTOK STATS
+      ====================================== */
+
+      let tiktokStats = {
+        follower_count: null,
+        following_count: null,
+        likes_count: null,
+        video_count: null
+      };
+
+
+      if (user.access_token) {
+
+        try {
+
+          const tiktokUser =
+            await getTikTokUserInfo(
+              user.access_token
+            );
+
+
+          tiktokStats = {
+            follower_count:
+              Number.isFinite(
+                Number(
+                  tiktokUser.follower_count
+                )
+              )
+                ? Number(
+                    tiktokUser.follower_count
+                  )
+                : null,
+
+            following_count:
+              Number.isFinite(
+                Number(
+                  tiktokUser.following_count
+                )
+              )
+                ? Number(
+                    tiktokUser.following_count
+                  )
+                : null,
+
+            likes_count:
+              Number.isFinite(
+                Number(
+                  tiktokUser.likes_count
+                )
+              )
+                ? Number(
+                    tiktokUser.likes_count
+                  )
+                : null,
+
+            video_count:
+              Number.isFinite(
+                Number(
+                  tiktokUser.video_count
+                )
+              )
+                ? Number(
+                    tiktokUser.video_count
+                  )
+                : null
+          };
+
+
+        } catch (tiktokError) {
+
+          /*
+           * Do not destroy the user's session
+           * just because TikTok stats failed.
+           */
+
+          console.error(
+            "TikTok stats refresh failed:",
+            tiktokError.message
+          );
+        }
+      }
+
+
+      /* ======================================
+         NEVER SEND ACCESS TOKEN
+      ====================================== */
+
+      delete user.access_token;
+
+
       return res.json({
 
         success: true,
 
-        user
+        user,
+
+        tiktok_stats:
+          tiktokStats
 
       });
 
